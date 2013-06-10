@@ -1,13 +1,25 @@
 var express = require("express");
-var sanitize = require("validator").sanitize;
+var expressValidator = require("express-validator");
 
 app = express();
 
 app.use(express.bodyParser());
+app.use(expressValidator);
 
 app.get("/api/addNumbers/", function(request, response) {
-  var a = sanitize(request.query.a).toInt();
-  var b = sanitize(request.query.b).toInt();
+  request.assert("a", "Invalid a").isInt();
+  request.assert("b", "Invalid b").isInt();
+
+  var errors = request.validationErrors();
+  if(!!errors) {
+    console.log("errors:");
+    console.log(errors);
+    response.send(errors);
+    return;
+  }
+
+  var a = request.sanitize("a").toInt();
+  var b = request.sanitize("b").toInt();
 
   var result = {
     "result": a + b,
@@ -18,8 +30,19 @@ app.get("/api/addNumbers/", function(request, response) {
 });
 
 app.post("/api/addNumbers/", function(request, response) {
-  var a = sanitize(request.body.a).toInt();
-  var b = sanitize(request.body.b).toInt();
+  request.checkBody("a", "Invalid a").isInt();
+  request.checkBody("b", "Invalid b").isInt();
+
+  var errors = request.validationErrors();
+  if(!!errors) {
+    console.log("errors:");
+    console.log(errors);
+    response.send(errors);
+    return;
+  }
+
+  var a = request.sanitize("a").toInt();
+  var b = request.sanitize("b").toInt();
 
   var result = {
     "result": a + b,
