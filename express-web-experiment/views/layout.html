@@ -1,8 +1,9 @@
 <!doctype html>
-<html>
+<html ng-app="app">
   <head>
     <link href="/bootstrap.min.css" rel="stylesheet">
-    <script type="text/javascript" href="/angular.min.js"></script>
+    <script type="text/javascript" src="/angular.min.js"></script>
+    <script type="text/javascript" src="/app.js"></script>
     <title>{% block title %}default title{% endblock %}</title>
   <head>
   <body>
@@ -12,9 +13,7 @@
           <div class="page-header">
             <h1>Hello <small>world</small></h1>
           </div>
-          <div>
-            {% block body %}{% endblock %}
-          </div>
+          {% block body %}{% endblock %}
         </div>
       </div>
     </div>

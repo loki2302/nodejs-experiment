@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+{% block title %}Other{% endblock %}
+
+{% block body %}
+<p>Other page goes here</p>
+<div ng-controller="CalculatorController">
+  <input type="text" ng-model="a" />
+  <input type="text" ng-model="b" />
+  <span>[[result]]</span>
+  <button ng-click="calculate()" class="btn btn-larger">Calculate</button>
+</div>
+<a href="/">Index</a>
+{% endblock %}

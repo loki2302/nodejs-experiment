@@ -10,15 +10,23 @@ var app = express();
 
 app.engine("html", consolidate.swig);
 app.set("view engine", "html");
-app.use(express.logger('dev'));
+app.use(express.logger("dev"));
 app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/", function(request, response) {
   response.render("index");
 });
 
-app.get("/other", function(request, response) {
-  response.render("other");
+app.get("/calculator", function(request, response) {
+  response.render("calculator");
+});
+
+app.get("/api/addNumbers/", function(request, response) {
+  var a = parseInt(request.query.a);
+  var b = parseInt(request.query.b);
+  response.send({
+    "result": a + b
+  });
 });
 
 http.createServer(app).listen(8080);
