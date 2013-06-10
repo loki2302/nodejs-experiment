@@ -1,12 +1,13 @@
 var express = require("express");
+var sanitize = require("validator").sanitize;
 
 app = express();
 
 app.use(express.bodyParser());
 
 app.get("/api/addNumbers/", function(request, response) {
-  var a = parseInt(request.query.a);
-  var b = parseInt(request.query.b);
+  var a = sanitize(request.query.a).toInt();
+  var b = sanitize(request.query.b).toInt();
 
   var result = {
     "result": a + b,
@@ -17,8 +18,8 @@ app.get("/api/addNumbers/", function(request, response) {
 });
 
 app.post("/api/addNumbers/", function(request, response) {
-  var a = parseInt(request.body.a);
-  var b = parseInt(request.body.b);
+  var a = sanitize(request.body.a).toInt();
+  var b = sanitize(request.body.b).toInt();
 
   var result = {
     "result": a + b,
