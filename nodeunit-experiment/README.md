@@ -1,0 +1,1 @@
+First `npm install nodeunit -g` to install nodeunit. Then `nodeunit mytests.js` to run tests.
