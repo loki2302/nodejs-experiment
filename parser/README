@@ -1,0 +1,1 @@
+`npm install -g nodeunit`, then `nodeunit tests.js`
