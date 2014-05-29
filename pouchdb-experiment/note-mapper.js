@@ -11,4 +11,11 @@ NoteMapper.prototype.noteFromNoteRow = function(noteRow) {
 	});
 };
 
+NoteMapper.prototype.notesFromNoteRows = function(noteRows) {
+	var self = this;
+	return noteRows.map(function(noteRow) {
+		return self.noteFromNoteRow(noteRow.doc);
+	});
+};
+
 exports.NoteMapper = NoteMapper;

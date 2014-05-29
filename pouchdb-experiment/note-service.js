@@ -28,4 +28,19 @@ NoteService.prototype.getNote = function(noteId, callback) {
 	});
 };
 
+NoteService.prototype.getAllNotes = function(callback) {
+	var self = this;
+	self.db.allDocs({
+		include_docs: true,
+		descending: true
+	}, function(err, result) {
+		if(err) {
+			callback(err, undefined);
+		}
+
+		var notes = self.noteMapper.notesFromNoteRows(result.rows);
+		callback(undefined, notes);
+	});
+};
+
 exports.NoteService = NoteService;

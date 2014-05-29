@@ -33,47 +33,42 @@ exports.canCreateNote = function(test) {
 	});
 };
 
-exports.dummy = function(test) {
-	PouchDB.destroy("notes", function(err, info) {
-		// intentionally ignoring error here
-
-		var db = new PouchDB("notes");
-		var note = {
-			title: "note one",
-			text: "text for note one"
-		};
-		db.post(note, function(err, result) {
-			test.ifError(err, "post() failed");
-			// that's how you do it in non-test environment
-			// if(err) {
-			//   throw "post() failed";
-			// }
-
-			console.log("Inserted!");
-			console.log(result);
-
-			db.allDocs({
-				include_docs: true,
-				descending: true
-			}, function(err, rowsDoc) {
-				test.ifError(err, "allDocs() failed");
-
-				console.log("Fetching!");
-				console.log(rowsDoc);
-
-				var numberOfDocuments = rowsDoc.rows.length;
-				for(var i = 0; i < numberOfDocuments; ++i) {
-					var doc = rowsDoc.rows[i].doc;
-					console.log("Got note", {
-						id: doc._id,
-						title: doc.title,
-						text: doc.text
-					});
-				}
-
-				test.equal(numberOfDocuments, 1, "expected exactly 1 document");
-				test.done();					
-			});
+exports.canGetAllNotes = function(test) {
+	async.waterfall([function(callback) {
+		PouchDB.destroy("notes", function(err, info) {
+			callback(err);
 		});
-	});		
+	}, function(callback) {
+		var noteMapper = new NoteMapper();
+		var noteService = new NoteService(noteMapper);
+		callback(null, noteService);
+	}, function(noteService, callback) {
+		noteService.createNote({
+			title: "title 1",
+			text: "text 1"
+		}, function(err, noteId) {
+			callback(err, noteService);
+		});
+	}, function(noteService, callback) {
+		noteService.createNote({
+			title: "title 2",
+			text: "text 2"
+		}, function(err, noteId) {
+			callback(err, noteService);
+		});
+	}, function(noteService, callback) {
+		noteService.getAllNotes(function(err, notes) {
+			test.equal(notes.length, 2);
+			test.equal(notes[0].title, "title 1");
+			test.equal(notes[0].text, "text 1");
+			test.equal(notes[1].title, "title 2");
+			test.equal(notes[1].text, "text 2");
+
+			callback(err, notes);
+		});
+	}], function(err, result) {
+		console.log(err, result);
+		test.ifError(err);
+		test.done();
+	});
 };
