@@ -1,5 +1,57 @@
 var PouchDB = require("pouchdb");
 
+var NoteService = function() {
+	this.db = new PouchDB("notes");
+};
+
+NoteService.prototype.createNote = function(note, success, error) {
+	this.db.post(note, function(err, result) {
+		if(err) {
+			error(err);
+		}
+
+		var noteId = result.id;
+		success(noteId);
+	});
+};
+
+NoteService.prototype.getNote = function(noteId, success, error) {
+	this.db.get(noteId, function(err, result) {
+		if(err) {
+			error(err);
+		}
+
+		success(result);
+	});
+};
+
+exports.canCreateNote = function(test) {
+	PouchDB.destroy("notes", function(err, info) {
+		var notes = new NoteService();
+		notes.createNote({
+			title: "title 1",
+			text: "text 1"
+		}, function(result) {
+			console.log("RESULT", result);
+
+			var noteId = result;
+			notes.getNote(noteId, function(result) {
+				console.log("RESULT", result);
+				test.done();
+			}, function(error) {
+				test.ifError(error);
+				console.log("ERROR", error)
+				test.done();
+			});			
+		}, function(error) {
+			test.ifError(error);
+			console.log("ERROR", error);
+			test.done();
+		});
+	});
+
+};
+
 exports.dummy = function(test) {
 	PouchDB.destroy("notes", function(err, info) {
 		// intentionally ignoring error here
