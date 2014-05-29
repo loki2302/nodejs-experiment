@@ -1,55 +1,78 @@
 var PouchDB = require("pouchdb");
 
-var NoteService = function() {
-	this.db = new PouchDB("notes");
+var Note = function(values) {
+	this.id = values.id || null;
+	this.title = values.title || "";
+	this.text = values.text || "";
 };
 
-NoteService.prototype.createNote = function(note, success, error) {
-	this.db.post(note, function(err, result) {
-		if(err) {
-			error(err);
-		}
+var NoteMapper = function() {	
+};
 
-		var noteId = result.id;
-		success(noteId);
+NoteMapper.prototype.noteFromNoteRow = function(noteRow) {
+	return new Note({
+		id: noteRow._id,
+		title: noteRow.title,
+		text: noteRow.text
 	});
 };
 
-NoteService.prototype.getNote = function(noteId, success, error) {
-	this.db.get(noteId, function(err, result) {
+var NoteService = function(noteMapper) {
+	this.db = new PouchDB("notes");
+	this.noteMapper = noteMapper;
+};
+
+NoteService.prototype.createNote = function(note, callback) {
+	this.db.post(note, function(err, result) {		
 		if(err) {
-			error(err);
+			callback(err, undefined);
 		}
 
-		success(result);
+		var noteId = result.id;
+		callback(undefined, noteId);
+	});
+};
+
+NoteService.prototype.getNote = function(noteId, callback) {
+	var self = this;
+	self.db.get(noteId, function(err, result) {
+		if(err) {
+			callback(err, undefined);
+		}
+
+		var note = self.noteMapper.noteFromNoteRow(result);
+		callback(undefined, note);
 	});
 };
 
 exports.canCreateNote = function(test) {
 	PouchDB.destroy("notes", function(err, info) {
-		var notes = new NoteService();
+		var noteMapper = new NoteMapper();
+		var notes = new NoteService(noteMapper);
 		notes.createNote({
 			title: "title 1",
 			text: "text 1"
-		}, function(result) {
+		}, function(err, result) {
+			if(err) {
+				test.ifError(err);
+				console.log("ERROR", err);
+				test.done();
+			}
+
 			console.log("RESULT", result);
 
 			var noteId = result;
-			notes.getNote(noteId, function(result) {
+			notes.getNote(noteId, function(err, result) {
+				if(err) {
+					test.ifError(err);
+					test.done();
+				}
+
 				console.log("RESULT", result);
 				test.done();
-			}, function(error) {
-				test.ifError(error);
-				console.log("ERROR", error)
-				test.done();
 			});			
-		}, function(error) {
-			test.ifError(error);
-			console.log("ERROR", error);
-			test.done();
 		});
 	});
-
 };
 
 exports.dummy = function(test) {
