@@ -64,6 +64,9 @@ exports.canCreateNote = function(test) {
 		});
 	}, function(notes, noteId, callback) {
 		notes.getNote(noteId, function(err, result) {
+			test.equal(result.id, noteId);
+			test.equal(result.title, "title 1");
+			test.equal(result.text, "text 1");
 			callback(err, result);
 		});
 	}], function(err, result) {
