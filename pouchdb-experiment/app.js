@@ -1,4 +1,5 @@
 var PouchDB = require("pouchdb");
+var async = require("async");
 
 var Note = function(values) {
 	this.id = values.id || null;
@@ -46,32 +47,29 @@ NoteService.prototype.getNote = function(noteId, callback) {
 };
 
 exports.canCreateNote = function(test) {
-	PouchDB.destroy("notes", function(err, info) {
+	async.waterfall([function(callback) {
+		PouchDB.destroy("notes", function(err, info) {
+			callback(err);
+		});
+	}, function(callback) {
 		var noteMapper = new NoteMapper();
 		var notes = new NoteService(noteMapper);
+		callback(null, notes);
+	}, function(notes, callback) {
 		notes.createNote({
 			title: "title 1",
 			text: "text 1"
-		}, function(err, result) {
-			if(err) {
-				test.ifError(err);
-				console.log("ERROR", err);
-				test.done();
-			}
-
-			console.log("RESULT", result);
-
-			var noteId = result;
-			notes.getNote(noteId, function(err, result) {
-				if(err) {
-					test.ifError(err);
-					test.done();
-				}
-
-				console.log("RESULT", result);
-				test.done();
-			});			
+		}, function(err, noteId) {
+			callback(err, notes, noteId);
 		});
+	}, function(notes, noteId, callback) {
+		notes.getNote(noteId, function(err, result) {
+			callback(err, result);
+		});
+	}], function(err, result) {
+		console.log(err, result);
+		test.ifError(err);
+		test.done();
 	});
 };
 
