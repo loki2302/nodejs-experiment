@@ -1,50 +1,7 @@
 var PouchDB = require("pouchdb");
 var async = require("async");
-
-var Note = function(values) {
-	this.id = values.id || null;
-	this.title = values.title || "";
-	this.text = values.text || "";
-};
-
-var NoteMapper = function() {	
-};
-
-NoteMapper.prototype.noteFromNoteRow = function(noteRow) {
-	return new Note({
-		id: noteRow._id,
-		title: noteRow.title,
-		text: noteRow.text
-	});
-};
-
-var NoteService = function(noteMapper) {
-	this.db = new PouchDB("notes");
-	this.noteMapper = noteMapper;
-};
-
-NoteService.prototype.createNote = function(note, callback) {
-	this.db.post(note, function(err, result) {		
-		if(err) {
-			callback(err, undefined);
-		}
-
-		var noteId = result.id;
-		callback(undefined, noteId);
-	});
-};
-
-NoteService.prototype.getNote = function(noteId, callback) {
-	var self = this;
-	self.db.get(noteId, function(err, result) {
-		if(err) {
-			callback(err, undefined);
-		}
-
-		var note = self.noteMapper.noteFromNoteRow(result);
-		callback(undefined, note);
-	});
-};
+var NoteMapper = require("./note-mapper.js").NoteMapper;
+var NoteService = require("./note-service.js").NoteService;
 
 exports.canCreateNote = function(test) {
 	async.waterfall([function(callback) {
