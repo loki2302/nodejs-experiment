@@ -1,0 +1,17 @@
+{
+  "name": "socketio-experiment",
+  "version": "0.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "loki2302",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "socket.io": "~1.0.6",
+    "express": "~4.8.5",
+    "socket.io-client": "~1.0.6"
+  }
+}
