@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "test": "nodeunit tests.js",
+    "start": "nodeunit tests.js"
   },
   "author": "loki2302",
   "license": "BSD-2-Clause",
