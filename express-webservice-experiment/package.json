@@ -1,0 +1,17 @@
+{
+  "name": "express-webservice-experiment",
+  "version": "0.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "author": "loki2302",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "express": "~4.8.5",
+    "express-validator": "~2.3.0",
+    "body-parser": "~1.6.6"
+  }
+}
