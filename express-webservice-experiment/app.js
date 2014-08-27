@@ -55,4 +55,4 @@ app.post("/api/addNumbers/", function(req, res) {
   res.send(result);
 });
 
-app.listen(3000);
+exports.app = app;
