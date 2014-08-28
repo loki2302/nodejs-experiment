@@ -2,10 +2,10 @@
   "name": "socketio-experiment",
   "version": "0.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "tests.js",
   "scripts": {
-    "start": "node app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodeunit tests.js",
+    "test": "nodeunit tests.js"
   },
   "author": "loki2302",
   "license": "BSD-2-Clause",
