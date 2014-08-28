@@ -1,10 +1,8 @@
-var express = require("express");
-var app = express();
-
 var http = require("http");
-var server = http.createServer(app);
+var makeSocketIoServer = require("socket.io");
 
-var io = require("socket.io")(server, {
+var server = http.Server();
+var io = makeSocketIoServer(server, {
 	// The entire app won't shutdown as long as at least
 	// one connection is considered alive. In practice this
 	// results in quite a long delay between call to server.close()
@@ -39,7 +37,8 @@ io.on("connection", function(socket) {
 server.listen(3000, function() {
 	console.log("listening: %j", server.address());
 
-	var socket = require("socket.io-client")("http://localhost:3000");
+	var makeSocketIoClient = require("socket.io-client");
+	var socket = makeSocketIoClient("http://localhost:3000");
 
 	socket.on("connect", function() {
 		socket.on("personal hello", function(data) {
