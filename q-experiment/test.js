@@ -34,6 +34,28 @@ describe("i can", function() {
 		});
 	});
 
+	describe("make promise from a function call", function() {
+		it("and get it resolved with function call result", function(done) {
+			var promise = Q.fcall(function() {
+				return 123;
+			});
+			promise.then(function(result) {
+				assert.equal(123, result);
+				done();
+			});
+		});
+
+		it("and get it rejected with what function call throws", function(done) {
+			var promise = Q.fcall(function() {
+				throw "error happened"
+			});
+			promise.then(null, function(error) {
+				assert.equal("error happened", error);
+				done();
+			});
+		});
+	});
+
 	describe("chain promises", function() {
 		it("to eventually get a result", function(done) {
 			Q.fcall(function() {
