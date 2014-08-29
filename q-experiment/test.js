@@ -54,6 +54,16 @@ describe("i can", function() {
 				done();
 			});
 		});
+
+		it("even if function has parameters", function(done) {
+			var promise = Q.fcall(function(a, b) {
+				return a + b;
+			}, 1, 2);
+			promise.then(function(result) {
+				assert.equal(3, result);
+				done();
+			});
+		});
 	});
 
 	describe("chain promises", function() {
