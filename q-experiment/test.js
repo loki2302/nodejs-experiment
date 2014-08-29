@@ -32,5 +32,32 @@ describe("i can", function() {
 				done();
 			});
 		});
-	});	
+	});
+
+	describe("chain promises", function() {
+		it("to eventually get a result", function(done) {
+			Q.fcall(function() {
+				return 1;
+			}).then(function(result) {
+				return result + 2;
+			}).then(function(result) {
+				assert.equal(3, result);
+				done();
+			});			
+		});
+
+		it("to get a rejection that happened on top of chain", function(done) {
+			Q.fcall(function() {
+				throw "error happened";
+			}).then(function(result) {
+				assert.ok(false, "should never get here");
+				return result + 2;
+			}).then(function(result) {
+				assert.ok(false, "should never get here");
+			}).then(null, function(error) {
+				assert.equal("error happened", error);
+				done();
+			});
+		});
+	});
 });
