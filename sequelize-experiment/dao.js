@@ -52,4 +52,31 @@ DAO.prototype.createNote = function(fields, success, error) {
 	});
 };
 
+DAO.prototype.updateNote = function(noteId, fields, success, error) {
+	this.getNote(noteId, function(note) {
+		if(!note) {
+			error(new Error("There is no note with id " + noteId));
+			return;			
+		}
+
+		note.title = fields.title || "";
+		note.description = fields.description || "";
+		note.save().success(function(note) {
+			success(note);
+		}, function(e) {
+			error(e);
+		});
+	}, function(e) {
+		error(e);
+	});
+};
+
+DAO.prototype.countNotes = function(success, error) {
+	this.Note.count().success(function(count) {
+		success(count);
+	}).error(function(e) {
+		error(e);
+	});
+};
+
 exports.DAO = DAO;

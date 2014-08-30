@@ -21,7 +21,13 @@ exports.thereAreNoNotesByDefault = function(test) {
 	var dao = this.dao;
 	dao.getAllNotes(function(notes) {
 		test.equal(notes.length, 0);
-		test.done();
+
+		dao.countNotes(function(count) {
+			test.equal(count, 0);
+			test.done();
+		}, function() {
+			test.ok(false, "countNotes() failed");
+		});
 	}, function() {
 		test.ok(false, "getAllNotes() failed");
 	});
@@ -52,7 +58,13 @@ exports.thereIsExactlyOneNoteAfterOneNoteIsCreated = function(test) {
 	dao.createNote(fields, function(note) {
 		dao.getAllNotes(function(notes) {
 			test.equal(notes.length, 1);
-			test.done();
+
+			dao.countNotes(function(count) {
+				test.equal(count, 1);
+				test.done();
+			}, function() {
+				test.ok(false, "countNotes() failed");
+			});
 		}, function() {
 			test.ok(false, "getAllNotes() failed");
 		});
@@ -89,5 +101,36 @@ exports.getNoteReturnsNullWhenThereIsNoSuchNote = function(test) {
 		test.done();
 	}, function() {
 		test.ok(false, "getNote() failed");
+	});
+};
+
+exports.canUpdateNote = function(test) {
+	var dao = this.dao;
+	var fields = {
+		title: "title 1", 
+		description: "description 1"
+	};
+	dao.createNote(fields, function(note) {
+		var noteId = note.id;
+		dao.updateNote(noteId, {title:"t", description: "d"}, function(note) {
+			test.equal(note.id, noteId);
+			test.equal(note.title, "t");
+			test.equal(note.description, "d");
+			test.done();
+		}, function() {
+			test.ok(false, "updateNote() failed");
+		});
+	}, function() {
+		test.ok(false, "createNote() failed");
+	});
+};
+
+exports.cantUpdateNoteThatDoesNotExist = function(test) {
+	var dao = this.dao;
+	dao.updateNote(123, {title:"t", description: "d"}, function(note) {
+		test.ok(false, "should never get here");
+	}, function(e) {
+		console.log(e);
+		test.done();
 	});
 };
