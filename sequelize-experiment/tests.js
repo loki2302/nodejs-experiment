@@ -129,8 +129,39 @@ exports.cantUpdateNoteThatDoesNotExist = function(test) {
 	var dao = this.dao;
 	dao.updateNote(123, {title:"t", description: "d"}, function(note) {
 		test.ok(false, "should never get here");
+	}, function(e) {		
+		test.done();
+	});
+};
+
+exports.canDeleteNote = function(test) {
+	var dao = this.dao;
+	var fields = {
+		title: "title 1", 
+		description: "description 1"
+	};
+	dao.createNote(fields, function(note) {
+		var noteId = note.id;		
+		dao.deleteNote(note, function() {			
+			dao.countNotes(function(count) {
+				test.equal(count, 0);
+				test.done();
+			}, function(e) {
+				test.ok(false, "countNotes() failed");
+			});
+		}, function(e) {
+			test.ok(false, "deleteNote() failed");
+		});
+	}, function() {
+		test.ok(false, "createNote() failed");
+	});
+};
+
+exports.cantDeleteNoteThatDoesNotExist = function(test) {
+	var dao = this.dao;
+	dao.deleteNote(123, function() {		
+		test.ok(false, "should never get here");
 	}, function(e) {
-		console.log(e);
 		test.done();
 	});
 };

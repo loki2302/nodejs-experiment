@@ -63,7 +63,24 @@ DAO.prototype.updateNote = function(noteId, fields, success, error) {
 		note.description = fields.description || "";
 		note.save().success(function(note) {
 			success(note);
-		}, function(e) {
+		}).error(function(e) {
+			error(e);
+		});
+	}, function(e) {
+		error(e);
+	});
+};
+
+DAO.prototype.deleteNote = function(noteId, success, error) {
+	this.getNote(noteId, function(note) {		
+		if(!note) {
+			error(new Error("There is no note with id " + noteId));
+			return;
+		}
+
+		note.destroy().success(function() {
+			success();
+		}).error(function(e) {
 			error(e);
 		});
 	}, function(e) {
