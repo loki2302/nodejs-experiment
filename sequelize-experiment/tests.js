@@ -60,3 +60,34 @@ exports.thereIsExactlyOneNoteAfterOneNoteIsCreated = function(test) {
 		test.ok(false, "createNote() failed");
 	});	
 };
+
+exports.canGetNoteById = function(test) {
+	var dao = this.dao;
+	var fields = {
+		title: "title 1", 
+		description: "description 1"
+	};
+	dao.createNote(fields, function(note) {
+		var noteId = note.id;
+		dao.getNote(noteId, function(note) {
+			test.equal(note.id, 1);
+			test.equal(note.title, "title 1");
+			test.equal(note.description, "description 1");
+			test.done();
+		}, function(error) {
+			test.ok(false, "getNote() failed");
+		});		
+	}, function() {
+		test.ok(false, "createNote() failed");
+	});	
+};
+
+exports.getNoteReturnsNullWhenThereIsNoSuchNote = function(test) {
+	var dao = this.dao;
+	dao.getNote(123, function(note) {
+		test.equal(note, null);
+		test.done();
+	}, function() {
+		test.ok(false, "getNote() failed");
+	});
+};

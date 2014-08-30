@@ -36,6 +36,14 @@ DAO.prototype.getAllNotes = function(success, error) {
 	});
 };
 
+DAO.prototype.getNote = function(noteId, success, error) {
+	this.Note.find(noteId).success(function(note) {
+		success(note);
+	}).error(function(e) {
+		error(e);
+	});
+};
+
 DAO.prototype.createNote = function(fields, success, error) {	
 	this.Note.create(fields).success(function(note) {
 		success(note);
