@@ -12,10 +12,10 @@ app.get("/api/addNumbers/", function(req, res) {
   req.assert("b", "Invalid b").isInt();
   
   var errors = req.validationErrors();
-  if(!!errors) {
-    console.log("errors:");
-    console.log(errors);
-    res.send(errors);
+  if(!!errors) {    
+    var validationErrorBody = makeValidationErrorBody(errors);
+    res.status(400);
+    res.send(validationErrorBody);
     return;
   }
 
@@ -27,6 +27,7 @@ app.get("/api/addNumbers/", function(req, res) {
     "message": "processed GET-request"
   };
 
+  res.status(200);
   res.send(result);
 });
 
@@ -37,10 +38,10 @@ app.post("/api/addNumbers/", function(req, res) {
   req.checkBody("b", "Invalid b").isInt();
 
   var errors = req.validationErrors();
-  if(!!errors) {
-    console.log("errors:");
-    console.log(errors);
-    res.send(errors);
+  if(!!errors) {    
+    var validationErrorBody = makeValidationErrorBody(errors);
+    res.status(400);
+    res.send(validationErrorBody);
     return;
   }
 
@@ -52,7 +53,20 @@ app.post("/api/addNumbers/", function(req, res) {
     "message": "processed POST-request"
   };
 
+  res.status(200);
   res.send(result);
 });
+
+function makeValidationErrorBody(validationErrors) {
+  var errors = {};
+  for(var i = 0; i < validationErrors.length; ++i) {
+    var validationError = validationErrors[i];
+    var paramName = validationError.param;
+    var message = validationError.msg;
+    errors[paramName] = message;
+  }
+
+  return errors;
+};
 
 exports.app = app;
