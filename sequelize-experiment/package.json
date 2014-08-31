@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "nodeunit tests.js",
-    "start": "nodeunit tests.js"
+    "test": "nodeunit tests",
+    "start": "nodeunit tests"
   },
   "author": "loki2302",
   "license": "BSD-2-Clause",
