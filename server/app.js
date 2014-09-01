@@ -3,7 +3,7 @@ var bodyParser = require("body-parser");
 
 module.exports = function(models) {
 	var app = express();
-	app.use(express.static(__dirname + "/static"));
+	app.use(express.static(__dirname + "/../client/build/"));
 	app.use(bodyParser.json());
 
 	app.get("/notes/", function(req, res, next) {
