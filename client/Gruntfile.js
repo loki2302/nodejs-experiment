@@ -17,6 +17,11 @@ module.exports = function(grunt) {
 					dest: "build/"
 				}, {
 					expand: true,
+					cwd: "bower_components/angular/",
+					src: ["angular.min.js"],
+					dest: "build/"
+				}, {
+					expand: true,
 					cwd: "src/",
 					src: "index.html",
 					dest: "build/"

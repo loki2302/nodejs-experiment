@@ -1,10 +1,18 @@
 <!doctype html>
-<html>
+<html ng-app="app">
 	<head>
 		<title>nodejs-app-experiment</title>
 		<link rel="stylesheet" href="/bootstrap.min.css">
 	</head>
-	<body>
+	<body ng-controller="IndexController">
 		<h1>nodejs-app-experiment</h1>
+		<h2>{{message}}</h2>
+
+		<script type="text/javascript" src="/angular.min.js"></script>
+		<script type="text/javascript">
+			angular.module("app", []).controller("IndexController", ["$scope", function($scope) {
+				$scope.message = "hello angular";
+			}]);
+		</script>
 	</body>
 </html>
