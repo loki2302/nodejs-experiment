@@ -85,7 +85,11 @@ exports.oneToManyTests = {
 			return getNoteWithCategory(noteId);
 		})
 		.then(function(note) {
-			console.log(JSON.stringify(note));
+			test.equal(note.id, 1);
+			test.equal(note.content, "hello");
+			test.equal(note.CategoryId, 1);
+			test.equal(note.category.id, 1);
+			test.equal(note.category.name, "js");
 			test.done();
 		});
 	}
