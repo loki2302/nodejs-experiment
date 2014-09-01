@@ -12,6 +12,9 @@
   "dependencies": {
     "sequelize": "~1.7.10",
     "express": "~4.8.7",
-    "request": "~2.40.0"
+    "request": "~2.40.0",
+    "body-parser": "~1.6.7",
+    "sqlite3": "~2.2.7",
+    "q": "~1.0.1"
   }
 }
