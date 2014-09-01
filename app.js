@@ -30,5 +30,30 @@ module.exports = function(models) {
 		});
 	});
 
+	app.post("/categories/", function(req, res, next) {
+		var body = req.body;
+		var categoryName = body.name;
+		models.Category.find({
+			where: {
+				name: categoryName
+			}
+		}).success(function(category) {
+			if(category) {
+				res.status(409).send({
+					message: "Category " + categoryName + " already exists"
+				});
+				return;
+			}
+
+			models.Category.create({ name: body.name }).success(function(category) {
+				res.status(201).send(category);
+			}).error(function(error) {
+				res.status(400).send(error);
+			});
+		}).error(function(error) {
+			next(error);
+		});		
+	});
+
 	return app;
 };

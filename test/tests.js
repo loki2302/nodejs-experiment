@@ -67,4 +67,49 @@ describe("app", function() {
 			done();
 		});
 	});
+
+	it("should let me create a category", function(done) {
+		var params = {
+			url: "http://localhost:3000/categories/",
+			json: {
+				name: "js"
+			}
+		};
+		request.post(params, function(error, response, body) {
+			assert.equal(response.statusCode, 201);
+			assert.equal(body.id, 1);
+			assert.equal(body.name, "js");
+			done();
+		});
+	});
+
+	it("should not let me create a category if fields are not valid", function(done) {
+		var params = {
+			url: "http://localhost:3000/categories/",
+			json: {
+				name: ""
+			}
+		};
+		request.post(params, function(error, response, body) {
+			assert.equal(response.statusCode, 400);
+			assert.ok("name" in body);
+			done();
+		});
+	});
+
+	it("should not let me create a category if it already exists", function(done) {
+		var params = {
+			url: "http://localhost:3000/categories/",
+			json: {
+				name: "js"
+			}
+		};
+		request.post(params, function(error, response, body) {
+			request.post(params, function(error, response, body) {
+				assert.equal(response.statusCode, 409);
+				assert.ok("message" in body);
+				done();
+			});
+		});
+	});
 });
