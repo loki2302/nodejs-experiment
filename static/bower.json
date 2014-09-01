@@ -1,0 +1,20 @@
+{
+  "name": "nodejs-app-experiment-fe",
+  "version": "0.0.0",
+  "homepage": "https://github.com/loki2302/nodejs-app-experiment",
+  "authors": [
+    "loki2302 <loki2302@loki2302.me>"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.2.0"
+  }
+}
