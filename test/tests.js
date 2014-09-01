@@ -4,6 +4,10 @@ var request = require("request");
 var models = require("../models.js");
 var makeApp = require("../app.js");
 
+function url(path) {
+	return "http://localhost:3000" + path;
+}
+
 describe("app", function() {
 	var server;
 	beforeEach(function(done) {
@@ -25,7 +29,7 @@ describe("app", function() {
 
 	it("should have no notes by default", function(done) {
 		var params = { 
-			url: "http://localhost:3000/notes/", 
+			url: url("/notes/"), 
 			json: true 
 		};
 		request.get(params, function(error, response, body) {
@@ -37,7 +41,7 @@ describe("app", function() {
 
 	it("should have no categories by default", function(done) {
 		var params = { 
-			url: "http://localhost:3000/categories/", 
+			url: url("/categories/"), 
 			json: true 
 		};
 		request.get(params, function(error, response, body) {
@@ -49,7 +53,7 @@ describe("app", function() {
 
 	it("should let me create a note", function(done) {
 		var params = {
-			url: "http://localhost:3000/notes/",
+			url: url("/notes/"),
 			json: {
 				content: "hello"
 			}
@@ -64,7 +68,7 @@ describe("app", function() {
 
 	it("should not let me create a note if fields are not valid", function(done) {
 		var params = {
-			url: "http://localhost:3000/notes/",
+			url: url("/notes/"),
 			json: {
 				content: ""
 			}
@@ -78,7 +82,7 @@ describe("app", function() {
 
 	it("should let me create a category", function(done) {
 		var params = {
-			url: "http://localhost:3000/categories/",
+			url: url("/categories/"),
 			json: {
 				name: "js"
 			}
@@ -93,7 +97,7 @@ describe("app", function() {
 
 	it("should not let me create a category if fields are not valid", function(done) {
 		var params = {
-			url: "http://localhost:3000/categories/",
+			url: url("/categories/"),
 			json: {
 				name: ""
 			}
@@ -107,7 +111,7 @@ describe("app", function() {
 
 	it("should not let me create a category if it already exists", function(done) {
 		var params = {
-			url: "http://localhost:3000/categories/",
+			url: url("/categories/"),
 			json: {
 				name: "js"
 			}
