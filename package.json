@@ -1,0 +1,17 @@
+{
+  "name": "nodejs-app-experiment",
+  "version": "0.0.0",
+  "description": "",
+  "main": "runner.js",
+  "scripts": {
+    "start": "node .",
+    "test": "mocha"
+  },
+  "author": "loki2302",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "sequelize": "~1.7.10",
+    "express": "~4.8.7",
+    "request": "~2.40.0"
+  }
+}
