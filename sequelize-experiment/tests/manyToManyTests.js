@@ -106,13 +106,14 @@ exports.oneToManyTests = {
 			});
 		})
 		.then(function(noteAndCategories) {
-			var note = noteAndCategories.note;
+			var note = noteAndCategories.note;			
 			var jsCategory = noteAndCategories.categories.jsCategory;
-			return addNoteToCategory(note, jsCategory).then(function() {
-				var articlesCategory = noteAndCategories.categories.articlesCategory;
-				return addNoteToCategory(note, articlesCategory).then(function() {
-					return note.id;
-				});
+			var articlesCategory = noteAndCategories.categories.articlesCategory;
+			return Q.all([
+				addNoteToCategory(note, jsCategory), 
+				addNoteToCategory(note, articlesCategory)
+			]).then(function() {
+				return note.id;
 			});
 		})
 		.then(function(noteId) {
