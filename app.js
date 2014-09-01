@@ -5,24 +5,26 @@ module.exports = function(models) {
 	var app = express();
 	app.use(bodyParser.json());
 
-	app.get("/", function(req, res) {
-		res.status(200);
-		res.send("hello");
-	});
-
 	app.get("/notes/", function(req, res, next) {
 		models.Note.findAll().success(function(notes) {
-			res.status(200);
-			res.send(notes);
+			res.status(200).send(notes);
 		}).error(function(error) {
 			next(error);
 		});
 	});
 
+	app.post("/notes/", function(req, res, next) {
+		var body = req.body;
+		models.Note.create({ content: body.content }).success(function(note) {
+			res.status(201).send(note);
+		}).error(function(error) {			
+			res.status(400).send(error);
+		});
+	});
+
 	app.get("/categories/", function(req, res, next) {
 		models.Category.findAll().success(function(categories) {
-			res.status(200);
-			res.send(categories);
+			res.status(200).send(categories);
 		}).error(function(error) {
 			next(error);
 		});
