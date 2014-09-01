@@ -24,7 +24,11 @@ describe("app", function() {
 	});
 
 	it("should have no notes by default", function(done) {
-		request.get({ url: "http://localhost:3000/notes/", json: true }, function(error, response, body) {
+		var params = { 
+			url: "http://localhost:3000/notes/", 
+			json: true 
+		};
+		request.get(params, function(error, response, body) {
 			assert.equal(response.statusCode, 200);			
 			assert.equal(body.length, 0);
 			done();
@@ -32,7 +36,11 @@ describe("app", function() {
 	});
 
 	it("should have no categories by default", function(done) {
-		request.get({ url: "http://localhost:3000/categories/", json: true }, function(error, response, body) {
+		var params = { 
+			url: "http://localhost:3000/categories/", 
+			json: true 
+		};
+		request.get(params, function(error, response, body) {
 			assert.equal(response.statusCode, 200);			
 			assert.equal(body.length, 0);
 			done();
