@@ -1,7 +1,7 @@
 var Sequelize = require("sequelize");
 var Q = require("q");
 
-exports.oneToManyTests = {
+exports.manyToManyTests = {
 	setUp: function(callback) {
 		this.sequelize = new Sequelize('database', 'username', 'password', {
 			dialect: 'sqlite',
@@ -21,7 +21,7 @@ exports.oneToManyTests = {
 
 		this.sequelize.sync().success(function() {
 			callback();
-		}).error(function(e) {
+		}).error(function(e) {			
 			throw e;
 		});
 	},
@@ -88,38 +88,39 @@ exports.oneToManyTests = {
 			return deferred.promise;
 		}
 
-		createCategory("js")
-		.then(function(jsCategory) {
-			return createCategory("articles").then(function(articlesCategory) {
+		Q.all(["js", "articles"].map(function(categoryName) {
+			return createCategory(categoryName).then(function(category) {
 				return {
-					jsCategory: jsCategory,
-					articlesCategory: articlesCategory
+					categoryName: categoryName,
+					category: category
 				};
 			});
-		})
-		.then(function(categories) {			
+		})).then(function(nameCategoryPairs) {
+			return nameCategoryPairs.reduce(function(categoryMap, nameCategoryPair) {
+				categoryMap[nameCategoryPair.categoryName] = nameCategoryPair.category;
+				return categoryMap;
+			}, {});
+		}).then(function(categories) {
 			return createNote("hello").then(function(note) {
 				return {
 					note: note,
 					categories: categories
 				};
 			});
-		})
-		.then(function(noteAndCategories) {
+		}).then(function(noteAndCategories) {
 			var note = noteAndCategories.note;			
-			var jsCategory = noteAndCategories.categories.jsCategory;
-			var articlesCategory = noteAndCategories.categories.articlesCategory;
+			var jsCategory = noteAndCategories.categories.js;
+			var articlesCategory = noteAndCategories.categories.articles;
+			
 			return Q.all([
 				addNoteToCategory(note, jsCategory), 
 				addNoteToCategory(note, articlesCategory)
 			]).then(function() {
 				return note.id;
 			});
-		})
-		.then(function(noteId) {
+		}).then(function(noteId) {
 			return getNoteWithCategories(noteId);
-		})
-		.then(function(note) {
+		}).then(function(note) {
 			test.equal(note.id, 1);
 			test.equal(note.content, "hello");
 			test.equal(note.categories.length, 2);

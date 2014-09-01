@@ -92,4 +92,20 @@ describe("i can", function() {
 			});
 		});
 	});
+
+	describe("combine promises", function() {
+		it("to get them resolved at once", function(done) {
+			Q.all([
+				Q.fcall(function() { return 1; }),
+				Q.fcall(function() { return 2; }),
+				Q.fcall(function() { return 3; })
+			]).then(function(result) {				
+				assert.equal(result.length, 3);
+				assert.ok(result.indexOf(1) !== -1);
+				assert.ok(result.indexOf(2) !== -1);
+				assert.ok(result.indexOf(3) !== -1);
+				done();
+			});
+		});
+	});
 });
