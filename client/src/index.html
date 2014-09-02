@@ -5,9 +5,20 @@
 		<link rel="stylesheet" href="/bootstrap.min.css">
 	</head>
 	<body ng-controller="IndexController">
+		<div class="navbar navbar-default">
+	      <div class="container">
+	        <div class="navbar-header">	          
+	          <a class="navbar-brand" href="#">Notepad</a>
+	        </div>
+	        <div class="collapse navbar-collapse">
+	          <ul class="nav navbar-nav">
+	            <li><a href="/">Notes</a></li>
+	            <li><a href="/">Categories</a></li>
+	          </ul>
+	        </div>
+	      </div>
+	    </div>
 		<div class="container">
-			<h1>nodejs-app-experiment</h1>
-
 			<div class="alert alert-info" ng-if="notes.length === 0">
 				There are no notes so far.
 			</div>
