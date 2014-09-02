@@ -68,6 +68,15 @@
 					}, function(httpResponse) {
 						console.log("error");
 						console.log(httpResponse);
+
+						if(httpResponse.status === 400) {
+							console.log("server reported validation error");
+
+							var validationErrors = httpResponse.data;
+							for(field in validationErrors) {
+								console.log("field %s:", field, validationErrors[field]);
+							}
+						}
 					});
 				};
 			}])
