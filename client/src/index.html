@@ -5,13 +5,22 @@
 		<link rel="stylesheet" href="/bootstrap.min.css">
 	</head>
 	<body ng-controller="IndexController">
-		<h1>nodejs-app-experiment</h1>
-		<h2>{{message}}</h2>
-		<p>{{notes|json}}</p>
-		<form ng-submit="createNote()">
-			<input type="text" ng-model="newNote.content">
-			<button type="submit">Create</button>
-		</form>
+		<div class="container">
+			<h1>nodejs-app-experiment</h1>
+
+			<div class="alert alert-info" ng-if="notes.length === 0">
+				There are no notes so far.
+			</div>
+
+			<ul class="list-unstyled" ng-if="notes.length > 0">
+				<li ng-repeat="note in notes"><span class="badge">{{note.id}}</span> {{note.content}}</li>
+			</ul>
+
+			<form ng-submit="createNote()">
+				<input type="text" ng-model="newNote.content">
+				<button type="submit">Create</button>
+			</form>
+		</div>
 
 		<script type="text/javascript" src="/angular.min.js"></script>
 		<script type="text/javascript" src="/angular-resource.min.js"></script>
@@ -40,6 +49,8 @@
 						console.log("success");
 						console.log(value);
 						console.log(responseHeaders);
+
+						$scope.notes = Note.query();
 					}, function(httpResponse) {
 						console.log("error");
 						console.log(httpResponse);
