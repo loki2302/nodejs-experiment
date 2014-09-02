@@ -7,11 +7,44 @@
 	<body ng-controller="IndexController">
 		<h1>nodejs-app-experiment</h1>
 		<h2>{{message}}</h2>
+		<p>{{notes|json}}</p>
+		<form ng-submit="createNote()">
+			<input type="text" ng-model="newNote.content">
+			<button type="submit">Create</button>
+		</form>
 
 		<script type="text/javascript" src="/angular.min.js"></script>
+		<script type="text/javascript" src="/angular-resource.min.js"></script>
 		<script type="text/javascript">
-			angular.module("app", []).controller("IndexController", ["$scope", function($scope) {
+			angular.module("app", ["ngResource"])
+			.factory("Note", ["$resource", function($resource) {
+				return $resource("/notes/:noteId", {}, {
+					query: {
+						method: "GET",
+						isArray: true
+					}
+				});
+			}])
+			.controller("IndexController", ["$scope", "Note", function($scope, Note) {
+				$scope.newNote = {
+					content: ""
+				};
+				$scope.notes = Note.query();
 				$scope.message = "hello angular";
+
+				$scope.createNote = function() {
+					var content = $scope.newNote.content;
+					Note.save({
+						content: content
+					}, function(value, responseHeaders) {
+						console.log("success");
+						console.log(value);
+						console.log(responseHeaders);
+					}, function(httpResponse) {
+						console.log("error");
+						console.log(httpResponse);
+					});
+				};
 			}]);
 		</script>
 	</body>
