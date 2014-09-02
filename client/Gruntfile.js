@@ -33,7 +33,7 @@ module.exports = function(grunt) {
 				}, {
 					expand: true,
 					cwd: "src/",
-					src: "index.html",
+					src: ["index.html", "notes.html", "categories.html"],
 					dest: "build/"
 				}]
 			}

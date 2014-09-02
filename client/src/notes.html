@@ -1,0 +1,12 @@
+<div class="alert alert-info" ng-if="notes.length === 0">
+	There are no notes so far.
+</div>
+
+<ul class="list-unstyled" ng-if="notes.length > 0">
+	<li ng-repeat="note in notes"><span class="badge">{{note.id}}</span> {{note.content}}</li>
+</ul>
+
+<form ng-submit="createNote()">
+	<input type="text" ng-model="newNote.content">
+	<button type="submit">Create</button>
+</form>
