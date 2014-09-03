@@ -33,6 +33,10 @@ angular.module("notes", ["ngRoute", "resources.notes"])
 				for(field in validationErrors) {
 					console.log("field %s:", field, validationErrors[field]);
 				}
+
+				throw {
+					message: "I am exception thrown from NotesController::createNote()"
+				};
 			}
 		});
 	};

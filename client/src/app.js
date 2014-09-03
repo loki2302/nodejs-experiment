@@ -6,4 +6,12 @@ angular.module("app", [
 	$routeProvider.otherwise({
 		redirectTo: "/notes"
 	});
+}])
+.config(["$provide", function($provide) {
+	$provide.decorator("$exceptionHandler", ["$delegate", function($delegate) {
+		return function(exception, cause) {
+			$delegate(exception, cause);
+			console.log("My exception handler: %s", exception.message);
+		};
+	}]);
 }]);
