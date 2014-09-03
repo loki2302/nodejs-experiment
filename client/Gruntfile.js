@@ -4,7 +4,7 @@ module.exports = function(grunt) {
 		uglify: {
 			build: {
 				files: {
-					"build/all.js": "src/*.js"			
+					"build/all.js": "src/**/*.js"
 				}
 			}
 		},
@@ -32,8 +32,9 @@ module.exports = function(grunt) {
 					dest: "build/"
 				}, {
 					expand: true,
+					flatten: true,
 					cwd: "src/",
-					src: ["index.html", "notes.html", "categories.html"],
+					src: ["**/*.html"],
 					dest: "build/"
 				}]
 			}
