@@ -1,10 +1,11 @@
 module.exports = function(grunt) {
 
 	grunt.initConfig({
+		builddir: 'build',
 		uglify: {
 			build: {
 				files: {
-					"build/all.js": "src/**/*.js"
+					"<%= builddir %>/all.js": "src/**/*.js"
 				}
 			}
 		},
@@ -14,33 +15,33 @@ module.exports = function(grunt) {
 					expand: true,
 					cwd: "bower_components/bootstrap/dist/css/",
 					src: ["bootstrap.min.css"], 
-					dest: "build/"
+					dest: "<%= builddir %>/"
 				}, {
 					expand: true,
 					cwd: "bower_components/angular/",
 					src: ["angular.min.js"],
-					dest: "build/"
+					dest: "<%= builddir %>/"
 				}, {
 					expand: true,
 					cwd: "bower_components/angular-resource/",
 					src: ["angular-resource.min.js"],
-					dest: "build/"
+					dest: "<%= builddir %>/"
 				}, {
 					expand: true,
 					cwd: "bower_components/angular-route/",
 					src: ["angular-route.min.js"],
-					dest: "build/"
+					dest: "<%= builddir %>/"
 				}, {
 					expand: true,
 					flatten: true,
 					cwd: "src/",
 					src: ["**/*.html"],
-					dest: "build/"
+					dest: "<%= builddir %>/"
 				}]
 			}
 		},
 		clean: [
-			"build"
+			"<%= builddir %>"
 		]
 	});
 
