@@ -8,10 +8,16 @@ angular.module("app", [
 	});
 }])
 .config(["$provide", function($provide) {
-	$provide.decorator("$exceptionHandler", ["$delegate", function($delegate) {
+	$provide.decorator("$exceptionHandler", ["$delegate", "$injector", function($delegate, $injector) {
 		return function(exception, cause) {
 			$delegate(exception, cause);
-			console.log("My exception handler: %s", exception.message);
+			var rootScope = $injector.get("$rootScope");
+
+			var errorMessage = exception.message;
+			rootScope.errorMessage = errorMessage;
+			console.log("My exception handler: %s", errorMessage);
 		};
 	}]);
+}])
+.controller("AppController", ["$scope", function($scope) {	
 }]);
