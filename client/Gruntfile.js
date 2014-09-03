@@ -3,41 +3,33 @@ module.exports = function(grunt) {
 	grunt.initConfig({
 		builddir: 'build',
 		uglify: {
-			build: {
-				files: {
-					"<%= builddir %>/all.js": "src/**/*.js"
-				}
+			app: {
+				src: "src/**/*.js",
+				dest: "<%= builddir %>/all.js"				
 			}
 		},
+		concat: {
+			angular: {
+				src: [
+					"bower_components/angular/angular.min.js",
+					"bower_components/angular-resource/angular-resource.min.js",
+					"bower_components/angular-route/angular-route.min.js"
+				],
+				dest: "<%= builddir %>/angular.js"
+			}			
+		},
 		copy: {
-			build: {
-				files: [{ 
-					expand: true,
-					cwd: "bower_components/bootstrap/dist/css/",
-					src: ["bootstrap.min.css"], 
-					dest: "<%= builddir %>/"
-				}, {
-					expand: true,
-					cwd: "bower_components/angular/",
-					src: ["angular.min.js"],
-					dest: "<%= builddir %>/"
-				}, {
-					expand: true,
-					cwd: "bower_components/angular-resource/",
-					src: ["angular-resource.min.js"],
-					dest: "<%= builddir %>/"
-				}, {
-					expand: true,
-					cwd: "bower_components/angular-route/",
-					src: ["angular-route.min.js"],
-					dest: "<%= builddir %>/"
-				}, {
-					expand: true,
-					flatten: true,
-					cwd: "src/",
-					src: ["**/*.html"],
-					dest: "<%= builddir %>/"
-				}]
+			app: {
+				expand: true,
+				flatten: true,				
+				src: "src/**/*.html",
+				dest: "<%= builddir %>/"
+			},
+			bootstrap: {
+				expand: true,
+				flatten: true,				
+				src: "bower_components/bootstrap/dist/css/bootstrap.min.css", 
+				dest: "<%= builddir %>/"				
 			}
 		},
 		clean: [
@@ -48,5 +40,6 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks("grunt-contrib-uglify");
 	grunt.loadNpmTasks("grunt-contrib-copy");
 	grunt.loadNpmTasks("grunt-contrib-clean");
-	grunt.registerTask("default", ["uglify", "copy"]);	
+	grunt.loadNpmTasks("grunt-contrib-concat");
+	grunt.registerTask("default", ["uglify", "copy", "concat"]);	
 };
