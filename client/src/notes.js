@@ -1,4 +1,4 @@
-angular.module("app")
+angular.module("notes", ["ngRoute", "resources.notes"])
 .config(["$routeProvider", function($routeProvider) {
 	$routeProvider.when("/notes", {
 		templateUrl: "notes.html",

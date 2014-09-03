@@ -1,4 +1,4 @@
-angular.module("app")
+angular.module("categories", ["ngRoute"])
 .config(["$routeProvider", function($routeProvider) {
 	$routeProvider.when("/categories", {
 		templateUrl: "categories.html",

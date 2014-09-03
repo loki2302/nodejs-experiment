@@ -18,25 +18,12 @@
 	        </div>
 	      </div>
 	    </div>
-		<div class="container" ng-view>			
+		<div class="container" ng-view>
 		</div>
 
 		<script type="text/javascript" src="/angular.min.js"></script>
 		<script type="text/javascript" src="/angular-resource.min.js"></script>
 		<script type="text/javascript" src="/angular-route.min.js"></script>
-
-		<script type="text/javascript">
-			angular.module("app", ["ngResource", "ngRoute"]);
-		</script>
-
 		<script type="text/javascript" src="/all.js"></script>
-
-		<script type="text/javascript">
-			angular.module("app").config(["$routeProvider", function($routeProvider) {
-				$routeProvider.otherwise({
-					redirectTo: "/notes"
-				});
-			}]);			
-		</script>
 	</body>
 </html>
