@@ -1,0 +1,62 @@
+exports.addRoutes = function(app, models) {
+	app.get("/notes/", function(req, res, next) {
+		models.Note.findAll().success(function(notes) {
+			res.status(200).send(notes);
+		}).error(function(error) {
+			next(error);
+		});
+	});
+
+	app.post("/notes/", function(req, res, next) {
+		var body = req.body;
+		models.Note.create({ content: body.content }).success(function(note) {
+			res.status(201).send(note);
+		}).error(function(error) {			
+			res.status(400).send(error);
+		});
+	});
+
+	app.delete("/notes/:id", function(req, res, next) {
+		var id = req.params.id;
+		models.Note.find(id).success(function(note) {
+			if(!note) {
+				res.status(404).send({
+					message: "Note " + id + " does not exist"
+				});
+				return;
+			}
+
+			note.destroy().success(function() {
+				res.status(200).send({
+					message: "Deleted"
+				});
+			}).error(function(error) {
+				next(error);
+			});
+		}).error(function(error) {
+			next(error);
+		});
+	});
+
+	app.post("/notes/:id", function(req, res, next) {
+		var id = req.params.id;
+		models.Note.find(id).success(function(note) {
+			if(!note) {
+				res.status(404).send({
+					message: "Note " + id + " does not exist"
+				});
+				return;
+			}
+
+			note.content = req.body.content;
+
+			note.save().success(function(note) {
+				res.status(200).send(note);
+			}).error(function(error) {
+				res.status(400).send(error);
+			});
+		}).error(function(error) {
+			next(error);
+		});
+	});
+};

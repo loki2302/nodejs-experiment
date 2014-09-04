@@ -1,0 +1,91 @@
+exports.addRoutes = function(app, models) {
+	app.get("/categories/", function(req, res, next) {
+		models.Category.findAll().success(function(categories) {
+			res.status(200).send(categories);
+		}).error(function(error) {
+			next(error);
+		});
+	});
+
+	app.post("/categories/", function(req, res, next) {
+		var body = req.body;
+		var categoryName = body.name;
+		models.Category.find({
+			where: {
+				name: categoryName
+			}
+		}).success(function(category) {
+			if(category) {
+				res.status(409).send({
+					message: "Category " + categoryName + " already exists"
+				});
+				return;
+			}
+
+			models.Category.create({ name: body.name }).success(function(category) {
+				res.status(201).send(category);
+			}).error(function(error) {
+				res.status(400).send(error);
+			});
+		}).error(function(error) {
+			next(error);
+		});		
+	});
+
+	app.delete("/categories/:id", function(req, res, next) {
+		var id = req.params.id;
+		models.Category.find(id).success(function(category) {
+			if(!category) {
+				res.status(404).send({
+					message: "Category " + id + " does not exist"
+				});
+				return;
+			}
+
+			category.destroy().success(function() {
+				res.status(200).send({
+					message: "Deleted"
+				});
+			}).error(function(error) {
+				next(error);
+			});
+		}).error(function(error) {
+			next(error);
+		});
+	});
+
+	app.post("/categories/:id", function(req, res, next) {
+		var id = req.params.id;
+		models.Category.find(id).success(function(category) {
+			if(!category) {
+				res.status(404).send({
+					message: "Category " + id + " does not exist"
+				});
+				return;
+			}
+
+			var categoryName = req.body.name;
+			models.Category.find({
+				where: {
+					name: categoryName
+				}
+			}).success(function(existingCategoryWithDesiredName) {
+				if(existingCategoryWithDesiredName && existingCategoryWithDesiredName.id !== id) {
+					res.status(409).send({
+						message: "Category " + categoryName + " already exists"
+					});
+					return;
+				}
+
+				category.name = categoryName;
+				category.save().success(function(category) {
+					res.status(200).send(category);
+				}).error(function(error) {
+					res.status(400).send(error);
+				});
+			});
+		}).error(function(error) {
+			next(error);
+		});
+	});
+};
