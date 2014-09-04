@@ -20,5 +20,18 @@ angular.module("app", [
 		};
 	}]);
 }])
-.controller("AppController", ["$scope", function($scope) {	
+.controller("AppController", ["$scope", "$location", function($scope, $location) {
+	$scope.isNavBarActive = function(navBarName) {
+		var path = $location.path();
+		
+		if(path === "/notes" && navBarName === "notes") {
+			return true;
+		}
+
+		if(path === "/categories" && navBarName === "categories") {
+			return true;
+		}
+
+		return false;
+	};
 }]);
