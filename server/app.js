@@ -43,7 +43,7 @@ module.exports = function(models) {
 		}).error(function(error) {
 			next(error);
 		});
-	});
+	});	
 
 	app.get("/categories/", function(req, res, next) {
 		models.Category.findAll().success(function(categories) {
@@ -76,6 +76,28 @@ module.exports = function(models) {
 		}).error(function(error) {
 			next(error);
 		});		
+	});
+
+	app.delete("/categories/:id", function(req, res, next) {
+		var id = req.params.id;
+		models.Category.find(id).success(function(category) {
+			if(!category) {
+				res.status(404).send({
+					message: "Category " + id + " does not exist"
+				});
+				return;
+			}
+
+			category.destroy().success(function() {
+				res.status(200).send({
+					message: "Deleted"
+				});
+			}).error(function(error) {
+				next(error);
+			});
+		}).error(function(error) {
+			next(error);
+		});
 	});
 
 	return app;

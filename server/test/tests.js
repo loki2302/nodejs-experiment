@@ -110,7 +110,7 @@ describe("app", function() {
 			assert.ok("message" in body);
 			done();
 		});
-	});
+	});	
 
 	it("should let me create a category", function(done) {
 		var params = {
@@ -154,6 +154,38 @@ describe("app", function() {
 				assert.ok("message" in body);
 				done();
 			});
+		});
+	});
+
+	it("should let me delete a category", function(done) {
+		var params = {
+			url: url("/categories/"),
+			json: {
+				name: "js"
+			}
+		};
+		request.post(params, function(error, response, body) {			
+			var params = {
+				url: url("/categories/" + body.id),
+				json: true
+			};
+			request.del(params, function(error, response, body) {
+				assert.equal(response.statusCode, 200);
+				assert.ok("message" in body);
+				done();
+			});
+		});
+	});
+
+	it("should not let me delete a category if category does not exist", function(done) {
+		var params = {
+			url: url("/categories/" + 123),
+			json: true
+		};
+		request.del(params, function(error, response, body) {
+			assert.equal(response.statusCode, 404);
+			assert.ok("message" in body);
+			done();
 		});
 	});
 });
