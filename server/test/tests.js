@@ -112,6 +112,65 @@ describe("app", function() {
 		});
 	});	
 
+	it("should let me update a note", function(done) {
+		var params = {
+			url: url("/notes/"),
+			json: {
+				content: "hello"
+			}
+		};
+		request.post(params, function(error, response, body) {			
+			var params = {
+				url: url("/notes/" + body.id),
+				json: {
+					content: "hi there"
+				}
+			};
+			request.post(params, function(error, response, body) {
+				assert.equal(response.statusCode, 200);
+				assert.equal(body.id, 1);
+				assert.equal(body.content, "hi there");
+				done();
+			});
+		});
+	});
+
+	it("should not let me update a note if note does not exist", function(done) {
+		var params = {
+			url: url("/notes/" + 123),
+			json: {
+				content: "hi there"
+			}
+		};
+		request.post(params, function(error, response, body) {
+			assert.equal(response.statusCode, 404);
+			assert.ok("message" in body);
+			done();
+		});
+	});
+
+	it("should not let me update a note if fields are not valid", function(done) {
+		var params = {
+			url: url("/notes/"),
+			json: {
+				content: "hello"
+			}
+		};
+		request.post(params, function(error, response, body) {			
+			var params = {
+				url: url("/notes/" + body.id),
+				json: {
+					content: ""
+				}
+			};
+			request.post(params, function(error, response, body) {
+				assert.equal(response.statusCode, 400);
+				assert.ok("content" in body);
+				done();
+			});
+		});
+	});
+
 	it("should let me create a category", function(done) {
 		var params = {
 			url: url("/categories/"),

@@ -43,7 +43,29 @@ module.exports = function(models) {
 		}).error(function(error) {
 			next(error);
 		});
-	});	
+	});
+
+	app.post("/notes/:id", function(req, res, next) {
+		var id = req.params.id;
+		models.Note.find(id).success(function(note) {
+			if(!note) {
+				res.status(404).send({
+					message: "Note " + id + " does not exist"
+				});
+				return;
+			}
+
+			note.content = req.body.content;
+
+			note.save().success(function(note) {
+				res.status(200).send(note);
+			}).error(function(error) {
+				res.status(400).send(error);
+			});
+		}).error(function(error) {
+			next(error);
+		});
+	});
 
 	app.get("/categories/", function(req, res, next) {
 		models.Category.findAll().success(function(categories) {
