@@ -122,5 +122,40 @@ module.exports = function(models) {
 		});
 	});
 
+	app.post("/categories/:id", function(req, res, next) {
+		var id = req.params.id;
+		models.Category.find(id).success(function(category) {
+			if(!category) {
+				res.status(404).send({
+					message: "Category " + id + " does not exist"
+				});
+				return;
+			}
+
+			var categoryName = req.body.name;
+			models.Category.find({
+				where: {
+					name: categoryName
+				}
+			}).success(function(existingCategoryWithDesiredName) {
+				if(existingCategoryWithDesiredName && existingCategoryWithDesiredName.id !== id) {
+					res.status(409).send({
+						message: "Category " + categoryName + " already exists"
+					});
+					return;
+				}
+
+				category.name = categoryName;
+				category.save().success(function(category) {
+					res.status(200).send(category);
+				}).error(function(error) {
+					res.status(400).send(error);
+				});
+			});
+		}).error(function(error) {
+			next(error);
+		});
+	});
+
 	return app;
 };

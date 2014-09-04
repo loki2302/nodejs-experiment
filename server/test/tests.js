@@ -247,4 +247,95 @@ describe("app", function() {
 			done();
 		});
 	});
+
+	it("should let me update a category", function(done) {
+		var params = {
+			url: url("/categories/"),
+			json: {
+				name: "js"
+			}
+		};
+		request.post(params, function(error, response, body) {			
+			var params = {
+				url: url("/categories/" + body.id),
+				json: {
+					name: "java"
+				}
+			};
+			request.post(params, function(error, response, body) {
+				assert.equal(response.statusCode, 200);
+				assert.equal(body.id, 1);
+				assert.equal(body.name, "java");
+				done();
+			});
+		});
+	});
+
+	it("should not let me update category if category does not exist", function(done) {
+		var params = {
+			url: url("/categories/" + 123),
+			json: {
+				name: "java"
+			}
+		};
+		request.post(params, function(error, response, body) {
+			assert.equal(response.statusCode, 404);
+			assert.ok("message" in body);
+			done();
+		});
+	});
+
+	it("should not let me update a category if fields are not valid", function(done) {
+		var params = {
+			url: url("/categories/"),
+			json: {
+				name: "js"
+			}
+		};
+		request.post(params, function(error, response, body) {			
+			var params = {
+				url: url("/categories/" + body.id),
+				json: {
+					name: ""
+				}
+			};
+			request.post(params, function(error, response, body) {
+				assert.equal(response.statusCode, 400);
+				assert.ok("name" in body);
+				done();
+			});
+		});
+	});
+
+	it("should not let me update a category name if name already used", function(done) {
+		var params = {
+			url: url("/categories/"),
+			json: {
+				name: "js"
+			}
+		};
+		request.post(params, function(error, response, body) {
+			var jsCategoryId = body.id;
+			var params = {
+				url: url("/categories/"),
+				json: {
+					name: "java"
+				}
+			};
+			request.post(params, function(error, response, body) {
+				var javaCategoryId = body.id;
+				var params = {
+					url: url("/categories/" + jsCategoryId),
+					json: {
+						name: "java"
+					}
+				};
+				request.post(params, function(error, response, body) {
+					assert.equal(response.statusCode, 409);
+					assert.ok("message" in body);
+					done();
+				});
+			});			
+		});
+	});
 });
