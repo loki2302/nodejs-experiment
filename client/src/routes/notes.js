@@ -40,4 +40,21 @@ angular.module("notes", ["ngRoute", "resources.notes"])
 			}
 		});
 	};
+
+	$scope.deleteNote = function(noteId) {
+		console.log("delete note");
+		console.log(noteId);
+		Note.delete({
+			id: noteId
+		}, function(value, responseHeaders) {
+			console.log("success");
+			console.log(value);
+			console.log(responseHeaders);
+
+			$scope.notes = Note.query();
+		}, function(httpResponse) {
+			console.log("error");
+			console.log(httpResponse);
+		});
+	};
 }]);
