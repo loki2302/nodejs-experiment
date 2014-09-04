@@ -23,6 +23,28 @@ module.exports = function(models) {
 		});
 	});
 
+	app.delete("/notes/:id", function(req, res, next) {
+		var id = req.params.id;
+		models.Note.find(id).success(function(note) {
+			if(!note) {
+				res.status(404).send({
+					message: "Note " + id + " does not exist"
+				});
+				return;
+			}
+
+			note.destroy().success(function() {
+				res.status(200).send({
+					message: "Deleted"
+				});
+			}).error(function(error) {
+				next(error);
+			});
+		}).error(function(error) {
+			next(error);
+		});
+	});
+
 	app.get("/categories/", function(req, res, next) {
 		models.Category.findAll().success(function(categories) {
 			res.status(200).send(categories);
