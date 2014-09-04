@@ -1,6 +1,6 @@
 angular.module("resources.notes", ["ngResource"])
 .factory("Note", ["$resource", function($resource) {
-	return $resource("/notes/:id", {
+	return $resource("/api/notes/:id", {
 		id: "@id"
 	}, {
 		query: {

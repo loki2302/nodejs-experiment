@@ -5,7 +5,7 @@ var models = require("../models.js");
 var makeApp = require("../app.js");
 
 function url(path) {
-	return "http://localhost:3000" + path;
+	return "http://localhost:3000/api" + path;
 }
 
 describe("app", function() {

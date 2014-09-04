@@ -1,5 +1,5 @@
 exports.addRoutes = function(app, models) {
-	app.get("/notes/", function(req, res, next) {
+	app.get("/api/notes/", function(req, res, next) {
 		models.Note.findAll().success(function(notes) {
 			res.status(200).send(notes);
 		}).error(function(error) {
@@ -7,7 +7,7 @@ exports.addRoutes = function(app, models) {
 		});
 	});
 
-	app.post("/notes/", function(req, res, next) {
+	app.post("/api/notes/", function(req, res, next) {
 		var body = req.body;
 		models.Note.create({ content: body.content }).success(function(note) {
 			res.status(201).send(note);
@@ -16,7 +16,7 @@ exports.addRoutes = function(app, models) {
 		});
 	});
 
-	app.delete("/notes/:id", function(req, res, next) {
+	app.delete("/api/notes/:id", function(req, res, next) {
 		var id = req.params.id;
 		models.Note.find(id).success(function(note) {
 			if(!note) {
@@ -38,7 +38,7 @@ exports.addRoutes = function(app, models) {
 		});
 	});
 
-	app.post("/notes/:id", function(req, res, next) {
+	app.post("/api/notes/:id", function(req, res, next) {
 		var id = req.params.id;
 		models.Note.find(id).success(function(note) {
 			if(!note) {

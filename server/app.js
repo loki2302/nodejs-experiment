@@ -10,5 +10,11 @@ module.exports = function(models) {
 	noteRoutes.addRoutes(app, models);
 	categoryRoutes.addRoutes(app, models);
 
+	["/", "/notes", "/categories"].forEach(function(route) {
+		app.all(route, function(req, res) {
+			res.sendFile("index.html", { root: __dirname + "/../client/build/" });
+		});
+	});
+
 	return app;
 };

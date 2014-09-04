@@ -1,5 +1,5 @@
 exports.addRoutes = function(app, models) {
-	app.get("/categories/", function(req, res, next) {
+	app.get("/api/categories/", function(req, res, next) {
 		models.Category.findAll().success(function(categories) {
 			res.status(200).send(categories);
 		}).error(function(error) {
@@ -7,7 +7,7 @@ exports.addRoutes = function(app, models) {
 		});
 	});
 
-	app.post("/categories/", function(req, res, next) {
+	app.post("/api/categories/", function(req, res, next) {
 		var body = req.body;
 		var categoryName = body.name;
 		models.Category.find({
@@ -32,7 +32,7 @@ exports.addRoutes = function(app, models) {
 		});		
 	});
 
-	app.delete("/categories/:id", function(req, res, next) {
+	app.delete("/api/categories/:id", function(req, res, next) {
 		var id = req.params.id;
 		models.Category.find(id).success(function(category) {
 			if(!category) {
@@ -54,7 +54,7 @@ exports.addRoutes = function(app, models) {
 		});
 	});
 
-	app.post("/categories/:id", function(req, res, next) {
+	app.post("/api/categories/:id", function(req, res, next) {
 		var id = req.params.id;
 		models.Category.find(id).success(function(category) {
 			if(!category) {
