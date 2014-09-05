@@ -6,7 +6,4 @@
 	<li ng-repeat="note in notes"><span class="badge">{{note.id}}</span> {{note.content}} <button ng-click="deleteNote(note.id)">Delete</button></li>
 </ul>
 
-<form ng-submit="createNote()">
-	<input type="text" ng-model="newNote.content">
-	<button type="submit">Create</button>
-</form>
+<note-editor save="createNote(note)"></note-editor>

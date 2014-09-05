@@ -1,0 +1,8 @@
+<form ng-submit="createNote()">
+	<div class="form-group" ng-class="{'has-error': error.message}">
+		<label for="content" class="control-label">Content</label>
+		<input type="text" class="form-control" id="content" ng-model="note.content">
+		<span class="help-block" ng-if="error.message">{{error.message}}</span>
+	</div>
+	<button type="submit" class="btn btn-default">Create</button>
+</form>

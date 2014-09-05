@@ -5,33 +5,52 @@ angular.module("notes", ["ngRoute", "resources.notes"])
 		controller: "NotesController"
 	});
 }])
-.controller("NotesController", ["$scope", "Note", function($scope, Note) {
-	$scope.newNote = {
-		content: ""
-	};
-	$scope.notes = Note.query();
-	$scope.message = "hello angular";
+.directive("noteEditor", function() {
+	return {
+		restrict: "E",
+		scope: {			
+			save: "&"
+		},
+		templateUrl: "note-editor.html",
+		link: function(scope, element, attrs, controllers) {
+			scope.note = {
+				content: ""
+			};
+			scope.error = {
+				message: ""
+			};
 
-	$scope.createNote = function() {
-		var content = $scope.newNote.content;
+			scope.createNote = function() {
+				scope.save({
+					note: scope.note
+				}).then(function() {
+					scope.note.content = "";
+					scope.error.message = "";
+				}, function() {
+					scope.error.message = "It didn't work";
+				});
+			};
+		}
+	};
+})
+.controller("NotesController", ["$scope", "$q", "Note", function($scope, $q, Note) {
+	$scope.notes = Note.query();
+
+	$scope.createNote = function(note) {
+		var deferred = $q.defer();
+
+		var content = note.content;
 		Note.save({
 			content: content
 		}, function(value, responseHeaders) {
-			console.log("success");
-			console.log(value);
-			console.log(responseHeaders);
-
+			deferred.resolve();
 			$scope.notes = Note.query();
 		}, function(httpResponse) {
-			console.log("error");
-			console.log(httpResponse);
-
+			deferred.reject();
 			if(httpResponse.status === 400) {
-				console.log("server reported validation error");
-
 				var validationErrors = httpResponse.data;
 				for(field in validationErrors) {
-					console.log("field %s:", field, validationErrors[field]);
+					console.log("validation error %s:", field, validationErrors[field]);
 				}
 
 				throw {
@@ -39,6 +58,8 @@ angular.module("notes", ["ngRoute", "resources.notes"])
 				};
 			}
 		});
+
+		return deferred.promise;
 	};
 
 	$scope.deleteNote = function(noteId) {
