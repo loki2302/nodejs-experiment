@@ -26,8 +26,12 @@ angular.module("notes", ["ngRoute", "resources.notes"])
 				}).then(function() {
 					scope.noteContent = "";
 					scope.error = "";
-				}, function() {
-					scope.error = "It didn't work";
+				}, function(errors) {
+					if(errors) {
+						scope.error = errors.content;
+					} else {
+						scope.error = "It didn't work";
+					}
 				}).finally(function() {
 					scope.working = false;
 				});
@@ -73,17 +77,25 @@ angular.module("notes", ["ngRoute", "resources.notes"])
 		}, function(value, responseHeaders) {
 			deferred.resolve();
 			$scope.notes = Note.query();
-		}, function(httpResponse) {
-			deferred.reject();
+		}, function(httpResponse) {			
 			if(httpResponse.status === 400) {
 				var validationErrors = httpResponse.data;
 				for(field in validationErrors) {
 					console.log("validation error %s:", field, validationErrors[field]);
 				}
 
+				var errors = {};
+				if("content" in validationErrors) {
+					errors.content = validationErrors.content[0];
+				}
+
+				deferred.reject(errors);
+
 				throw {
 					message: "I am exception thrown from NotesController::createNote()"
 				};
+			} else {
+				deferred.reject();
 			}
 		});
 
