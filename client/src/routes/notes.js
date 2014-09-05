@@ -7,11 +7,16 @@ angular.module("notes", [
 .config(["$routeProvider", function($routeProvider) {
 	$routeProvider.when("/notes", {
 		templateUrl: "notes.html",
-		controller: "NotesController"
+		controller: "NotesController",
+		resolve: {
+			notes: ["Note", function(Note) {
+				return Note.query();
+			}]
+		}
 	});
 }])
-.controller("NotesController", ["$scope", "$q", "Note", function($scope, $q, Note) {
-	$scope.notes = Note.query();
+.controller("NotesController", ["$scope", "$q", "Note", "notes", function($scope, $q, Note, notes) {
+	$scope.notes = notes;
 
 	$scope.createNote = function(note) {
 		var deferred = $q.defer();
