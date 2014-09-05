@@ -3,7 +3,7 @@
 </div>
 
 <ul class="list-unstyled" ng-if="notes.length > 0">
-	<li ng-repeat="note in notes"><span class="badge">{{note.id}}</span> {{note.content}} <button ng-click="deleteNote(note.id)">Delete</button></li>
+	<li ng-repeat="note in notes"><note-item-view note="note" delete="deleteNote(note)"></note-item-view></li>
 </ul>
 
 <note-editor save="createNote(note)"></note-editor>

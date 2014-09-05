@@ -35,6 +35,32 @@ angular.module("notes", ["ngRoute", "resources.notes"])
 		}
 	};
 })
+.directive("noteItemView", function() {
+	return {
+		restrict: "E",
+		scope: {
+			note: "=",
+			delete: "&"
+		},
+		templateUrl: "note-item-view.html",
+		link: function(scope) {
+			scope.working = false;
+
+			scope.deleteNote = function() {
+				scope.working = true;
+				scope.delete({
+					note: scope.note
+				}).then(function() {
+					// do I need to do anything when it's deleted?
+				}, function() {
+					// do I need to display error when delete failed?
+				}).finally(function() {
+					scope.working = false;
+				});
+			};
+		}
+	};
+})
 .controller("NotesController", ["$scope", "$q", "Note", function($scope, $q, Note) {
 	$scope.notes = Note.query();
 
@@ -64,20 +90,19 @@ angular.module("notes", ["ngRoute", "resources.notes"])
 		return deferred.promise;
 	};
 
-	$scope.deleteNote = function(noteId) {
-		console.log("delete note");
-		console.log(noteId);
+	$scope.deleteNote = function(note) {
+		var deferred = $q.defer();
+
+		var noteId = note.id;
 		Note.delete({
 			id: noteId
 		}, function(value, responseHeaders) {
-			console.log("success");
-			console.log(value);
-			console.log(responseHeaders);
-
+			deferred.resolve();
 			$scope.notes = Note.query();
 		}, function(httpResponse) {
-			console.log("error");
-			console.log(httpResponse);
+			deferred.reject();
 		});
+
+		return deferred.promise;
 	};
 }]);
