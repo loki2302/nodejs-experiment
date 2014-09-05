@@ -12,7 +12,9 @@ describe("app", function() {
 	var server;
 	beforeEach(function(done) {
 		models.reset().then(function() {
-			var app = makeApp(models);
+			var app = makeApp(models, {
+				// no synth delays for tests
+			});
 			server = app.listen(3000, function() {
 				done();
 			});
