@@ -22,7 +22,7 @@ exports.addRoutes = function(app, models) {
 
 	app.delete("/api/notes/:id", function(req, res, next) {
 		sleep.sleep(1);
-		
+
 		var id = req.params.id;
 		models.Note.find(id).success(function(note) {
 			if(!note) {
@@ -45,6 +45,8 @@ exports.addRoutes = function(app, models) {
 	});
 
 	app.post("/api/notes/:id", function(req, res, next) {
+		sleep.sleep(1);
+		
 		var id = req.params.id;
 		models.Note.find(id).success(function(note) {
 			if(!note) {
