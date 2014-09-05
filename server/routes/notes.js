@@ -1,3 +1,5 @@
+var sleep = require("sleep");
+
 exports.addRoutes = function(app, models) {
 	app.get("/api/notes/", function(req, res, next) {
 		models.Note.findAll().success(function(notes) {
@@ -8,6 +10,8 @@ exports.addRoutes = function(app, models) {
 	});
 
 	app.post("/api/notes/", function(req, res, next) {
+		sleep.sleep(1);
+
 		var body = req.body;
 		models.Note.create({ content: body.content }).success(function(note) {
 			res.status(201).send(note);

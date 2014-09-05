@@ -13,21 +13,23 @@ angular.module("notes", ["ngRoute", "resources.notes"])
 		},
 		templateUrl: "note-editor.html",
 		link: function(scope, element, attrs, controllers) {
-			scope.note = {
-				content: ""
-			};
-			scope.error = {
-				message: ""
-			};
+			scope.noteContent = "";
+			scope.error = "";
+			scope.working = false;
 
 			scope.createNote = function() {
+				scope.working = true;
 				scope.save({
-					note: scope.note
+					note: {
+						content: scope.noteContent
+					}
 				}).then(function() {
-					scope.note.content = "";
-					scope.error.message = "";
+					scope.noteContent = "";
+					scope.error = "";
 				}, function() {
-					scope.error.message = "It didn't work";
+					scope.error = "It didn't work";
+				}).finally(function() {
+					scope.working = false;
 				});
 			};
 		}
