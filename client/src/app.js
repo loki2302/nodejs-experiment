@@ -1,7 +1,8 @@
 angular.module("app", [
 	"ngRoute", 
 	"notes", 
-	"categories"])
+	"categories",
+	"api"])
 .config(["$routeProvider", "$locationProvider", function($routeProvider, $locationProvider) {
 	$locationProvider.html5Mode(true);
 	$routeProvider.otherwise({	
@@ -12,11 +13,19 @@ angular.module("app", [
 	$provide.decorator("$exceptionHandler", ["$delegate", "$injector", function($delegate, $injector) {
 		return function(exception, cause) {
 			$delegate(exception, cause);
+
+			var noteService = $injector.get("noteService");
 			var rootScope = $injector.get("$rootScope");
 
-			var errorMessage = exception.message;
-			rootScope.errorMessage = errorMessage;
-			console.log("My exception handler: %s", errorMessage);
+			if(exception instanceof noteService.ConnectivityError) {
+				rootScope.errorMessage = "There's a connectivity issue";
+			} else if(exception instanceof noteService.ValidationError) {
+				rootScope.errorMessage = "There's a validation error";
+			} else if(exception instanceof noteService.UnexpectedError) {
+				rootScope.errorMessage = "There's an unexpected API error: " + exception.message;
+			} else {
+				rootScope.errorMessage = exception.message;
+			}
 		};
 	}]);
 }])
