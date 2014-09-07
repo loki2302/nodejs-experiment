@@ -1,9 +1,5 @@
-exports.addRoutes = function(app, models, config) {
+exports.addRoutes = function(app, models) {
 	app.get("/api/categories/", function(req, res, next) {
-		if(config && config.delay) {
-			sleep.sleep(config.delay);
-		}
-
 		models.Category.findAll().success(function(categories) {
 			res.status(200).send(categories);
 		}).error(function(error) {
@@ -12,10 +8,6 @@ exports.addRoutes = function(app, models, config) {
 	});
 
 	app.post("/api/categories/", function(req, res, next) {
-		if(config && config.delay) {
-			sleep.sleep(config.delay);
-		}
-
 		var body = req.body;
 		var categoryName = body.name;
 		models.Category.find({
@@ -41,10 +33,6 @@ exports.addRoutes = function(app, models, config) {
 	});
 
 	app.delete("/api/categories/:id", function(req, res, next) {
-		if(config && config.delay) {
-			sleep.sleep(config.delay);
-		}
-
 		var id = req.params.id;
 		models.Category.find(id).success(function(category) {
 			if(!category) {
@@ -67,10 +55,6 @@ exports.addRoutes = function(app, models, config) {
 	});
 
 	app.post("/api/categories/:id", function(req, res, next) {
-		if(config && config.delay) {
-			sleep.sleep(config.delay);
-		}
-		
 		var id = req.params.id;
 		models.Category.find(id).success(function(category) {
 			if(!category) {

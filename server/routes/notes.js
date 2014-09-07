@@ -1,11 +1,5 @@
-var sleep = require("sleep");
-
-exports.addRoutes = function(app, models, config) {
+exports.addRoutes = function(app, models) {
 	app.get("/api/notes/", function(req, res, next) {
-		if(config && config.delay) {
-			sleep.sleep(config.delay);
-		}
-
 		models.Note.findAll().success(function(notes) {
 			res.status(200).send(notes);
 		}).error(function(error) {
@@ -14,10 +8,6 @@ exports.addRoutes = function(app, models, config) {
 	});
 
 	app.post("/api/notes/", function(req, res, next) {
-		if(config && config.delay) {
-			sleep.sleep(config.delay);
-		}
-
 		var body = req.body;
 		models.Note.create({ content: body.content }).success(function(note) {
 			res.status(201).send(note);
@@ -27,10 +17,6 @@ exports.addRoutes = function(app, models, config) {
 	});
 
 	app.delete("/api/notes/:id", function(req, res, next) {
-		if(config && config.delay) {
-			sleep.sleep(config.delay);
-		}
-
 		var id = req.params.id;
 		models.Note.find(id).success(function(note) {
 			if(!note) {
@@ -53,10 +39,6 @@ exports.addRoutes = function(app, models, config) {
 	});
 
 	app.post("/api/notes/:id", function(req, res, next) {
-		if(config && config.delay) {
-			sleep.sleep(config.delay);
-		}
-		
 		var id = req.params.id;
 		models.Note.find(id).success(function(note) {
 			if(!note) {
