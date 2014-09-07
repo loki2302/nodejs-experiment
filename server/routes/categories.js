@@ -56,6 +56,10 @@ exports.addRoutes = function(app, models) {
 
 	app.post("/api/categories/:id", function(req, res, next) {
 		var id = req.params.id;
+
+		// TODO: use express-validator to validate and sanitize URL params
+		id = parseInt(id, 10);
+
 		models.Category.find(id).success(function(category) {
 			if(!category) {
 				res.status(404).send({

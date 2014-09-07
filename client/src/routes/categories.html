@@ -1,3 +1,9 @@
-<div class="alert alert-info">
-	Not implemented yet. Controller says: &ldquo;{{message}}&rdquo;.
+<div class="alert alert-info" ng-if="categories.length === 0">
+	There are no categories so far.
 </div>
+
+<ul class="list-unstyled" ng-if="categories.length > 0">
+	<li ng-repeat="category in categories"><category-item-view category="category" delete="deleteCategory(category)" save="updateCategory(category)"></category-item-view></li>
+</ul>
+
+<category-editor save="createCategory(category)" save-title="Create"></category-editor>
