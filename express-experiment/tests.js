@@ -91,4 +91,92 @@ describe("I can", function() {
 			});
 		});
 	});
+
+	describe("use param to validate and sanitize id", function() {
+		var server;
+		beforeEach(function(callback) {
+			var app = express();
+			app.param("id", function(req, res, next, id) {
+				var idIntOrNaN = parseInt(id);
+				if(isNaN(idIntOrNaN)) {
+					res.status(404).send({
+						message: "no such id"
+					});
+					return;
+				}
+
+				req.id = idIntOrNaN;
+				next();
+			});
+			app.get("/hello/:id", function(req, res) {
+				res.status(200).send({
+					id: req.id,
+					typeOfId: typeof req.id
+				});
+			});
+			app.get("/bye/:bye_id", function(req, res) {
+				res.status(200).send({
+					id: req.params.bye_id,
+					typeOfId: typeof req.params.bye_id
+				});
+
+			});
+			server = app.listen(3000, function() {
+				callback();
+			});
+		});
+
+		afterEach(function(callback) {
+			server.close(function() {
+				callback();
+			});
+		});
+
+		it("hello should 404 when id is not a number", function(done) {
+			request.get({ 
+				url: "http://localhost:3000/hello/qwerty", 
+				json: true 
+			}, function(error, response, body) {
+				assert.equal(response.statusCode, 404);
+				assert.equal(body.message, "no such id");
+				done();		
+			});
+		});
+
+		it("hello should 200 when id is a number", function(done) {
+			request.get({ 
+				url: "http://localhost:3000/hello/123", 
+				json: true 
+			}, function(error, response, body) {
+				assert.equal(response.statusCode, 200);
+				assert.equal(body.id, 123);
+				assert.equal(body.typeOfId, "number");
+				done();		
+			});
+		});
+
+		it("bye should 200 and string when id is string", function(done) {
+			request.get({ 
+				url: "http://localhost:3000/bye/qwerty", 
+				json: true 
+			}, function(error, response, body) {
+				assert.equal(response.statusCode, 200);
+				assert.equal(body.id, "qwerty");
+				assert.equal(body.typeOfId, "string");
+				done();		
+			});
+		});
+
+		it("bye should 200 and string when id is numeric string", function(done) {
+			request.get({ 
+				url: "http://localhost:3000/bye/123", 
+				json: true 
+			}, function(error, response, body) {
+				assert.equal(response.statusCode, 200);
+				assert.equal(body.id, "123");
+				assert.equal(body.typeOfId, "string");
+				done();		
+			});
+		});
+	});
 });
