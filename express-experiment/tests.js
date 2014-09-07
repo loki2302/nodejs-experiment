@@ -179,4 +179,42 @@ describe("I can", function() {
 			});
 		});
 	});
+
+	describe("use param to resolve context before actual logic", function(done) {
+		var server;
+		beforeEach(function(callback) {
+			var app = express();
+			app.param("user_id", function(req, res, next, id) {
+				req.user = {
+					id: id,
+					name: "user-" + id
+				};
+				next();
+			});
+			app.get("/:user_id", function(req, res) {
+				res.status(200).send(req.user);
+			});
+			server = app.listen(3000, function() {
+				callback();
+			});
+		});
+
+		afterEach(function(callback) {
+			server.close(function() {
+				callback();
+			});
+		});
+
+		it("it should resolve context", function(done) {
+			request.get({ 
+				url: "http://localhost:3000/123", 
+				json: true 
+			}, function(error, response, body) {
+				assert.equal(response.statusCode, 200);
+				assert.equal(body.id, "123");
+				assert.equal(body.name, "user-123");
+				done();		
+			});
+		});
+	});
 });
