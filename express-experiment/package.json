@@ -1,0 +1,15 @@
+{
+  "name": "express-experiment",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha ."
+  },
+  "author": "loki2302",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "express": "~4.8.8",
+    "request": "~2.42.0"
+  }
+}
