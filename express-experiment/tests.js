@@ -19,7 +19,7 @@ describe("I can", function() {
 		});
 	});
 
-	it("chain handlers", function(done) {
+	it("chain handlers for a single route", function(done) {
 		var app = express();
 		app.get("/", function(req, res, next) {
 			req.customData = "one";
@@ -39,6 +39,31 @@ describe("I can", function() {
 		var server = app.listen(3000, function() {
 			request.get("http://localhost:3000/", function(error, response, body) {
 				assert.equal(body, "onetwothree");
+
+				server.close(function() {
+					done();
+				});		
+			});
+		});
+	});
+
+	it("chain common handlers", function(done) {
+		var app = express();
+		app.use(function(req, res, next) {
+			req.customData = "before";
+			next();
+		});
+		app.get("/", function(req, res, next) {
+			req.customData += "in";
+			next();
+		});
+		app.use(function(req, res) {
+			req.customData += "after";
+			res.send(req.customData);
+		});
+		var server = app.listen(3000, function() {
+			request.get("http://localhost:3000/", function(error, response, body) {
+				assert.equal(body, "beforeinafter");
 
 				server.close(function() {
 					done();
