@@ -9,20 +9,20 @@ angular.module("notes", [
 		templateUrl: "notes.html",
 		controller: "NotesController",
 		resolve: {
-			notes: ["noteService", function(noteService) {
-				return noteService.getNotes();
+			notes: ["apiService", function(apiService) {
+				return apiService.getNotes();
 			}]
 		}
 	});
 }])
-.controller("NotesController", ["$scope", "$q", "notes", "noteService", function($scope, $q, notes, noteService) {
+.controller("NotesController", ["$scope", "$q", "notes", "apiService", function($scope, $q, notes, apiService) {
 	$scope.notes = notes;
 
 	$scope.createNote = function(note) {
-		return noteService.createNote(note).then(function(note) {
-			$scope.notes = noteService.getNotes();
+		return apiService.createNote(note).then(function(note) {
+			$scope.notes = apiService.getNotes();
 		}, function(error) {
-			if(error instanceof noteService.ValidationError) {
+			if(error instanceof apiService.ValidationError) {
 				return $q.reject(error.errorMap);
 			}
 			
@@ -31,10 +31,10 @@ angular.module("notes", [
 	};
 
 	$scope.updateNote = function(note) {
-		return noteService.updateNote(note).then(function(note) {
-			$scope.notes = noteService.getNotes();			
+		return apiService.updateNote(note).then(function(note) {
+			$scope.notes = apiService.getNotes();			
 		}, function(error) {
-			if(error instanceof noteService.ValidationError) {
+			if(error instanceof apiService.ValidationError) {
 				return $q.reject(error.errorMap);
 			}
 
@@ -43,8 +43,8 @@ angular.module("notes", [
 	};
 
 	$scope.deleteNote = function(note) {
-		return noteService.deleteNote(note).then(function() {
-			$scope.notes = noteService.getNotes();
+		return apiService.deleteNote(note).then(function() {
+			$scope.notes = apiService.getNotes();
 		}, function(error) {
 			throw error;
 		});

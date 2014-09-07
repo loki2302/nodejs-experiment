@@ -1,5 +1,5 @@
-angular.module("api", ["resources.notes"])
-.service("noteService", ["$q", "Note", function($q, Note) {
+angular.module("api", ["resources.notes", "resources.categories"])
+.service("apiService", ["$q", "Note", "Category", function($q, Note, Category) {
 	this.ValidationError = function ValidationError(errorMap) {
 		this.errorMap = errorMap;
 	};
