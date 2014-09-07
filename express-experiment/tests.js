@@ -17,7 +17,7 @@ describe("I can", function() {
 				});		
 			});
 		});
-	});	
+	});
 
 	it("chain handlers", function(done) {
 		var app = express();
@@ -39,6 +39,26 @@ describe("I can", function() {
 		var server = app.listen(3000, function() {
 			request.get("http://localhost:3000/", function(error, response, body) {
 				assert.equal(body, "onetwothree");
+
+				server.close(function() {
+					done();
+				});		
+			});
+		});
+	});
+
+	it("have an error handler", function(done) {
+		var app = express();
+		app.get("/", function(req, res, next) {
+			next(new Error("hello"));
+		});
+		app.use(function(err, req, res, next) {
+			assert.equal(err.message, "hello");
+			res.send("got error");
+		});
+		var server = app.listen(3000, function() {
+			request.get("http://localhost:3000/", function(error, response, body) {
+				assert.equal(body, "got error");
 
 				server.close(function() {
 					done();
