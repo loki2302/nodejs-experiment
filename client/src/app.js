@@ -14,14 +14,14 @@ angular.module("app", [
 		return function(exception, cause) {
 			$delegate(exception, cause);
 
-			var noteService = $injector.get("noteService");
+			var apiService = $injector.get("apiService");
 			var rootScope = $injector.get("$rootScope");
 
-			if(exception instanceof noteService.ConnectivityError) {
+			if(exception instanceof apiService.ConnectivityError) {
 				rootScope.errorMessage = "There's a connectivity issue";
-			} else if(exception instanceof noteService.ValidationError) {
+			} else if(exception instanceof apiService.ValidationError) {
 				rootScope.errorMessage = "There's a validation error";
-			} else if(exception instanceof noteService.UnexpectedError) {
+			} else if(exception instanceof apiService.UnexpectedError) {
 				rootScope.errorMessage = "There's an unexpected API error: " + exception.message;
 			} else {
 				rootScope.errorMessage = exception.message;
