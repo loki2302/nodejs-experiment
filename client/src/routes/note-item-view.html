@@ -1,5 +1,4 @@
 <div ng-if="!editing">
-	<span class="badge">{{note.id}}</span> {{note.content}} <button ng-click="deleteNote()" class="btn btn-default" ng-class="{'disabled': working}">Delete</button> <button ng-click="editNote()" class="btn btn-default" ng-class="{'disabled': working}">Edit</button>
-	<tags-input ng-model="tags"></tags-input>
+	<span class="badge">{{note.id}}</span> {{note.content}} <button ng-click="deleteNote()" class="btn btn-default" ng-class="{'disabled': working}">Delete</button> <button ng-click="editNote()" class="btn btn-default" ng-class="{'disabled': working}">Edit</button>	
 </div>
 <note-editor ng-if="editing" original-note="note" save="saveNote(note)" save-title="Save" display-cancel="true" cancel="cancelEditNote()"></note-editor>

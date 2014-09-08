@@ -1,5 +1,5 @@
-angular.module("directives.notes.noteEditor", [])
-.directive("noteEditor", function() {
+angular.module("directives.notes.noteEditor", ["ngTagsInput"])
+.directive("noteEditor", ["$q", function($q) {
 	return {
 		restrict: "E",
 		scope: {
@@ -27,6 +27,14 @@ angular.module("directives.notes.noteEditor", [])
 			scope.error = "";
 			scope.working = false;
 
+			scope.searchTags = function(query) {
+				var deferred = $q.defer();
+				deferred.resolve(["tag one", "tag two", "tag three", "tag four"]);
+				return deferred.promise;
+			};
+
+			scope.tags = ["tag one", "tag two", "tag three"];
+
 			scope.createNote = function() {
 				scope.working = true;
 				scope.save({
@@ -53,4 +61,4 @@ angular.module("directives.notes.noteEditor", [])
 			};
 		}
 	};
-});
+}]);
