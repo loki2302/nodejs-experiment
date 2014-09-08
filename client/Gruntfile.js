@@ -14,7 +14,8 @@ module.exports = function(grunt) {
 					"bower_components/angular/angular.min.js",
 					"bower_components/angular-resource/angular-resource.min.js",
 					"bower_components/angular-route/angular-route.min.js",
-					"bower_components/ng-tags-input/ng-tags-input.min.js"
+					"bower_components/ng-tags-input/ng-tags-input.min.js",
+					"bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"
 				],
 				dest: "<%= builddir %>/angular.js"
 			}			
