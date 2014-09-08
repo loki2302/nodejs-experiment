@@ -1,4 +1,4 @@
-angular.module("directives.notes.noteItemView", [])
+angular.module("directives.notes.noteItemView", ["ngTagsInput"])
 .directive("noteItemView", function() {
 	return {
 		restrict: "E",
@@ -11,6 +11,8 @@ angular.module("directives.notes.noteItemView", [])
 		link: function(scope) {
 			scope.editing = false;
 			scope.working = false;
+
+			scope.tags = ["tag one", "tag two", "tag three"];
 
 			scope.deleteNote = function() {
 				scope.working = true;

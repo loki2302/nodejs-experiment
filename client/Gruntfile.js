@@ -13,7 +13,8 @@ module.exports = function(grunt) {
 				src: [
 					"bower_components/angular/angular.min.js",
 					"bower_components/angular-resource/angular-resource.min.js",
-					"bower_components/angular-route/angular-route.min.js"
+					"bower_components/angular-route/angular-route.min.js",
+					"bower_components/ng-tags-input/ng-tags-input.min.js"
 				],
 				dest: "<%= builddir %>/angular.js"
 			}			
@@ -30,6 +31,15 @@ module.exports = function(grunt) {
 				flatten: true,				
 				src: "bower_components/bootstrap/dist/css/bootstrap.min.css", 
 				dest: "<%= builddir %>/"				
+			},
+			ngTagsInput: {
+				expand: true,
+				flatten: true,
+				src: [
+					"bower_components/ng-tags-input/ng-tags-input.min.css",
+					"bower_components/ng-tags-input/ng-tags-input.bootstrap.min.css"
+				],
+				dest: "<%= builddir %>/"
 			}
 		},
 		clean: [
