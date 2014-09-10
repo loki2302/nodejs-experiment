@@ -1,0 +1,14 @@
+{
+  "name": "jsonschema-experiment",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha ."
+  },
+  "author": "loki2302",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "jsonschema": "~1.0.0"
+  }
+}
