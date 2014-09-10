@@ -48,3 +48,60 @@ describe("Integer validator", function() {
 		assert.notEqual(result.errors.length, 0);
 	});
 });
+
+describe("Note validator", function() {
+	var schema;
+	before(function() {
+		schema = {
+			type: "object",
+			properties: {
+				id: {
+					type: "integer",
+					required: true
+				},
+				content: {
+					type: "string",
+					required: true
+				}
+			}
+		};
+	});
+
+	it("should be OK when both id and content are there", function() {
+		var result = validate({
+			id: 123,
+			content: "hello there"
+		}, schema);
+		assert.equal(result.errors.length, 0);
+	});
+
+	it("should not be OK when there's no id", function() {
+		var result = validate({			
+			content: "hello there"
+		}, schema);
+		assert.equal(result.errors.length, 1);
+	});
+
+	it("should not be OK when id is not integer", function() {
+		var result = validate({
+			id: "123",
+			content: "hello there"
+		}, schema);
+		assert.equal(result.errors.length, 1);
+	});
+
+	it("should not be OK when there's no content", function() {
+		var result = validate({
+			id: 123
+		}, schema);
+		assert.equal(result.errors.length, 1);
+	});
+
+	it("should not be OK when content is not a string", function() {
+		var result = validate({
+			id: 123,
+			content: {}
+		}, schema);
+		assert.equal(result.errors.length, 1);
+	});
+});
