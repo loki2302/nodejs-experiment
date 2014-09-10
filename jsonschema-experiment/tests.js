@@ -9,12 +9,41 @@ describe("Number validator", function() {
 		};
 	});
 
-	it("should be OK with numbers", function() {		
+	it("should be OK with integers", function() {		
 		var result = validate(123, schema);
 		assert.equal(result.errors.length, 0);
 	});
 
-	it("should note be OK with strings", function() {		
+	it("should be OK with reals", function() {		
+		var result = validate(3.14, schema);
+		assert.equal(result.errors.length, 0);
+	});
+
+	it("should not be OK with strings", function() {		
+		var result = validate("hello", schema);
+		assert.notEqual(result.errors.length, 0);
+	});
+});
+
+describe("Integer validator", function() {
+	var schema;
+	before(function() {
+		schema = {
+			"type": "integer"
+		};
+	});
+
+	it("should be OK with integers", function() {
+		var result = validate(123, schema);
+		assert.equal(result.errors.length, 0);
+	});
+
+	it("should not be OK with reals", function() {		
+		var result = validate(3.14, schema);
+		assert.notEqual(result.errors.length, 0);
+	});
+
+	it("should not be OK with strings", function() {		
 		var result = validate("hello", schema);
 		assert.notEqual(result.errors.length, 0);
 	});
