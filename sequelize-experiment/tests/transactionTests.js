@@ -26,7 +26,7 @@ exports.transactionTests = {
 		});
 	},
 
-	dummy: function(test) {
+	canCommitTransaction: function(test) {
 		var self = this;
 		self.sequelize.transaction({
 			isolationLevel: "READ UNCOMMITTED" // Sequelize.Transaction.READ_UNCOMMITTED wtf?
@@ -57,6 +57,56 @@ exports.transactionTests = {
 							// make sure note is visible outside tx after commit
 							self.Note.find(1).success(function(note) {
 								test.ok(!!note);
+								test.done();
+							}).error(function(e) {
+								test.ok(false);
+							});							
+						}).error(function(e) {
+							test.ok(false);
+						});
+					}).error(function(e) {
+						test.ok(false);
+					});					
+				}).error(function(e) {
+					test.ok(false);
+				});
+			}).error(function(e) {
+				test.ok(false);
+			});
+		});		
+	},
+
+	canRollbackTransaction: function(test) {
+		var self = this;
+		self.sequelize.transaction({
+			isolationLevel: "READ UNCOMMITTED" // Sequelize.Transaction.READ_UNCOMMITTED wtf?
+		}, function(tx) {
+			// create note in transaction tx
+			self.Note.create({ 
+				content: "hello" 
+			}, {
+				transaction: tx
+			}).success(function(note) {
+				// make sure note is visible inside tx
+				self.Note.find(1, { 
+					transaction: tx 
+				}).success(function(note) {		
+					if(!note) {
+						test.ok(false);
+						return;
+					}
+
+					// make sure note is invisible outside tx
+					self.Note.find(1).success(function(note) {
+						if(!!note) {
+							test.ok(false);
+							return;
+						}
+
+						tx.rollback().success(function() {
+							// make sure note has not been created
+							self.Note.find(1).success(function(note) {
+								test.ok(!note);
 								test.done();
 							}).error(function(e) {
 								test.ok(false);
