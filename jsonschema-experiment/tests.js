@@ -1,4 +1,5 @@
 var assert = require("assert");
+var Validator = require("jsonschema").Validator;
 var validate = require("jsonschema").validate;
 
 describe("Number validator", function() {
@@ -117,8 +118,23 @@ describe("Note validator", function() {
 });
 
 describe("Tagged note validator", function() {
-	var schema;
+	var validator;
 	before(function() {
+		var tagWithIdSchema = {
+			id: "/tagWithId",
+			type: "object",
+			properties: {
+				id: {
+					type: "integer",
+					required: true
+				},
+				name: {
+					type: "string",
+					required: false
+				}
+			}
+		};
+
 		schema = {
 			type: "object",
 			properties: {
@@ -133,26 +149,17 @@ describe("Tagged note validator", function() {
 				tags: {
 					type: "array",
 					required: false,
-					items: {
-						type: "object",
-						properties: {
-							id: {
-								type: "integer",
-								required: true
-							},
-							name: {
-								type: "string",
-								required: false
-							}
-						}
-					}
+					items: { "$ref": "/tagWithId" }
 				}
 			}
 		};
+
+		validator = new Validator();		
+		validator.addSchema(tagWithIdSchema);
 	});
 
 	it("should be OK when tags are there and they have names", function() {
-		var result = validate({
+		var result = validator.validate({
 			id: 123,
 			content: "hello",
 			tags: [
@@ -165,7 +172,7 @@ describe("Tagged note validator", function() {
 	});
 
 	it("should be OK when tags are there and they don't have names", function() {
-		var result = validate({
+		var result = validator.validate({
 			id: 123,
 			content: "hello",
 			tags: [
@@ -178,7 +185,7 @@ describe("Tagged note validator", function() {
 	});
 
 	it("should be OK when tags are not there", function() {
-		var result = validate({
+		var result = validator.validate({
 			id: 123,
 			content: "hello"
 		}, schema);
