@@ -7,7 +7,8 @@ angular.module("directives.notes.noteEditor", ["ngTagsInput"])
 			save: "&",
 			saveTitle: "@",
 			displayCancel: "@",
-			cancel: "&"
+			cancel: "&",
+			searchCategories: "&"
 		},
 		templateUrl: "note-editor.html",
 		link: function(scope, element, attrs, controllers) {
@@ -16,8 +17,10 @@ angular.module("directives.notes.noteEditor", ["ngTagsInput"])
 			if(scope.originalNote) {
 				scope.noteId = scope.originalNote.id;
 				scope.noteContent = scope.originalNote.content;
+				scope.noteCategories = scope.originalNote.categories;
 			} else {
 				scope.noteContent = "";
+				scope.noteCategories = [];
 			}
 
 			if(!scope.displayCancel) {
@@ -27,23 +30,17 @@ angular.module("directives.notes.noteEditor", ["ngTagsInput"])
 			scope.error = "";
 			scope.working = false;
 
-			scope.searchTags = function(query) {
-				var deferred = $q.defer();
-				deferred.resolve(["tag one", "tag two", "tag three", "tag four"]);
-				return deferred.promise;
-			};
-
-			scope.tags = ["tag one", "tag two", "tag three"];
-
 			scope.createNote = function() {
 				scope.working = true;
 				scope.save({
 					note: {
 						id: scope.noteId,
-						content: scope.noteContent
+						content: scope.noteContent,
+						categories: scope.noteCategories
 					}
 				}).then(function() {
 					scope.noteContent = "";
+					scope.noteCategories = [];
 					scope.error = "";
 				}, function(errors) {
 					if(errors) {

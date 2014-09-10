@@ -5,7 +5,8 @@ angular.module("directives.notes.noteItemView", [])
 		scope: {
 			note: "=",			
 			delete: "&",
-			save: "&"
+			save: "&",
+			searchCategories: "&",
 		},
 		templateUrl: "note-item-view.html",
 		link: function(scope) {
