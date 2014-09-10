@@ -104,6 +104,16 @@ describe("Note validator", function() {
 		}, schema);
 		assert.equal(result.errors.length, 1);
 	});
+
+	it("should be OK when there are unexpected properties", function() {
+		var result = validate({
+			id: 123,
+			content: "hello",
+			unexpectedProperty1: "unexpected string",
+			unexpectedProperty2: 222
+		}, schema);
+		assert.equal(result.errors.length, 0);
+	});
 });
 
 describe("Tagged note validator", function() {
@@ -173,5 +183,5 @@ describe("Tagged note validator", function() {
 			content: "hello"
 		}, schema);
 		assert.equal(result.errors.length, 0);
-	});
+	});	
 });
