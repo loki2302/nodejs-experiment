@@ -29,7 +29,7 @@ exports.transactionTests = {
 	dummy: function(test) {
 		var self = this;
 		self.sequelize.transaction({
-			isolationLevel: "READ UNCOMMITTED"
+			isolationLevel: "READ UNCOMMITTED" // Sequelize.Transaction.READ_UNCOMMITTED wtf?
 		}, function(tx) {
 			// create note in transaction tx
 			self.Note.create({ 

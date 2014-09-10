@@ -10,7 +10,7 @@
   "author": "loki2302",
   "license": "BSD-2-Clause",
   "dependencies": {
-    "sequelize": "~1.7.9",
+    "sequelize": "~1.7.10",
     "sqlite3": "~2.2.7",
     "q": "~1.0.1"
   }
