@@ -1,4 +1,4 @@
-exports.addRoutes = function(app, models) {
+exports.addRoutes = function(app, dao, models) {
 	app.get("/api/categories/", function(req, res, next) {
 		models.Category.findAll().success(function(categories) {
 			res.status(200).send(categories);

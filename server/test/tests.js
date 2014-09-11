@@ -2,6 +2,7 @@ var assert = require("assert");
 var request = require("request");
 
 var models = require("../models.js");
+var DAO = require("../dao.js").DAO;
 var makeApp = require("../app.js");
 
 function url(path) {
@@ -12,7 +13,8 @@ describe("app", function() {
 	var server;
 	beforeEach(function(done) {
 		models.reset().then(function() {
-			var app = makeApp(models, {
+			var dao = new DAO(models);
+			var app = makeApp(dao, models, {
 				// no synth delays for tests
 			});
 			server = app.listen(3000, function() {

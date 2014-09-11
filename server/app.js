@@ -4,7 +4,7 @@ var sleep = require("sleep");
 var noteRoutes = require("./routes/notes.js");
 var categoryRoutes = require("./routes/categories.js");
 
-module.exports = function(models, config) {
+module.exports = function(dao, models, config) {
 	var app = express();
 	app.use(express.static(__dirname + "/../client/build/"));
 	app.use(bodyParser.json());
@@ -15,8 +15,8 @@ module.exports = function(models, config) {
 			next();
 		});
 	}
-	noteRoutes.addRoutes(app, models);
-	categoryRoutes.addRoutes(app, models);
+	noteRoutes.addRoutes(app, dao, models);
+	categoryRoutes.addRoutes(app, dao, models);
 
 	["/", "/notes", "/categories"].forEach(function(route) {
 		app.all(route, function(req, res) {
