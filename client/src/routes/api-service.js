@@ -28,7 +28,8 @@ angular.module("api", ["resources.notes", "resources.categories"])
 
 	this.createNote = function(note) {
 		return Note.save({
-			content: note.content
+			content: note.content,
+			categories: note.categories
 		}).$promise.then(function(note) {
 			return note;
 		}, function(httpResponse) {
@@ -39,7 +40,8 @@ angular.module("api", ["resources.notes", "resources.categories"])
 	this.updateNote = function(note) {
 		return Note.save({
 			id: note.id,
-			content: note.content
+			content: note.content,
+			categories: note.categories
 		}).$promise.then(function(note) {
 			return note;
 		}, function(httpResponse) {

@@ -3,7 +3,9 @@ var DAO = require("../dao.js");
 
 exports.addRoutes = function(app, dao, models) {
 	app.get("/api/notes/", function(req, res, next) {
-		models.Note.findAll().success(function(notes) {
+		models.Note.findAll({			
+			include: [ models.Category ]
+		}).success(function(notes) {
 			res.status(200).send(notes);
 		}).error(function(error) {
 			next(error);
@@ -43,19 +45,11 @@ exports.addRoutes = function(app, dao, models) {
 						res.status(400).send({
 							message: error.message
 						});
-					} else if(error instanceof Error) {
-						res.status(500).send({
-							message: error.message
-						});
 					} else {
-						res.status(500).send({
-							message: "Unexpected error"
-						});
+						next(error);
 					}
-				}).error(function() {
-					res.status(500).send({
-						message: "Error"
-					});
+				}).error(function(error) {
+					next(error);
 				});
 			});
 		});

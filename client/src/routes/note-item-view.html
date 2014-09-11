@@ -1,4 +1,6 @@
 <div ng-if="!editing">
-	<span class="badge">{{note.id}}</span> {{note.content}} <button ng-click="deleteNote()" class="btn btn-default" ng-class="{'disabled': working}">Delete</button> <button ng-click="editNote()" class="btn btn-default" ng-class="{'disabled': working}">Edit</button>	
+	<span class="badge">{{note.id}}</span> {{note.content}} <button ng-click="deleteNote()" class="btn btn-default" ng-class="{'disabled': working}">Delete</button> <button ng-click="editNote()" class="btn btn-default" ng-class="{'disabled': working}">Edit</button>
+	<span ng-if="note.categories.length === 0">Linked to no categories</span>
+	<span ng-if="note.categories.length > 0"><span class="badge" ng-repeat="category in note.categories">{{category.name}}</span></span>
 </div>
 <note-editor ng-if="editing" original-note="note" save="saveNote(note)" save-title="Save" display-cancel="true" cancel="cancelEditNote()" search-categories="searchCategories(query)"></note-editor>

@@ -24,5 +24,17 @@ module.exports = function(dao, models, config) {
 		});
 	});
 
+	app.use(function(err, req, res, next) {
+		if(error instanceof Error) {
+			res.status(500).send({
+				message: error.message
+			});
+		} else {
+			res.status(500).send({
+				message: "Unexpected error"
+			});
+		}
+	});
+
 	return app;
 };
