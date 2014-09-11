@@ -9,11 +9,91 @@ exports.addRoutes = function(app, models) {
 
 	app.post("/api/notes/", function(req, res, next) {
 		var body = req.body;
-		models.Note.create({ content: body.content }).success(function(note) {
-			res.status(201).send(note);
-		}).error(function(error) {			
-			res.status(400).send(error);
-		});
+		var sequelize = models.sequelize;
+		sequelize.transaction({
+			isolationLevel: "READ UNCOMMITTED"
+		}, function(tx) {
+			models.Note.create({ 
+				content: body.content 
+			}, {
+				transaction: tx
+			}).success(function(note) {
+				if(!body.categories) {
+					tx.commit().success(function() {
+						res.status(201).send(note);
+					}).error(function(error) {
+						res.status(500).send(error);
+					});					
+					return;
+				}
+				
+				var categories = body.categories;
+				var categoryIds = categories.map(function(category) { 
+					return category.id; 
+				});
+				models.Category.findAll({
+					where: {
+						id: {
+							in: categoryIds
+						}
+					}
+				}, {
+					transaction: tx
+				}).success(function(categories) {
+					if(categories.length !== categoryIds.length) {
+						tx.rollback().success(function() {
+							res.status(400).send({
+								message: "Didn't find at least one category"
+							});
+						}).error(function(error) {
+							res.status(500).send(error);
+						});						
+						return;
+					}
+					
+					note.setCategories(categories, {
+						transaction: tx
+					}).success(function() {
+						models.Note.find({
+							where: { id: note.id },
+							include: [ models.Category ]
+						}, {
+							transaction: tx
+						}).success(function(note) {
+							tx.commit().success(function() {
+								res.status(201).send(note);
+							}).error(function(error) {
+								res.status(500).send(error);
+							});
+						}).error(function(error) {
+							tx.rollback().success(function() {
+								res.status(400).send(error);
+							}).error(function(error) {
+								res.status(500).send(error);
+							});
+						});
+					}).error(function(error) {
+						tx.rollback().success(function() {
+							res.status(400).send(error);
+						}).error(function(error) {
+							res.status(500).send(error);
+						});
+					});				
+				}).error(function(error) {
+					tx.rollback().success(function() {
+						res.status(400).send(error);
+					}).error(function(error) {
+						res.status(500).send(error);
+					});
+				});						
+			}).error(function(error) {			
+				tx.rollback().success(function() {
+					res.status(400).send(error);
+				}).error(function(error) {
+					res.status(500).send(error);
+				});
+			});
+		});	
 	});
 
 	app.delete("/api/notes/:id", function(req, res, next) {

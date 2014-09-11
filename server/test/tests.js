@@ -82,6 +82,125 @@ describe("app", function() {
 		});
 	});
 
+	it("should let me create a note with single category", function(done) {
+		var params = {
+			url: url("/categories/"),
+			json: {
+				name: "js"
+			}
+		};
+		request.post(params, function(error, response, body) {
+			assert.equal(response.statusCode, 201);
+
+			var jsCategoryId = body.id;
+			var params = {
+				url: url("/notes/"),
+				json: {
+					content: "hello there",
+					categories: [
+						{ id: jsCategoryId }
+					]
+				}
+			};
+			request.post(params, function(error, response, body) {
+				assert.equal(response.statusCode, 201);
+				assert.equal(body.id, 1);
+				assert.equal(body.content, "hello there");
+				assert.ok(body.categories);
+				assert.equal(body.categories.length, 1);
+				assert.equal(body.categories[0].id, jsCategoryId);
+				assert.equal(body.categories[0].name, "js");
+				done();
+			});
+		});
+	});
+
+	it("should let me create a note with multiple categories", function(done) {
+		var params = {
+			url: url("/categories/"),
+			json: {
+				name: "js"
+			}
+		};
+		request.post(params, function(error, response, body) {
+			assert.equal(response.statusCode, 201);
+
+			var jsCategoryId = body.id;
+			var params = {
+				url: url("/categories/"),
+				json: {
+					name: "java"
+				}
+			};
+			request.post(params, function(error, response, body) {
+				assert.equal(response.statusCode, 201);
+
+				var javaCategoryId = body.id;
+				var params = {
+					url: url("/notes/"),
+					json: {
+						content: "hello there",
+						categories: [
+							{ id: jsCategoryId },
+							{ id: javaCategoryId }
+						]
+					}
+				};
+				request.post(params, function(error, response, body) {
+					assert.equal(response.statusCode, 201);
+					assert.equal(body.id, 1);
+					assert.equal(body.content, "hello there");
+					assert.ok(body.categories);
+					assert.equal(body.categories.length, 2);
+					assert.equal(body.categories[0].id, jsCategoryId);
+					assert.equal(body.categories[0].name, "js");
+					assert.equal(body.categories[1].id, javaCategoryId);
+					assert.equal(body.categories[1].name, "java");
+					done();
+				});
+			});			
+		});
+	});
+
+	it("should not let me create a note if at least one category doesn't exist", function(done) {
+		var params = {
+			url: url("/categories/"),
+			json: {
+				name: "js"
+			}
+		};
+		request.post(params, function(error, response, body) {
+			assert.equal(response.statusCode, 201);
+
+			var jsCategoryId = body.id;
+			var params = {
+				url: url("/notes/"),
+				json: {
+					content: "hello there",
+					categories: [
+						{ id: jsCategoryId },
+						{ id: 123 },
+						{ id: 222 }
+					]
+				}
+			};
+			request.post(params, function(error, response, body) {
+				assert.equal(response.statusCode, 400);
+				assert.ok("message" in body);
+
+				var params = { 
+					url: url("/notes/"), 
+					json: true 
+				};
+				request.get(params, function(error, response, body) {
+					assert.equal(response.statusCode, 200);			
+					assert.equal(body.length, 0);
+					done();
+				});
+			});
+		});
+	});
+
 	it("should let me delete a note", function(done) {
 		var params = {
 			url: url("/notes/"),

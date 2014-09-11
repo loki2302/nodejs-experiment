@@ -33,6 +33,7 @@ Category.hasMany(Note);
 
 module.exports.Note = Note;
 module.exports.Category = Category;
+module.exports.sequelize = sequelize;
 
 module.exports.initialize = function() {
 	var deferred = Q.defer();
