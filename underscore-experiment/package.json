@@ -1,0 +1,14 @@
+{
+  "name": "underscore-experiment",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha ."
+  },
+  "author": "",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "underscore": "~1.7.0"
+  }
+}
