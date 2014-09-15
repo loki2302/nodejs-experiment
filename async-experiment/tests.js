@@ -49,20 +49,20 @@ describe("To create multiple notes, I can use", function() {
 			}
 
 			assertResultIsOk(result);
-
 			done();
 		});
 	});
 
 	it("series", function(done) {
 		function createNotes(notesWithTags, callback) {
-			var notes = {};
-			notesWithTags.forEach(function(noteWithTag) {
-				notes[noteWithTag.tag] = function(callback) {
-					createNote(noteWithTag.content, callback);
+			var tasks = notesWithTags.reduce(function(memo, item) {
+				memo[item.tag] = function(callback) {
+					createNote(item.content, callback);
 				};
-			});
-			async.series(notes, callback);
+				return memo;
+			}, {});
+
+			async.series(tasks, callback);
 		};
 
 		createNotes([
@@ -75,7 +75,6 @@ describe("To create multiple notes, I can use", function() {
 			}
 
 			assertResultIsOk(result);
-
 			done();
 		});
 	});
