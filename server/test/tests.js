@@ -4,6 +4,7 @@ var request = require("request");
 var models = require("../models.js");
 var DAO = require("../dao.js").DAO;
 var makeApp = require("../app.js");
+var Q = require("q");
 
 function url(path) {
 	return "http://localhost:3000/api" + path;
@@ -430,35 +431,94 @@ describe("app", function() {
 		});
 	});
 
-	it("should not let me update a category name if name already used", function(done) {
-		var params = {
-			url: url("/categories/"),
-			json: {
-				name: "js"
-			}
-		};
-		request.post(params, function(error, response, body) {
-			var jsCategoryId = body.id;
+	function createCategory(name) {
+		return Q.Promise(function(resolve, reject) {
 			var params = {
 				url: url("/categories/"),
+				json: {
+					name: name
+				}
+			};
+			request.post(params, function(error, response, body) {
+				if(error) {
+					reject(error);
+					return;
+				}
+
+				resolve({
+					response: response,
+					body: body
+				});
+			});
+		});
+	};
+
+	function createCategories(categories) {
+		var promises = categories.map(function(category) {
+			return createCategory(category.name).then(function(result) {
+				return {
+					tag: category.tag,
+					id: result.body.id
+				};
+			});
+		});
+
+		return Q.all(promises).then(function(results) {
+			return results.reduce(function(map, result) {
+				map[result.tag] = result.id;
+				return map;
+			}, {});
+		});
+	};
+
+	it("should not let me update a category name if name already used", function(done) {
+		createCategories([
+			{ tag: "js", name: "js" },
+			{ tag: "java", name: "java" }
+		]).then(function(categoryIds) {
+			var params = {
+				url: url("/categories/" + categoryIds.js),
 				json: {
 					name: "java"
 				}
 			};
 			request.post(params, function(error, response, body) {
-				var javaCategoryId = body.id;
+				assert.equal(response.statusCode, 409);
+				assert.ok("message" in body);
+				done();
+			});
+		}, function(error) {
+			assert.ok(false);
+		});
+	});
+
+	it("should let me filter categories by first letters", function(done) {
+		createCategories([
+			{ tag: "aaa", name: "aaa" },
+			{ tag: "aab", name: "aab" },
+			{ tag: "aba", name: "aba" },
+			{ tag: "abb", name: "abb" },
+			{ tag: "baa", name: "baa" },
+			{ tag: "bbb", name: "bbb" }
+		]).then(function(categoryIds) {
+			var params = {
+				url: url("/categories/"),
+				qs: { nameStartsWith: "a" },
+				json: true
+			};
+			request.get(params, function(error, response, body) {
+				assert.equal(body.length, 4);
+
 				var params = {
-					url: url("/categories/" + jsCategoryId),
-					json: {
-						name: "java"
-					}
+					url: url("/categories/"),
+					qs: { nameStartsWith: "aa" },
+					json: true
 				};
-				request.post(params, function(error, response, body) {
-					assert.equal(response.statusCode, 409);
-					assert.ok("message" in body);
+				request.get(params, function(error, response, body) {
+					assert.equal(body.length, 2);
 					done();
 				});
-			});			
+			});
 		});
 	});
 });

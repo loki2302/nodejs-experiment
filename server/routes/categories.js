@@ -1,6 +1,15 @@
 exports.addRoutes = function(app, dao, models) {
 	app.get("/api/categories/", function(req, res, next) {
-		models.Category.findAll().success(function(categories) {
+		var criteria = {};
+		var nameStartsWith = req.query.nameStartsWith;
+		if(nameStartsWith) {
+			var lowercaseNameStartsWith = nameStartsWith.toLowerCase();
+			criteria = {
+				where: ["lower(name) like ?", lowercaseNameStartsWith + '%']
+			};
+		}
+
+		models.Category.findAll(criteria).success(function(categories) {
 			res.status(200).send(categories);
 		}).error(function(error) {
 			next(error);
