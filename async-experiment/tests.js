@@ -56,9 +56,7 @@ describe("To create multiple notes, I can use", function() {
 	it("series", function(done) {
 		function createNotes(notesWithTags, callback) {
 			var tasks = notesWithTags.reduce(function(memo, item) {
-				memo[item.tag] = function(callback) {
-					createNote(item.content, callback);
-				};
+				memo[item.tag] = createNote.bind(null, item.content);
 				return memo;
 			}, {});
 
