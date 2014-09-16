@@ -12,6 +12,25 @@ exports.addRoutes = function(app, dao, models) {
 		});
 	});
 
+	app.get("/api/notes/:id", function(req, res, next) {
+		var id = req.params.id;
+		models.Note.find({
+			where: { id: id	},
+			include: [ models.Category ]
+		}).success(function(note) {
+			if(!note) {
+				res.status(404).send({
+					message: "There's no note " + id
+				});
+				return;
+			}
+
+			res.status(200).send(note);
+		}).error(function(error) {
+			next(error);
+		});
+	});
+
 	app.post("/api/notes/", function(req, res, next) {
 		var body = req.body;
 		var sequelize = models.sequelize;

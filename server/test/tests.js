@@ -205,6 +205,36 @@ describe("app", function() {
 		});
 	});	
 
+	it("should respond with 404 if note does not exist", function(done) {
+		client.getNote(123, function(error, response, body) {
+			assert.equal(response.statusCode, 404);
+			assert.ok("message" in body);
+			done();
+		});
+	});
+
+	it("should let me retrieve a note", function(done) {
+		async.waterfall([
+			function(callback) {
+				client.createNote({
+					content: "hello"
+				}, function(error, response, body) {
+					assert.ifError(error);
+					callback(null, body.id)
+				});
+			},
+			function(noteId, callback) {
+				client.getNote(noteId, function(error, response, body) {
+					assert.ifError(error);
+					assert.equal(response.statusCode, 200);
+					assert.equal(body.id, 1);
+					assert.equal(body.content, "hello");
+					done();					
+				});
+			}
+		]);
+	});
+
 	it("should let me update a note", function(done) {
 		async.waterfall([
 			function(callback) {
@@ -230,7 +260,6 @@ describe("app", function() {
 		]);
 	});
 
-	//
 	it("should not let me update a note if note does not exist", function(done) {
 		client.updateNote({
 			id: 123,
@@ -465,6 +494,83 @@ describe("app", function() {
 				client.getCategoriesWithNameStartingWith("b", function(error, response, body) {
 					assert.ifError(error);
 					assert.equal(body.length, 2);
+					done();
+				});
+			}
+		]);
+	});
+
+	it("should let me delete category linked to note", function(done) {
+		async.waterfall([
+			function(callback) {
+				client.createCategory({
+					name: "js"
+				}, function(error, response, body) {
+					assert.ifError(error);
+					callback(null, body.id);
+				});
+			},
+			function(jsCategoryId, callback) {
+				client.createNote({
+					content: "hello there",
+					categories: [
+						{ id: jsCategoryId }
+					]
+				}, function(error, response, body) {
+					assert.ifError(error);
+					callback(null, jsCategoryId, body.id);
+				});
+			},
+			function(jsCategoryId, helloNoteId, callback) {
+				client.deleteCategory(jsCategoryId, function(error, response, body) {
+					assert.ifError(error);
+					assert.equal(response.statusCode, 200);
+					callback(null, helloNoteId);
+				});
+			},
+			function(helloNoteId, callback) {
+				client.getNote(helloNoteId, function(error, response, body) {
+					assert.ifError(error);
+					assert.equal(response.statusCode, 200);
+					assert.equal(body.categories.length, 0);
+					done();
+				});
+			}
+		]);
+	});
+
+	it("should let me delete note linked to category", function(done) {
+		async.waterfall([
+			function(callback) {
+				client.createCategory({
+					name: "js"
+				}, function(error, response, body) {
+					assert.ifError(error);
+					callback(null, body.id);
+				});
+			},
+			function(jsCategoryId, callback) {
+				client.createNote({
+					content: "hello there",
+					categories: [
+						{ id: jsCategoryId }
+					]
+				}, function(error, response, body) {
+					assert.ifError(error);
+					callback(null, jsCategoryId, body.id);
+				});
+			},
+			function(jsCategoryId, helloNoteId, callback) {
+				client.deleteNote(helloNoteId, function(error, response, body) {
+					assert.ifError(error);
+					assert.equal(response.statusCode, 200);
+					callback(null, jsCategoryId);
+				});
+			},
+			function(jsCategoryId, callback) {
+				client.getCategory(jsCategoryId, function(error, response, body) {
+					assert.ifError(error);
+					assert.equal(response.statusCode, 200);
 					done();
 				});
 			}

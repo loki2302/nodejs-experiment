@@ -44,6 +44,10 @@ NotepadClient.prototype.getAllNotes = function(callback) {
 	this.get("/notes/", callback);
 };
 
+NotepadClient.prototype.getNote = function(noteId, callback) {
+	this.get("/notes/" + noteId, callback);
+};
+
 NotepadClient.prototype.deleteNote = function(noteId, callback) {
 	this.delete("/notes/" + noteId, callback);
 };
@@ -87,6 +91,10 @@ NotepadClient.prototype.getCategoriesWithNameStartingWith = function(namePattern
 		json: true
 	};
 	request.get(params, callback);
+};
+
+NotepadClient.prototype.getCategory = function(categoryId, callback) {
+	this.get("/categories/" + categoryId, callback);
 };
 
 NotepadClient.prototype.deleteCategory = function(categoryId, callback) {

@@ -16,6 +16,22 @@ exports.addRoutes = function(app, dao, models) {
 		});
 	});
 
+	app.get("/api/categories/:id", function(req, res, next) {
+		var id = req.params.id;
+		models.Category.find(id).success(function(category) {
+			if(!category) {
+				res.status(404).send({
+					message: "There's no category " + id
+				});
+				return;
+			}
+
+			res.status(200).send(category);
+		}).error(function(error) {
+			next(error);
+		});
+	});
+
 	app.post("/api/categories/", function(req, res, next) {
 		var body = req.body;
 		var categoryName = body.name;
