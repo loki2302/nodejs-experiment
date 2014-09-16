@@ -1,19 +1,17 @@
 var assert = require("assert");
-var request = require("request");
+var async = require("async");
 
 var models = require("../models.js");
 var DAO = require("../dao.js").DAO;
 var makeApp = require("../app.js");
-var Q = require("q");
-
-function url(path) {
-	return "http://localhost:3000/api" + path;
-}
+var NotepadClient = require("../client.js");
 
 describe("app", function() {
+	var client;
 	var server;
 	beforeEach(function(done) {
 		models.reset().then(function() {
+			client = new NotepadClient("http://localhost:3000/api");
 			var dao = new DAO(models);
 			var app = makeApp(dao, models, {
 				// no synth delays for tests
@@ -33,11 +31,8 @@ describe("app", function() {
 	});
 
 	it("should have no notes by default", function(done) {
-		var params = { 
-			url: url("/notes/"), 
-			json: true 
-		};
-		request.get(params, function(error, response, body) {
+		client.getAllNotes(function(error, response, body) {
+			assert.ifError(error);
 			assert.equal(response.statusCode, 200);			
 			assert.equal(body.length, 0);
 			done();
@@ -45,11 +40,8 @@ describe("app", function() {
 	});
 
 	it("should have no categories by default", function(done) {
-		var params = { 
-			url: url("/categories/"), 
-			json: true 
-		};
-		request.get(params, function(error, response, body) {
+		client.getAllCategories(function(error, response, body) {
+			assert.ifError(error);
 			assert.equal(response.statusCode, 200);			
 			assert.equal(body.length, 0);
 			done();
@@ -57,13 +49,10 @@ describe("app", function() {
 	});
 
 	it("should let me create a note", function(done) {
-		var params = {
-			url: url("/notes/"),
-			json: {
-				content: "hello"
-			}
-		};
-		request.post(params, function(error, response, body) {
+		client.createNote({
+			content: "hello"
+		}, function(error, response, body) {
+			assert.ifError(error);
 			assert.equal(response.statusCode, 201);
 			assert.equal(body.id, 1);
 			assert.equal(body.content, "hello");
@@ -72,13 +61,10 @@ describe("app", function() {
 	});
 
 	it("should not let me create a note if fields are not valid", function(done) {
-		var params = {
-			url: url("/notes/"),
-			json: {
-				content: ""
-			}
-		};
-		request.post(params, function(error, response, body) {
+		client.createNote({
+			content: ""
+		}, function(error, response, body) {
+			assert.ifError(error);
 			assert.equal(response.statusCode, 400);
 			assert.ok("content" in body);
 			done();
@@ -86,70 +72,59 @@ describe("app", function() {
 	});
 
 	it("should let me create a note with single category", function(done) {
-		var params = {
-			url: url("/categories/"),
-			json: {
-				name: "js"
-			}
-		};
-		request.post(params, function(error, response, body) {
-			assert.equal(response.statusCode, 201);
-
-			var jsCategoryId = body.id;
-			var params = {
-				url: url("/notes/"),
-				json: {
+		async.waterfall([
+			function(callback) {
+				client.createCategory({
+					name: "js"
+				}, function(error, response, body) {
+					assert.ifError(error);
+					assert.equal(response.statusCode, 201);
+					callback(null, body.id);
+				});
+			},
+			function(jsCategoryId, callback) {
+				client.createNote({
 					content: "hello there",
 					categories: [
 						{ id: jsCategoryId }
 					]
-				}
-			};
-			request.post(params, function(error, response, body) {
-				assert.equal(response.statusCode, 201);
-				assert.equal(body.id, 1);
-				assert.equal(body.content, "hello there");
-				assert.ok(body.categories);
-				assert.equal(body.categories.length, 1);
-				assert.equal(body.categories[0].id, jsCategoryId);
-				assert.equal(body.categories[0].name, "js");
-				done();
-			});
-		});
+				}, function(error, response, body) {
+					assert.ifError(error);
+					assert.equal(response.statusCode, 201);
+					assert.equal(body.id, 1);
+					assert.equal(body.content, "hello there");
+					assert.ok(body.categories);
+					assert.equal(body.categories.length, 1);
+					assert.equal(body.categories[0].id, jsCategoryId);
+					assert.equal(body.categories[0].name, "js");
+					done();
+				});
+			}
+		]);
 	});
 
 	it("should let me create a note with multiple categories", function(done) {
-		var params = {
-			url: url("/categories/"),
-			json: {
-				name: "js"
-			}
-		};
-		request.post(params, function(error, response, body) {
-			assert.equal(response.statusCode, 201);
-
-			var jsCategoryId = body.id;
-			var params = {
-				url: url("/categories/"),
-				json: {
-					name: "java"
-				}
-			};
-			request.post(params, function(error, response, body) {
-				assert.equal(response.statusCode, 201);
-
-				var javaCategoryId = body.id;
-				var params = {
-					url: url("/notes/"),
-					json: {
-						content: "hello there",
-						categories: [
-							{ id: jsCategoryId },
-							{ id: javaCategoryId }
-						]
-					}
-				};
-				request.post(params, function(error, response, body) {
+		async.waterfall([
+			function(callback) {
+				client.createCategories([
+					{ tag: "js", category: { name: "js" } },
+					{ tag: "java", category: { name: "java" } }
+				], function(error, result) {
+					assert.ifError(error);
+					callback(null, result);					
+				});
+			},
+			function(categoryMap, callback) {
+				var jsCategoryId = categoryMap.js.body.id;
+				var javaCategoryId = categoryMap.java.body.id;
+				client.createNote({
+					content: "hello there",
+					categories: [
+						{ id: jsCategoryId },
+						{ id: javaCategoryId }
+					]
+				}, function(error, response, body) {
+					assert.ifError(error);
 					assert.equal(response.statusCode, 201);
 					assert.equal(body.id, 1);
 					assert.equal(body.content, "hello there");
@@ -161,75 +136,69 @@ describe("app", function() {
 					assert.equal(body.categories[1].name, "java");
 					done();
 				});
-			});			
-		});
+			}
+		]);
 	});
 
 	it("should not let me create a note if at least one category doesn't exist", function(done) {
-		var params = {
-			url: url("/categories/"),
-			json: {
-				name: "js"
-			}
-		};
-		request.post(params, function(error, response, body) {
-			assert.equal(response.statusCode, 201);
-
-			var jsCategoryId = body.id;
-			var params = {
-				url: url("/notes/"),
-				json: {
+		async.waterfall([
+			function(callback) {
+				client.createCategory({
+					name: "js"
+				}, function(error, response, body) {
+					assert.ifError(error);
+					callback(null, body.id);					
+				});
+			},
+			function(jsCategoryId, callback) {				
+				client.createNote({
 					content: "hello there",
 					categories: [
 						{ id: jsCategoryId },
 						{ id: 123 },
 						{ id: 222 }
 					]
-				}
-			};
-			request.post(params, function(error, response, body) {
-				assert.equal(response.statusCode, 400);
-				assert.ok("message" in body);
-
-				var params = { 
-					url: url("/notes/"), 
-					json: true 
-				};
-				request.get(params, function(error, response, body) {
+				}, function(error, response, body) {
+					assert.ifError(error);
+					assert.equal(response.statusCode, 400);
+					assert.ok("message" in body);
+					callback();
+				});
+			},
+			function(callback) {
+				client.getAllNotes(function(error, response, body) {
+					assert.ifError(error);
 					assert.equal(response.statusCode, 200);			
 					assert.equal(body.length, 0);
 					done();
 				});
-			});
-		});
+			}
+		]);
 	});
 
 	it("should let me delete a note", function(done) {
-		var params = {
-			url: url("/notes/"),
-			json: {
-				content: "hello"
+		async.waterfall([
+			function(callback) {
+				client.createNote({
+					content: "hello"
+				}, function(error, response, body) {
+					assert.ifError(error);
+					callback(null, body.id)
+				});
+			},
+			function(noteId, callback) {
+				client.deleteNote(noteId, function(error, response, body) {
+					assert.ifError(error);
+					assert.equal(response.statusCode, 200);
+					assert.ok("message" in body);
+					done();
+				});
 			}
-		};
-		request.post(params, function(error, response, body) {			
-			var params = {
-				url: url("/notes/" + body.id),
-				json: true
-			};
-			request.del(params, function(error, response, body) {
-				assert.equal(response.statusCode, 200);
-				assert.ok("message" in body);
-				done();
-			});
-		});
+		]);
 	});
 
 	it("should not let me delete a note if note does not exist", function(done) {
-		var params = {
-			url: url("/notes/" + 123),
-			json: true
-		};
-		request.del(params, function(error, response, body) {
+		client.deleteNote(123, function(error, response, body) {
 			assert.equal(response.statusCode, 404);
 			assert.ok("message" in body);
 			done();
@@ -237,72 +206,72 @@ describe("app", function() {
 	});	
 
 	it("should let me update a note", function(done) {
-		var params = {
-			url: url("/notes/"),
-			json: {
-				content: "hello"
-			}
-		};
-		request.post(params, function(error, response, body) {			
-			var params = {
-				url: url("/notes/" + body.id),
-				json: {
+		async.waterfall([
+			function(callback) {
+				client.createNote({
+					content: "hello"
+				}, function(error, response, body) {
+					assert.ifError(error);
+					callback(null, body.id)
+				});
+			},
+			function(noteId, callback) {
+				client.updateNote({
+					id: noteId,
 					content: "hi there"
-				}
-			};
-			request.post(params, function(error, response, body) {
-				assert.equal(response.statusCode, 200);
-				assert.equal(body.id, 1);
-				assert.equal(body.content, "hi there");
-				done();
-			});
-		});
+				}, function(error, response, body) {
+					assert.ifError(error);
+					assert.equal(response.statusCode, 200);
+					assert.equal(body.id, 1);
+					assert.equal(body.content, "hi there");
+					done();					
+				});
+			}
+		]);
 	});
 
+	//
 	it("should not let me update a note if note does not exist", function(done) {
-		var params = {
-			url: url("/notes/" + 123),
-			json: {
-				content: "hi there"
-			}
-		};
-		request.post(params, function(error, response, body) {
+		client.updateNote({
+			id: 123,
+			content: "hi there"
+		}, function(error, response, body) {
+			assert.ifError(error);
 			assert.equal(response.statusCode, 404);
 			assert.ok("message" in body);
-			done();
+			done();					
 		});
 	});
 
 	it("should not let me update a note if fields are not valid", function(done) {
-		var params = {
-			url: url("/notes/"),
-			json: {
-				content: "hello"
-			}
-		};
-		request.post(params, function(error, response, body) {			
-			var params = {
-				url: url("/notes/" + body.id),
-				json: {
+		async.waterfall([
+			function(callback) {
+				client.createNote({
+					content: "hello"
+				}, function(error, response, body) {
+					assert.ifError(error);
+					callback(null, body.id)
+				});
+			},
+			function(noteId, callback) {
+				client.updateNote({
+					id: noteId,
 					content: ""
-				}
-			};
-			request.post(params, function(error, response, body) {
-				assert.equal(response.statusCode, 400);
-				assert.ok("content" in body);
-				done();
-			});
-		});
+				}, function(error, response, body) {
+					assert.ifError(error);
+					assert.equal(response.statusCode, 400);
+					assert.ok("content" in body);
+					done();					
+				});
+			}
+		]);
 	});
 
 	it("should let me create a category", function(done) {
-		var params = {
-			url: url("/categories/"),
-			json: {
-				name: "js"
-			}
-		};
-		request.post(params, function(error, response, body) {
+		client.createCategory({
+			name: "js"
+		}, function(error, response, body) {
+			assert.ifError(error);
 			assert.equal(response.statusCode, 201);
 			assert.equal(body.id, 1);
 			assert.equal(body.name, "js");
@@ -311,13 +280,10 @@ describe("app", function() {
 	});
 
 	it("should not let me create a category if fields are not valid", function(done) {
-		var params = {
-			url: url("/categories/"),
-			json: {
-				name: ""
-			}
-		};
-		request.post(params, function(error, response, body) {
+		client.createCategory({
+			name: ""
+		}, function(error, response, body) {
+			assert.ifError(error);
 			assert.equal(response.statusCode, 400);
 			assert.ok("name" in body);
 			done();
@@ -325,47 +291,51 @@ describe("app", function() {
 	});
 
 	it("should not let me create a category if it already exists", function(done) {
-		var params = {
-			url: url("/categories/"),
-			json: {
-				name: "js"
+		async.waterfall([
+			function(callback) {
+				client.createCategory({
+					name: "js"
+				}, function(error, response, body) {
+					assert.ifError(error);
+					callback();
+				});
+			},
+			function(callback) {
+				client.createCategory({
+					name: "js"
+				}, function(error, response, body) {
+					assert.ifError(error);
+					assert.equal(response.statusCode, 409);
+					assert.ok("message" in body);
+					done();
+				});
 			}
-		};
-		request.post(params, function(error, response, body) {
-			request.post(params, function(error, response, body) {
-				assert.equal(response.statusCode, 409);
-				assert.ok("message" in body);
-				done();
-			});
-		});
+		]);
 	});
 
 	it("should let me delete a category", function(done) {
-		var params = {
-			url: url("/categories/"),
-			json: {
-				name: "js"
+		async.waterfall([
+			function(callback) {
+				client.createCategory({
+					name: "js"
+				}, function(error, response, body) {
+					assert.ifError(error);
+					callback(null, body.id);
+				});
+			},
+			function(categoryId, callback) {
+				client.deleteCategory(categoryId, function(error, response, body) {
+					assert.ifError(error);
+					assert.equal(response.statusCode, 200);
+					assert.ok("message" in body);
+					done();
+				});
 			}
-		};
-		request.post(params, function(error, response, body) {			
-			var params = {
-				url: url("/categories/" + body.id),
-				json: true
-			};
-			request.del(params, function(error, response, body) {
-				assert.equal(response.statusCode, 200);
-				assert.ok("message" in body);
-				done();
-			});
-		});
+		]);
 	});
 
 	it("should not let me delete a category if category does not exist", function(done) {
-		var params = {
-			url: url("/categories/" + 123),
-			json: true
-		};
-		request.del(params, function(error, response, body) {
+		client.deleteCategory(123, function(error, response, body) {
 			assert.equal(response.statusCode, 404);
 			assert.ok("message" in body);
 			done();
@@ -373,152 +343,132 @@ describe("app", function() {
 	});
 
 	it("should let me update a category", function(done) {
-		var params = {
-			url: url("/categories/"),
-			json: {
-				name: "js"
-			}
-		};
-		request.post(params, function(error, response, body) {			
-			var params = {
-				url: url("/categories/" + body.id),
-				json: {
+		async.waterfall([
+			function(callback) {
+				client.createCategory({
+					name: "js"
+				}, function(error, response, body) {
+					assert.ifError(error);
+					callback(null, body.id);
+				});
+			},
+			function(categoryId, callback) {
+				client.updateCategory({
+					id: categoryId,
 					name: "java"
-				}
-			};
-			request.post(params, function(error, response, body) {
-				assert.equal(response.statusCode, 200);
-				assert.equal(body.id, 1);
-				assert.equal(body.name, "java");
-				done();
-			});
-		});
+				}, function(error, response, body) {
+					assert.ifError(error);
+					assert.equal(response.statusCode, 200);
+					assert.equal(body.id, 1);
+					assert.equal(body.name, "java");
+					done();
+				});
+			}
+		]);
 	});
 
 	it("should not let me update category if category does not exist", function(done) {
-		var params = {
-			url: url("/categories/" + 123),
-			json: {
-				name: "java"
-			}
-		};
-		request.post(params, function(error, response, body) {
+		client.updateCategory({
+			id: 123,
+			name: "java"
+		}, function(error, response, body) {
+			assert.ifError(error);
 			assert.equal(response.statusCode, 404);
 			assert.ok("message" in body);
 			done();
 		});
 	});
 
+	//
 	it("should not let me update a category if fields are not valid", function(done) {
-		var params = {
-			url: url("/categories/"),
-			json: {
-				name: "js"
-			}
-		};
-		request.post(params, function(error, response, body) {			
-			var params = {
-				url: url("/categories/" + body.id),
-				json: {
+		async.waterfall([
+			function(callback) {
+				client.createCategory({
+					name: "js"
+				}, function(error, response, body) {
+					assert.ifError(error);
+					callback(null, body.id);
+				});
+			},
+			function(categoryId, callback) {
+				client.updateCategory({
+					id: categoryId,
 					name: ""
-				}
-			};
-			request.post(params, function(error, response, body) {
-				assert.equal(response.statusCode, 400);
-				assert.ok("name" in body);
-				done();
-			});
-		});
+				}, function(error, response, body) {
+					assert.ifError(error);
+					assert.equal(response.statusCode, 400);
+					assert.ok("name" in body);
+					done();
+				});
+			}
+		]);
 	});
 
-	function createCategory(name) {
-		return Q.Promise(function(resolve, reject) {
-			var params = {
-				url: url("/categories/"),
-				json: {
-					name: name
-				}
-			};
-			request.post(params, function(error, response, body) {
-				if(error) {
-					reject(error);
-					return;
-				}
-
-				resolve({
-					response: response,
-					body: body
-				});
-			});
-		});
-	};
-
-	function createCategories(categories) {
-		var promises = categories.map(function(category) {
-			return createCategory(category.name).then(function(result) {
-				return {
-					tag: category.tag,
-					id: result.body.id
-				};
-			});
-		});
-
-		return Q.all(promises).then(function(results) {
-			return results.reduce(function(map, result) {
-				map[result.tag] = result.id;
-				return map;
-			}, {});
-		});
-	};
-
 	it("should not let me update a category name if name already used", function(done) {
-		createCategories([
-			{ tag: "js", name: "js" },
-			{ tag: "java", name: "java" }
-		]).then(function(categoryIds) {
-			var params = {
-				url: url("/categories/" + categoryIds.js),
-				json: {
+		async.waterfall([
+			function(callback) {
+				client.createCategories([
+					{ tag: "js", category: { name: "js" } },
+					{ tag: "java", category: { name: "java" } }
+				], function(error, result) {
+					assert.ifError(error);
+					callback(null, result);					
+				});
+			},
+			function(categoryMap, callback) {
+				var jsCategoryId = categoryMap.js.body.id;
+				callback(null, jsCategoryId);
+			},
+			function(jsCategoryId, callback) {
+				client.updateCategory({
+					id: jsCategoryId,
 					name: "java"
-				}
-			};
-			request.post(params, function(error, response, body) {
-				assert.equal(response.statusCode, 409);
-				assert.ok("message" in body);
-				done();
-			});
-		}, function(error) {
-			assert.ok(false);
-		});
+				}, function(error, response, body) {
+					assert.ifError(error);
+					assert.equal(response.statusCode, 409);
+					assert.ok("message" in body);
+					done();
+				});
+			}
+		]);
 	});
 
 	it("should let me filter categories by first letters", function(done) {
-		createCategories([
-			{ tag: "aaa", name: "aaa" },
-			{ tag: "aab", name: "aab" },
-			{ tag: "aba", name: "aba" },
-			{ tag: "abb", name: "abb" },
-			{ tag: "baa", name: "baa" },
-			{ tag: "bbb", name: "bbb" }
-		]).then(function(categoryIds) {
-			var params = {
-				url: url("/categories/"),
-				qs: { nameStartsWith: "a" },
-				json: true
-			};
-			request.get(params, function(error, response, body) {
-				assert.equal(body.length, 4);
-
-				var params = {
-					url: url("/categories/"),
-					qs: { nameStartsWith: "aa" },
-					json: true
-				};
-				request.get(params, function(error, response, body) {
+		async.waterfall([
+			function(callback) {
+				client.createCategories([
+					{ tag: "aaa", category: { name: "aaa" } },
+					{ tag: "aab", category: { name: "aab" } },
+					{ tag: "aba", category: { name: "aba" } },
+					{ tag: "abb", category: { name: "abb" } },
+					{ tag: "baa", category: { name: "baa" } },
+					{ tag: "bbb", category: { name: "bbb" } }
+				], function(error, result) {
+					assert.ifError(error);
+					callback();					
+				});
+			},
+			function(callback) {
+				client.getCategoriesWithNameStartingWith("a", function(error, response, body) {
+					assert.ifError(error);
+					assert.equal(body.length, 4);
+					callback();
+				});
+			},
+			function(callback) {
+				client.getCategoriesWithNameStartingWith("ab", function(error, response, body) {
+					assert.ifError(error);
+					assert.equal(body.length, 2);
+					callback();
+				});
+			},
+			function(callback) {
+				client.getCategoriesWithNameStartingWith("b", function(error, response, body) {
+					assert.ifError(error);
 					assert.equal(body.length, 2);
 					done();
 				});
-			});
-		});
+			}
+		]);
 	});
 });
