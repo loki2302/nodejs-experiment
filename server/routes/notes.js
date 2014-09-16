@@ -98,23 +98,28 @@ exports.addRoutes = function(app, dao, models) {
 
 	app.post("/api/notes/:id", function(req, res, next) {
 		var id = req.params.id;
-		models.Note.find(id).success(function(note) {
-			if(!note) {
-				res.status(404).send({
-					message: "Note " + id + " does not exist"
+		var sequelize = models.sequelize;
+		sequelize.transaction({
+			isolationLevel: "READ UNCOMMITTED"
+		}, function(tx) {
+			models.Note.find(id).success(function(note) {
+				if(!note) {
+					res.status(404).send({
+						message: "Note " + id + " does not exist"
+					});
+					return;
+				}
+
+				note.content = req.body.content;
+
+				note.save().success(function(note) {
+					res.status(200).send(note);
+				}).error(function(error) {
+					res.status(400).send(error);
 				});
-				return;
-			}
-
-			note.content = req.body.content;
-
-			note.save().success(function(note) {
-				res.status(200).send(note);
 			}).error(function(error) {
-				res.status(400).send(error);
+				next(error);
 			});
-		}).error(function(error) {
-			next(error);
 		});
 	});
 };
