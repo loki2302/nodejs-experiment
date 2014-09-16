@@ -379,7 +379,6 @@ describe("app", function() {
 		});
 	});
 
-	//
 	it("should not let me update a category if fields are not valid", function(done) {
 		async.waterfall([
 			function(callback) {
