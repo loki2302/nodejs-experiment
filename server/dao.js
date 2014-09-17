@@ -10,6 +10,9 @@ var FailedToFindAllCategoriesError = function() {};
 FailedToFindAllCategoriesError.prototype.name = "FailedToFindAllCategoriesError";
 FailedToFindAllCategoriesError.prototype.message = "Failed to find all categories";
 
+var NoteNotFoundError = function() {};
+NoteNotFoundError.prototype.name = "NoteNotFoundError";
+
 var DAO = function(models) {
 	this.models = models;
 };
@@ -18,6 +21,24 @@ DAO.prototype.createNote = function(tx, note, callback) {
 	this.models.Note.create({
 		content: note.content
 	}, {
+		transaction: tx
+	}).success(function(note) {
+		callback(null, note);
+	}).error(function(error) {
+		// it's assumed that if error is not instanceof Error,
+		// it's a validation error
+
+		if(error instanceof Error) {
+			callback(error);
+			return;
+		}
+
+		callback(new ValidationError(error));
+	});
+};
+
+DAO.prototype.saveNote = function(tx, note, callback) {
+	note.save({
 		transaction: tx
 	}).success(function(note) {
 		callback(null, note);
@@ -50,7 +71,12 @@ DAO.prototype.getNoteWithCategories = function(tx, noteId, callback) {
 		include: [ this.models.Category ]
 	}, {
 		transaction: tx
-	}).success(function(note) {		
+	}).success(function(note) {
+		if(!note) {
+			callback(new NoteNotFoundError());
+			return;
+		}
+
 		callback(null, note);
 	}).error(function(error) {
 		callback(error);
@@ -79,3 +105,4 @@ DAO.prototype.findCategoriesByCategoryIds = function(tx, categoryIds, callback) 
 module.exports.DAO = DAO;
 module.exports.ValidationError = ValidationError;
 module.exports.FailedToFindAllCategoriesError = FailedToFindAllCategoriesError;
+module.exports.NoteNotFoundError = NoteNotFoundError;

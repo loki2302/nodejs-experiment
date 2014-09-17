@@ -7,9 +7,7 @@ exports.addRoutes = function(app, dao, models) {
 			include: [ models.Category ]
 		}).success(function(notes) {
 			res.status(200).send(notes);
-		}).error(function(error) {
-			next(error);
-		});
+		}).error(next);
 	});
 
 	app.get("/api/notes/:id", function(req, res, next) {
@@ -26,9 +24,7 @@ exports.addRoutes = function(app, dao, models) {
 			}
 
 			res.status(200).send(note);
-		}).error(function(error) {
-			next(error);
-		});
+		}).error(next);
 	});
 
 	app.post("/api/notes/", function(req, res, next) {
@@ -59,9 +55,7 @@ exports.addRoutes = function(app, dao, models) {
 					tx.commit().success(function() {
 						res.status(201).send(noteWithCategories);
 						callback();
-					}).error(function(error) {
-						callback(error);
-					});
+					}).error(callback);
 				}
 			], function(error, result) {
 				if(!error) {
@@ -78,9 +72,7 @@ exports.addRoutes = function(app, dao, models) {
 					} else {
 						next(error);
 					}
-				}).error(function(error) {
-					next(error);
-				});
+				}).error(next);
 			});			
 		});
 	});
@@ -99,12 +91,8 @@ exports.addRoutes = function(app, dao, models) {
 				res.status(200).send({
 					message: "Deleted"
 				});
-			}).error(function(error) {
-				next(error);
-			});
-		}).error(function(error) {
-			next(error);
-		});
+			}).error(next);
+		}).error(next);
 	});
 
 	app.post("/api/notes/:id", function(req, res, next) {
@@ -113,23 +101,34 @@ exports.addRoutes = function(app, dao, models) {
 		sequelize.transaction({
 			isolationLevel: "READ UNCOMMITTED"
 		}, function(tx) {
-			models.Note.find(id).success(function(note) {
-				if(!note) {
-					res.status(404).send({
-						message: "Note " + id + " does not exist"
-					});
+			async.waterfall([
+				dao.getNoteWithCategories.bind(dao, tx, id),
+				function(note, callback) {
+					note.content = req.body.content;
+					dao.saveNote(tx, note, callback);
+				},
+				function(noteWithCategories, callback) {
+					tx.commit().success(function() {
+						res.status(200).send(noteWithCategories);
+						callback();
+					}).error(callback);
+				}
+			], function(error, result) {
+				if(!error) {
 					return;
 				}
 
-				note.content = req.body.content;
-
-				note.save().success(function(note) {
-					res.status(200).send(note);
-				}).error(function(error) {
-					res.status(400).send(error);
-				});
-			}).error(function(error) {
-				next(error);
+				tx.rollback().success(function() {
+					if(error instanceof DAO.NoteNotFoundError) {
+						res.status(404).send({
+							message: "Note " + id + " does not exist"
+						});
+					} else if(error instanceof DAO.ValidationError) {
+						res.status(400).send(error.fields);
+					} else {
+						next(error);
+					}
+				}).error(next);
 			});
 		});
 	});
