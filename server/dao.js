@@ -1,4 +1,4 @@
-var Q = require("q");
+var async = require("async");
 
 var ValidationError = function(fields) {
 	this.fields = fields;
@@ -14,64 +14,50 @@ var DAO = function(models) {
 	this.models = models;
 };
 
-DAO.prototype.createNote = function(tx, note) {
-	var deferred = Q.defer();
-
+DAO.prototype.createNote = function(tx, note, callback) {
 	this.models.Note.create({
 		content: note.content
 	}, {
 		transaction: tx
 	}).success(function(note) {
-		deferred.resolve(note);
+		callback(null, note);
 	}).error(function(error) {
 		// it's assumed that if error is not instanceof Error,
 		// it's a validation error
 
 		if(error instanceof Error) {
-			deferred.reject(error);
+			callback(error);
 			return;
 		}
 
-		deferred.reject(new ValidationError(error));
+		callback(new ValidationError(error));
 	});
-
-	return deferred.promise;	
 };
 
-DAO.prototype.setNoteCategories = function(tx, note, categories) {
-	var deferred = Q.defer();
-	
+DAO.prototype.setNoteCategories = function(tx, note, categories, callback) {
 	note.setCategories(categories, {
 		transaction: tx
 	}).success(function() {			
-		deferred.resolve();
+		callback();
 	}).error(function(error) {
-		deferred.reject(error);
+		callback(error);
 	});
-
-	return deferred.promise;
 };
 
-DAO.prototype.getNoteWithCategories = function(tx, noteId) {
-	var deferred = Q.defer();
-
+DAO.prototype.getNoteWithCategories = function(tx, noteId, callback) {
 	this.models.Note.find({
 		where: { id: noteId },
 		include: [ this.models.Category ]
 	}, {
 		transaction: tx
 	}).success(function(note) {		
-		deferred.resolve(note);
+		callback(null, note);
 	}).error(function(error) {
-		deferred.reject(error);
+		callback(error);
 	});
-
-	return deferred.promise;
 };
 
-DAO.prototype.findCategoriesByCategoryIds = function(tx, categoryIds) {
-	var deferred = Q.defer();
-
+DAO.prototype.findCategoriesByCategoryIds = function(tx, categoryIds, callback) {
 	this.models.Category.findAll({
 		where: {
 			id: { in: categoryIds }
@@ -80,15 +66,14 @@ DAO.prototype.findCategoriesByCategoryIds = function(tx, categoryIds) {
 		transaction: tx
 	}).success(function(categories) {
 		if(categories.length !== categoryIds.length) {
-			deferred.reject(new FailedToFindAllCategoriesError());
+			callback(new FailedToFindAllCategoriesError());
+			return;
 		}
 
-		deferred.resolve(categories);
-	}).error(function(error) {
-		deferred.reject(error);
+		callback(null, categories);
+	}).error(function(error) {		
+		callback(error);
 	});
-
-	return deferred.promise;
 };
 
 module.exports.DAO = DAO;

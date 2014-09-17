@@ -1,4 +1,5 @@
 var Q = require("q");
+var async = require("async");
 var DAO = require("../dao.js");
 
 exports.addRoutes = function(app, dao, models) {
@@ -37,27 +38,46 @@ exports.addRoutes = function(app, dao, models) {
 		sequelize.transaction({
 			isolationLevel: "READ UNCOMMITTED"
 		}, function(tx) {
-			dao.createNote(tx, {
-				content: body.content
-			}).then(function(note) {
-				var categories = body.categories || [];				
-				var categoryIds = categories.map(function(category) { 
-					return category.id; 
-				});
+			async.waterfall([
+				function(callback) {
+					dao.createNote(tx, {
+						content: body.content
+					}, callback);
+				},
+				function(note, callback) {
+					var categories = body.categories || [];				
+					var categoryIds = categories.map(function(category) { 
+						return category.id; 
+					});
 
-				return dao.findCategoriesByCategoryIds(tx, categoryIds).then(function(categories) {
-					return dao.setNoteCategories(tx, note, categories);
-				}).then(function() {
-					return note.id;
-				});
-			}).then(function(noteId) {
-				return dao.getNoteWithCategories(tx, noteId);
-			}).then(function(noteWithCategories) {
-				return tx.commit().success(function() {					
-					res.status(201).send(noteWithCategories);
-				});
-			}).then(null, function(error) {
-				return tx.rollback().success(function() {
+					async.waterfall([
+						function(callback) {
+							dao.findCategoriesByCategoryIds(tx, categoryIds, callback);
+						},
+						function(categories, callback) {
+							dao.setNoteCategories(tx, note, categories, callback);
+						}
+					], function(error, result) {
+						callback(error, note.id);
+					});					
+				},
+				function(noteId, callback) {
+					dao.getNoteWithCategories(tx, noteId, callback);
+				},
+				function(noteWithCategories, callback) {
+					tx.commit().success(function() {
+						res.status(201).send(noteWithCategories);
+						callback();
+					}).error(function(error) {
+						callback(error);
+					});
+				}
+			], function(error, result) {
+				if(!error) {
+					return;
+				}
+
+				tx.rollback().success(function() {
 					if(error instanceof DAO.ValidationError) {
 						res.status(400).send(error.fields);
 					} else if(error instanceof DAO.FailedToFindAllCategoriesError) {
@@ -70,7 +90,7 @@ exports.addRoutes = function(app, dao, models) {
 				}).error(function(error) {
 					next(error);
 				});
-			});
+			});			
 		});
 	});
 
