@@ -1,4 +1,3 @@
-var Q = require("q");
 var async = require("async");
 var DAO = require("../dao.js");
 
@@ -39,11 +38,9 @@ exports.addRoutes = function(app, dao, models) {
 			isolationLevel: "READ UNCOMMITTED"
 		}, function(tx) {
 			async.waterfall([
-				function(callback) {
-					dao.createNote(tx, {
-						content: body.content
-					}, callback);
-				},
+				dao.createNote.bind(dao, tx, {
+					content: body.content
+				}),
 				function(note, callback) {
 					var categories = body.categories || [];				
 					var categoryIds = categories.map(function(category) { 
@@ -51,19 +48,13 @@ exports.addRoutes = function(app, dao, models) {
 					});
 
 					async.waterfall([
-						function(callback) {
-							dao.findCategoriesByCategoryIds(tx, categoryIds, callback);
-						},
-						function(categories, callback) {
-							dao.setNoteCategories(tx, note, categories, callback);
-						}
+						dao.findCategoriesByCategoryIds.bind(dao, tx, categoryIds),
+						dao.setNoteCategories.bind(dao, tx, note)
 					], function(error, result) {
 						callback(error, note.id);
 					});					
 				},
-				function(noteId, callback) {
-					dao.getNoteWithCategories(tx, noteId, callback);
-				},
+				dao.getNoteWithCategories.bind(dao, tx),
 				function(noteWithCategories, callback) {
 					tx.commit().success(function() {
 						res.status(201).send(noteWithCategories);
