@@ -1,6 +1,16 @@
 var async = require("async");
 var DAO = require("../dao.js");
 
+function sendNoteNotFoundError(res, noteId) {
+	res.status(404).send({
+		message: "Note " + noteId + " not found"
+	});
+}
+
+function sendValidationError(res, validationError) {
+	res.status(400).send(validationError.fields);
+}
+
 exports.addRoutes = function(app, dao, models) {
 	app.get("/api/notes/", function(req, res, next) {
 		models.Note.findAll({			
@@ -17,9 +27,7 @@ exports.addRoutes = function(app, dao, models) {
 			include: [ models.Category ]
 		}).success(function(note) {
 			if(!note) {
-				res.status(404).send({
-					message: "There's no note " + id
-				});
+				sendNoteNotFoundError(res, id);
 				return;
 			}
 
@@ -64,7 +72,7 @@ exports.addRoutes = function(app, dao, models) {
 
 				tx.rollback().success(function() {
 					if(error instanceof DAO.ValidationError) {
-						res.status(400).send(error.fields);
+						sendValidationError(res, error);
 					} else if(error instanceof DAO.FailedToFindAllCategoriesError) {
 						res.status(400).send({
 							message: error.message
@@ -81,9 +89,7 @@ exports.addRoutes = function(app, dao, models) {
 		var id = req.params.id;
 		models.Note.find(id).success(function(note) {
 			if(!note) {
-				res.status(404).send({
-					message: "Note " + id + " does not exist"
-				});
+				sendNoteNotFoundError(res, id);
 				return;
 			}
 
@@ -120,11 +126,9 @@ exports.addRoutes = function(app, dao, models) {
 
 				tx.rollback().success(function() {
 					if(error instanceof DAO.NoteNotFoundError) {
-						res.status(404).send({
-							message: "Note " + id + " does not exist"
-						});
+						sendNoteNotFoundError(res, id);
 					} else if(error instanceof DAO.ValidationError) {
-						res.status(400).send(error.fields);
+						sendValidationError(res, error);
 					} else {
 						next(error);
 					}
