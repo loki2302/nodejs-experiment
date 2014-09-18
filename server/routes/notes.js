@@ -108,10 +108,44 @@ exports.addRoutes = function(app, dao, models) {
 			isolationLevel: "READ UNCOMMITTED"
 		}, function(tx) {
 			async.waterfall([
-				dao.getNoteWithCategories.bind(dao, tx, id),
-				function(note, callback) {
+				function(callback) {
+					async.series({
+						note: function(callback) {
+							dao.getNoteWithCategories(tx, id, callback);
+						},
+						categories: function(callback) {
+							var categories = req.body.categories;
+							if(!categories) {
+								callback();
+								return;
+							}
+
+							var categoryIds = categories.map(function(category) { 
+								return category.id; 
+							});
+							dao.findCategoriesByCategoryIds(tx, categoryIds, callback);
+						}
+					}, callback);
+				},
+				function(noteAndCategories, callback) {
+					var note = noteAndCategories.note;
 					note.content = req.body.content;
+
+					var categories = noteAndCategories.categories;
+					if(!categories) {
+						callback(null, note);
+						return;
+					}
+					
+					dao.setNoteCategories(tx, note, categories, function(error) {
+						callback(error, note);
+					});
+				},
+				function(note, callback) {					
 					dao.saveNote(tx, note, callback);
+				},
+				function(note, callback) {
+					dao.getNoteWithCategories(tx, note.id, callback);
 				},
 				function(noteWithCategories, callback) {
 					tx.commit().success(function() {
@@ -127,6 +161,10 @@ exports.addRoutes = function(app, dao, models) {
 				tx.rollback().success(function() {
 					if(error instanceof DAO.NoteNotFoundError) {
 						sendNoteNotFoundError(res, id);
+					} else if(error instanceof DAO.FailedToFindAllCategoriesError) {
+						res.status(400).send({
+							message: error.message
+						});
 					} else if(error instanceof DAO.ValidationError) {
 						sendValidationError(res, error);
 					} else {

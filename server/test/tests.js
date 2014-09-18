@@ -260,6 +260,48 @@ describe("app", function() {
 		]);
 	});
 
+	it("should let me add categories to the note", function(done) {
+		async.waterfall([
+			function(callback) {
+				async.series({
+					categories: function(callback) {
+						client.createCategories([
+							{ tag: "js", category: { name: "js" } },
+							{ tag: "java", category: { name: "java" } }
+						], function(error, result) {
+							assert.ifError(error);
+							callback(null, result);		
+						});			
+					},
+					note: function(callback) {
+						client.createNote({
+							content: "hello"
+						}, function(error, response, body) {							
+							assert.ifError(error);
+							callback(null, body)
+						});
+					}
+				}, callback);
+			},
+			function(categoriesAndNote, callback) {
+				var note = categoriesAndNote.note;
+				var categories = categoriesAndNote.categories;
+				note.categories = [
+					{ id: categories.js.body.id },
+					{ id: categories.java.body.id }
+				];
+				note.content = "hi there";
+				client.updateNote(note, callback);
+			},
+			function(response, body, callback) {
+				assert.equal(response.statusCode, 200);
+				assert.equal(body.content, "hi there");
+				assert.equal(body.categories.length, 2);
+				done();
+			}
+		]);
+	});
+
 	it("should not let me update a note if note does not exist", function(done) {
 		client.updateNote({
 			id: 123,
