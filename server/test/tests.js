@@ -302,6 +302,126 @@ describe("app", function() {
 		]);
 	});
 
+	it("should not let me update a note when at least one category doesn't exist", function(done) {
+		async.waterfall([
+			function(callback) {
+				async.series({
+					categories: function(callback) {
+						client.createCategories([
+							{ tag: "js", category: { name: "js" } },
+							{ tag: "java", category: { name: "java" } }
+						], function(error, result) {
+							assert.ifError(error);
+							callback(null, result);		
+						});			
+					},
+					note: function(callback) {
+						client.createNote({
+							content: "hello"
+						}, function(error, response, body) {							
+							assert.ifError(error);
+							callback(null, body)
+						});
+					}
+				}, callback);
+			},
+			function(categoriesAndNote, callback) {
+				var note = categoriesAndNote.note;
+				var categories = categoriesAndNote.categories;
+				note.categories = [
+					{ id: categories.js.body.id },
+					{ id: categories.java.body.id },
+					{ id: 123 }
+				];
+				note.content = "hi there";
+				client.updateNote(note, callback);
+			},
+			function(response, body, callback) {
+				assert.equal(response.statusCode, 400);
+				assert.ok("message" in body);
+				done();
+			}
+		]);
+	});
+
+	it("should let me remove note categories", function(done) {
+		async.waterfall([
+			function(callback) {
+				client.createCategories([
+					{ tag: "js", category: { name: "js" } },
+					{ tag: "java", category: { name: "java" } }
+				], function(error, result) {
+					assert.ifError(error);
+					callback(null, result);					
+				});
+			},
+			function(categoryMap, callback) {
+				var jsCategoryId = categoryMap.js.body.id;
+				var javaCategoryId = categoryMap.java.body.id;
+				client.createNote({
+					content: "hello there",
+					categories: [
+						{ id: jsCategoryId },
+						{ id: javaCategoryId }
+					]
+				}, function(error, response, body) {
+					assert.ifError(error);
+
+					body.categories = [];
+					client.updateNote(body, callback);
+				});
+			},
+			function(response, body, callback) {
+				assert.equal(response.statusCode, 200);
+				assert.equal(body.id, 1);
+				assert.equal(body.content, "hello there");
+				assert.ok(body.categories);
+				assert.equal(body.categories.length, 0);
+				done();
+			}
+		]);
+	});
+
+	it("should let me replace note categories", function(done) {
+		async.waterfall([
+			function(callback) {
+				client.createCategories([
+					{ tag: "js", category: { name: "js" } },
+					{ tag: "java", category: { name: "java" } },
+					{ tag: "dotnet", category: { name: "dotnet" } }
+				], function(error, result) {
+					assert.ifError(error);
+					callback(null, result);					
+				});
+			},
+			function(categoryMap, callback) {
+				var jsCategoryId = categoryMap.js.body.id;
+				var javaCategoryId = categoryMap.java.body.id;
+				var dotnetCategoryId = categoryMap.dotnet.body.id;
+				client.createNote({
+					content: "hello there",
+					categories: [
+						{ id: jsCategoryId },
+						{ id: javaCategoryId }
+					]
+				}, function(error, response, body) {
+					assert.ifError(error);
+
+					body.categories = [{ id: dotnetCategoryId }];
+					client.updateNote(body, callback);
+				});
+			},
+			function(response, body, callback) {
+				assert.equal(response.statusCode, 200);
+				assert.equal(body.id, 1);
+				assert.equal(body.content, "hello there");
+				assert.ok(body.categories);
+				assert.equal(body.categories.length, 1);
+				done();
+			}
+		]);
+	});
+
 	it("should not let me update a note if note does not exist", function(done) {
 		client.updateNote({
 			id: 123,
