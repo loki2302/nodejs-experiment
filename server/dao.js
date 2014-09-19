@@ -17,6 +17,14 @@ var DAO = function(models) {
 	this.models = models;
 };
 
+DAO.prototype.getAllNotes = function(callback) {
+	this.models.Note.findAll({		
+		include: [ this.models.Category ]
+	}).success(function(notes) {
+		callback(null, notes);
+	}).error(callback);
+};
+
 DAO.prototype.createNote = function(tx, note, callback) {
 	this.models.Note.create({
 		content: note.content

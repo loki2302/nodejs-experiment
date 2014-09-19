@@ -31,26 +31,55 @@ function sendNoteDeleted(res) {
 
 exports.addRoutes = function(app, dao, models) {
 	app.get("/api/notes/", function(req, res, next) {
-		models.Note.findAll({			
-			include: [ models.Category ]
-		}).success(function(notes) {
-			sendNotes(res, notes);
-		}).error(next);
+		dao.getAllNotes(function(error, result) {
+			if(error) {
+				next(error);
+				return;
+			}
+
+			sendNotes(res, result);
+		});
 	});
 
 	app.get("/api/notes/:id", function(req, res, next) {
 		var id = req.params.id;
-		models.Note.find({
-			where: { id: id	},
-			include: [ models.Category ]
-		}).success(function(note) {
-			if(!note) {
-				sendNoteNotFoundError(res, id);
+		dao.getNoteWithCategories(null, id, function(error, result) {
+			if(!error) {
+				sendNote(res, result);
 				return;
 			}
 
-			sendNote(res, note);
-		}).error(next);
+			if(error instanceof DAO.NoteNotFoundError) {
+				sendNoteNotFoundError(res, id);
+			} else {
+				next(error);
+			}
+		});
+	});
+
+	app.delete("/api/notes/:id", function(req, res, next) {
+		var id = req.params.id;
+		async.waterfall([
+			function(callback) {
+				dao.getNoteWithCategories(null, id, callback);
+			},
+			function(note, callback) {
+				note.destroy().success(callback).error(callback);
+			},
+			function(callback) {
+				sendNoteDeleted(res);
+			}
+		], function(error, result) {
+			if(!error) {
+				return;
+			}
+
+			if(error instanceof DAO.NoteNotFoundError) {
+				sendNoteNotFoundError(res, id);
+			} else {
+				next(error);
+			}
+		});
 	});
 
 	app.post("/api/notes/", function(req, res, next) {
@@ -101,20 +130,6 @@ exports.addRoutes = function(app, dao, models) {
 				}).error(next);
 			});			
 		});
-	});
-
-	app.delete("/api/notes/:id", function(req, res, next) {
-		var id = req.params.id;
-		models.Note.find(id).success(function(note) {
-			if(!note) {
-				sendNoteNotFoundError(res, id);
-				return;
-			}
-
-			note.destroy().success(function() {
-				sendNoteDeleted(res);
-			}).error(next);
-		}).error(next);
 	});
 
 	app.post("/api/notes/:id", function(req, res, next) {
