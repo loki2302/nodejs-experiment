@@ -11,12 +11,30 @@ function sendValidationError(res, validationError) {
 	res.status(400).send(validationError.fields);
 }
 
+function sendNotes(res, notes) {
+	res.status(200).send(notes);
+}
+
+function sendNote(res, note) {
+	res.status(200).send(note);
+}
+
+function sendNoteCreated(res, note) {
+	res.status(201).send(note);
+}
+
+function sendNoteDeleted(res) {
+	res.status(200).send({
+		message: "Deleted"
+	});
+}
+
 exports.addRoutes = function(app, dao, models) {
 	app.get("/api/notes/", function(req, res, next) {
 		models.Note.findAll({			
 			include: [ models.Category ]
 		}).success(function(notes) {
-			res.status(200).send(notes);
+			sendNotes(res, notes);
 		}).error(next);
 	});
 
@@ -31,7 +49,7 @@ exports.addRoutes = function(app, dao, models) {
 				return;
 			}
 
-			res.status(200).send(note);
+			sendNote(res, note);
 		}).error(next);
 	});
 
@@ -61,7 +79,7 @@ exports.addRoutes = function(app, dao, models) {
 				dao.getNoteWithCategories.bind(dao, tx),
 				function(noteWithCategories, callback) {
 					tx.commit().success(function() {
-						res.status(201).send(noteWithCategories);
+						sendNoteCreated(res, noteWithCategories);
 						callback();
 					}).error(callback);
 				}
@@ -94,9 +112,7 @@ exports.addRoutes = function(app, dao, models) {
 			}
 
 			note.destroy().success(function() {
-				res.status(200).send({
-					message: "Deleted"
-				});
+				sendNoteDeleted(res);
 			}).error(next);
 		}).error(next);
 	});
@@ -149,7 +165,7 @@ exports.addRoutes = function(app, dao, models) {
 				},
 				function(noteWithCategories, callback) {
 					tx.commit().success(function() {
-						res.status(200).send(noteWithCategories);
+						sendNote(res, noteWithCategories);
 						callback();
 					}).error(callback);
 				}
