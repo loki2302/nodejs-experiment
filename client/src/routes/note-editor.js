@@ -56,6 +56,10 @@ angular.module("directives.notes.noteEditor", ["ngTagsInput"])
 			scope.cancelClicked = function() {
 				scope.cancel();
 			};
+
+			scope._searchCategories = function(query) {
+				return scope.searchCategories({ query: query });
+			};
 		}
 	};
 }]);

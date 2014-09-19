@@ -6,6 +6,13 @@ angular.module("resources.categories", ["ngResource"])
 		query: {
 			method: "GET",
 			isArray: true
+		},
+		search: {
+			method: "GET",
+			isArray: true,
+			params: {
+				nameStartsWith: "@nameStartsWith"
+			}
 		}
 	});
 }]);

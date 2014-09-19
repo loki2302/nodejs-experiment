@@ -95,4 +95,10 @@ angular.module("api", ["resources.notes", "resources.categories"])
 	this.getCategories = function() {
 		return Category.query();
 	};
+
+	this.getCategoriesWithNameStartingWith = function(name) {
+		return Category.search({
+			nameStartsWith: name
+		});
+	};
 }]);

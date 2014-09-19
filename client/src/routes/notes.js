@@ -51,11 +51,9 @@ angular.module("notes", [
 	};
 
 	$scope.searchCategoriesStartingWith = function(query) {
-		// TODO: filter by query
-
 		var deferred = $q.defer();
 
-		apiService.getCategories().$promise.then(function(categories) {
+		apiService.getCategoriesWithNameStartingWith(query).$promise.then(function(categories) {
 			deferred.resolve(categories);
 		}, function(error) {
 			deferred.reject(error);

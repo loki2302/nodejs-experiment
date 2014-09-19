@@ -6,7 +6,7 @@
 			<span class="help-block" ng-if="error">{{error}}</span>
 		</div>
 		<tags-input ng-model="noteCategories" display-property="name">
-			<auto-complete source="searchCategories($query)"></auto-complete>
+			<auto-complete source="_searchCategories($query)"></auto-complete>
 		</tags-input>
 		<button type="submit" class="btn btn-default">{{saveTitle}}</button>
 		<button type="button" class="btn btn-default" ng-if="displayCancel" ng-click="cancelClicked()">Cancel</button>
