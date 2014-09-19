@@ -1,5 +1,6 @@
 var async = require("async");
 var DAO = require("../dao.js");
+var validator = require("validator");
 
 function sendNoteNotFoundError(res, noteId) {
 	res.status(404).send({
@@ -29,6 +30,10 @@ function sendNoteDeleted(res) {
 	});
 }
 
+function intIdOrNull(idString) {
+	return validator.isInt(idString) ? validator.toInt(idString) : null;
+}
+
 exports.addRoutes = function(app, dao, models) {
 	app.get("/api/notes/", function(req, res, next) {
 		dao.getAllNotes(function(error, result) {
@@ -42,7 +47,12 @@ exports.addRoutes = function(app, dao, models) {
 	});
 
 	app.get("/api/notes/:id", function(req, res, next) {
-		var id = req.params.id;
+		var id = intIdOrNull(req.params.id);
+		if(!id) {
+			sendNoteNotFoundError(res, id);
+			return;
+		}
+
 		dao.getNoteWithCategories(null, id, function(error, result) {
 			if(!error) {
 				sendNote(res, result);
@@ -58,7 +68,12 @@ exports.addRoutes = function(app, dao, models) {
 	});
 
 	app.delete("/api/notes/:id", function(req, res, next) {
-		var id = req.params.id;
+		var id = intIdOrNull(req.params.id);
+		if(!id) {
+			sendNoteNotFoundError(res, id);
+			return;
+		}
+
 		async.waterfall([
 			function(callback) {
 				dao.getNoteWithCategories(null, id, callback);
@@ -133,7 +148,12 @@ exports.addRoutes = function(app, dao, models) {
 	});
 
 	app.post("/api/notes/:id", function(req, res, next) {
-		var id = req.params.id;
+		var id = intIdOrNull(req.params.id);
+		if(!id) {
+			sendNoteNotFoundError(res, id);
+			return;
+		}
+		
 		var sequelize = models.sequelize;
 		sequelize.transaction({
 			isolationLevel: "READ UNCOMMITTED"

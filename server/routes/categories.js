@@ -1,3 +1,9 @@
+var validator = require("validator");
+
+function intIdOrNull(idString) {
+	return validator.isInt(idString) ? validator.toInt(idString) : null;
+}
+
 exports.addRoutes = function(app, dao, models) {
 	app.get("/api/categories/", function(req, res, next) {
 		var criteria = {};
@@ -17,7 +23,14 @@ exports.addRoutes = function(app, dao, models) {
 	});
 
 	app.get("/api/categories/:id", function(req, res, next) {
-		var id = req.params.id;
+		var id = intIdOrNull(req.params.id);
+		if(!id) {
+			res.status(404).send({
+				message: "There's no category " + id
+			});
+			return;
+		}
+
 		models.Category.find(id).success(function(category) {
 			if(!category) {
 				res.status(404).send({
@@ -58,7 +71,14 @@ exports.addRoutes = function(app, dao, models) {
 	});
 
 	app.delete("/api/categories/:id", function(req, res, next) {
-		var id = req.params.id;
+		var id = intIdOrNull(req.params.id);
+		if(!id) {
+			res.status(404).send({
+				message: "There's no category " + id
+			});
+			return;
+		}
+
 		models.Category.find(id).success(function(category) {
 			if(!category) {
 				res.status(404).send({
@@ -80,10 +100,13 @@ exports.addRoutes = function(app, dao, models) {
 	});
 
 	app.post("/api/categories/:id", function(req, res, next) {
-		var id = req.params.id;
-
-		// TODO: use express-validator to validate and sanitize URL params
-		id = parseInt(id, 10);
+		var id = intIdOrNull(req.params.id);
+		if(!id) {
+			res.status(404).send({
+				message: "There's no category " + id
+			});
+			return;
+		}
 
 		models.Category.find(id).success(function(category) {
 			if(!category) {
