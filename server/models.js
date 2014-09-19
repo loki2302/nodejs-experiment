@@ -1,4 +1,3 @@
-var Q = require("q");
 var Sequelize = require("sequelize");
 
 var sequelize = new Sequelize("", "", "", {
@@ -35,28 +34,12 @@ module.exports.Note = Note;
 module.exports.Category = Category;
 module.exports.sequelize = sequelize;
 
-module.exports.initialize = function() {
-	var deferred = Q.defer();
-
-	sequelize.sync().success(function() {
-		deferred.resolve();
-	}).error(function(error) {
-		deferred.reject(error);
-	});
-
-	return deferred.promise;
+module.exports.initialize = function(callback) {
+	sequelize.sync().done(callback);
 };
 
-module.exports.reset = function() {
-	var deferred = Q.defer();
-
+module.exports.reset = function(callback) {
 	sequelize.drop().done(function() {
-		sequelize.sync().success(function() {
-			deferred.resolve();
-		}).error(function(error) {
-			deferred.reject(error);
-		});
+		sequelize.sync().done(callback);
 	});
-
-	return deferred.promise;	
 };

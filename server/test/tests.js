@@ -10,7 +10,11 @@ describe("app", function() {
 	var client;
 	var server;
 	beforeEach(function(done) {
-		models.reset().then(function() {
+		models.reset(function(error) {
+			if(error) {
+				throw new Error("Failed to reset database");
+			}
+
 			client = new NotepadClient("http://localhost:3000/api");
 			var dao = new DAO(models);
 			var app = makeApp(dao, models, {
@@ -19,8 +23,6 @@ describe("app", function() {
 			server = app.listen(3000, function() {
 				done();
 			});
-		}, function(error) {
-			throw new Error("Failed to initialize models");
 		});
 	});
 
