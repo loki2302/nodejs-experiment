@@ -77,3 +77,26 @@ describe("To create multiple notes, I can use", function() {
 		});
 	});
 });
+
+describe("I can use", function() {
+	it("auto", function(done) {
+		async.auto({
+			getId: function(callback) {
+				callback(null, 123);
+			},
+			getText: function(callback) {
+				callback(null, "hello");
+			},
+			createNote: ["getId", "getText", function(callback, results) {
+				callback(null, {
+					id: results.getId,
+					text: results.getText
+				});
+			}]
+		}, function(error, results) {
+			assert.equal(results.createNote.id, 123);
+			assert.equal(results.createNote.text, "hello");
+			done();
+		});
+	});
+});
