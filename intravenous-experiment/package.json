@@ -1,0 +1,14 @@
+{
+  "name": "intravenous-experiment",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "nodeunit ."
+  },
+  "author": "loki2302",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "intravenous": "~0.1.4-beta"
+  }
+}
