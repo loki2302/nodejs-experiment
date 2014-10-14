@@ -35,6 +35,17 @@ function intIdOrNull(idString) {
 }
 
 exports.addRoutes = function(app, dao, models) {
+	app.param("note_id", function(req, res, next, note_id) {
+		var id = intIdOrNull(note_id);
+		if(!id) {
+			sendNoteNotFoundError(res, id);
+			return;
+		}
+
+		req.note_id = id;
+		next();
+	});
+
 	app.get("/api/notes/", function(req, res, next) {
 		dao.getAllNotes(function(error, result) {
 			if(error) {
@@ -46,13 +57,8 @@ exports.addRoutes = function(app, dao, models) {
 		});
 	});
 
-	app.get("/api/notes/:id", function(req, res, next) {
-		var id = intIdOrNull(req.params.id);
-		if(!id) {
-			sendNoteNotFoundError(res, id);
-			return;
-		}
-
+	app.get("/api/notes/:note_id", function(req, res, next) {
+		var id = req.note_id;
 		dao.getNoteWithCategories(null, id, function(error, result) {
 			if(!error) {
 				sendNote(res, result);
@@ -67,13 +73,8 @@ exports.addRoutes = function(app, dao, models) {
 		});
 	});
 
-	app.delete("/api/notes/:id", function(req, res, next) {
-		var id = intIdOrNull(req.params.id);
-		if(!id) {
-			sendNoteNotFoundError(res, id);
-			return;
-		}
-
+	app.delete("/api/notes/:note_id", function(req, res, next) {
+		var id = req.note_id;
 		async.waterfall([
 			function(callback) {
 				dao.getNoteWithCategories(null, id, callback);
@@ -147,13 +148,8 @@ exports.addRoutes = function(app, dao, models) {
 		});
 	});
 
-	app.post("/api/notes/:id", function(req, res, next) {
-		var id = intIdOrNull(req.params.id);
-		if(!id) {
-			sendNoteNotFoundError(res, id);
-			return;
-		}
-		
+	app.post("/api/notes/:note_id", function(req, res, next) {
+		var id = req.note_id;		
 		var sequelize = models.sequelize;
 		sequelize.transaction({
 			isolationLevel: "READ UNCOMMITTED"
