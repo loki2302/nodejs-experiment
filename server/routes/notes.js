@@ -2,21 +2,6 @@ var async = require("async");
 var DAO = require("../dao.js");
 var validator = require("validator");
 
-function NoteNotFoundError(id) {
-	this.id = id;
-};
-NoteNotFoundError.prototype.name = "NoteNotFoundError";
-
-function ValidationError(fields) {
-	this.fields = fields;
-};
-ValidationError.prototype.name = "ValidationError";
-
-function BadRequestError(message) {
-	this.message = message;
-};
-BadRequestError.prototype.name = "BadRequestError";
-
 function makeNoteResult(status, note) {
 	return function(res) {
 		res.status(status).send(note);
@@ -37,10 +22,28 @@ function makeMessageResult(status, message) {
 	};
 };
 
-function makeValidationErrorResult(fields) {
-	return function(res) {
-		res.status(400).send(fields);
-	};
+function NoteNotFoundError(id) {
+	this.id = id;
+};
+NoteNotFoundError.prototype.name = "NoteNotFoundError";
+NoteNotFoundError.prototype.render = function(res) {
+	res.status(404).send({ "message": "Note " + this.id + " not found" });
+};
+
+function ValidationError(fields) {
+	this.fields = fields;
+};
+ValidationError.prototype.name = "ValidationError";
+ValidationError.prototype.render = function(res) {
+	res.status(400).send(this.fields);
+};
+
+function BadRequestError(message) {
+	this.message = message;
+};
+BadRequestError.prototype.name = "BadRequestError";
+BadRequestError.prototype.render = function(res) {
+	res.status(400).send({ "message": this.message });	
 };
 
 function intIdOrNull(idString) {
@@ -218,16 +221,9 @@ exports.addRoutes = function(app, dao, models) {
 	});	
 
 	app.use("/api/notes", function(error, req, res, next) {
-		console.log("ERROR RENDERER: %s", error);
-		if(error instanceof NoteNotFoundError) {
-			res.result = makeMessageResult(404, "Note " + error.id + " not found");
-			next();
-		} else if(error instanceof ValidationError) {
-			res.result = makeValidationErrorResult(error.fields);
-			next();
-		} else if(error instanceof BadRequestError) {
-			res.result = makeMessageResult(400, error.message);
-			next();
+		console.log("ERROR RENDERER: [%s] %j", error.name, error);
+		if(typeof error.render === "function") {
+			error.render(res);
 		} else {
 			next(error);
 		}
