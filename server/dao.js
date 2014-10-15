@@ -66,7 +66,7 @@ DAO.prototype.saveNote = function(tx, note, callback) {
 DAO.prototype.setNoteCategories = function(tx, note, categories, callback) {
 	note.setCategories(categories, {
 		transaction: tx
-	}).success(function() {			
+	}).success(function() {
 		callback();
 	}).error(function(error) {
 		callback(error);
