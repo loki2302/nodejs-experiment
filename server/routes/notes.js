@@ -37,9 +37,15 @@ function makeMessageResult(status, message) {
 	};
 };
 
+function makeValidationErrorResult(fields) {
+	return function(res) {
+		res.status(400).send(fields);
+	};
+};
+
 function intIdOrNull(idString) {
 	return validator.isInt(idString) ? validator.toInt(idString) : null;
-}
+};
 
 exports.addRoutes = function(app, dao, models) {
 	app.use("/api/notes", function(req, res, next) {
@@ -209,28 +215,27 @@ exports.addRoutes = function(app, dao, models) {
 		}).error(function() {
 			next(error);
 		});
+	});	
+
+	app.use("/api/notes", function(error, req, res, next) {
+		console.log("ERROR RENDERER: %s", error);
+		if(error instanceof NoteNotFoundError) {
+			res.result = makeMessageResult(404, "Note " + error.id + " not found");
+			next();
+		} else if(error instanceof ValidationError) {
+			res.result = makeValidationErrorResult(error.fields);
+			next();
+		} else if(error instanceof BadRequestError) {
+			res.result = makeMessageResult(400, error.message);
+			next();
+		} else {
+			next(error);
+		}
 	});
 
 	app.use("/api/notes", function(req, res, next) {
 		console.log("RESULT RENDERER");
 		res.result(res);
 		next();
-	});
-
-	app.use("/api/notes", function(error, req, res, next) {
-		console.log("ERROR RENDERER: %s", error);
-		if(error instanceof NoteNotFoundError) {
-			res.status(404).send({
-				message: "Note " + error.id + " not found"
-			});
-		} else if(error instanceof ValidationError) {
-			res.status(400).send(error.fields);
-		} else if(error instanceof BadRequestError) {
-			res.status(400).send({
-				message: error.message
-			});		
-		} else {
-			next(error);
-		}
-	});
+	});	
 };
