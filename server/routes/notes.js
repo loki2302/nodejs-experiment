@@ -17,6 +17,26 @@ function BadRequestError(message) {
 };
 BadRequestError.prototype.name = "BadRequestError";
 
+function makeNoteResult(status, note) {
+	return function(res) {
+		res.status(status).send(note);
+	};
+};
+
+function makeNoteCollectionResult(status, noteCollection) {
+	return function(res) {
+		res.status(status).send(noteCollection);
+	};
+};
+
+function makeMessageResult(status, message) {
+	return function(res) {
+		res.status(status).send({
+			"message": message
+		});
+	};
+};
+
 function intIdOrNull(idString) {
 	return validator.isInt(idString) ? validator.toInt(idString) : null;
 }
@@ -50,26 +70,21 @@ exports.addRoutes = function(app, dao, models) {
 				}
 			});
 		}
-	});
+	});	
 
 	app.get("/api/notes/", function(req, res, next) {
 		dao.getAllNotes(function(error, result) {
 			if(error) {
 				next(error);
 			} else {
-				res.result = function(res) {
-					res.status(200).send(result);
-				};
-				console.log(res.result);
+				res.result = makeNoteCollectionResult(200, result);
 				next();
 			}
 		});
-	});
+	});	
 
 	app.get("/api/notes/:note_id", function(req, res, next) {		
-		res.result = function(res) {			
-			res.status(200).send(req.note);
-		};
+		res.result = makeNoteResult(200, req.note);
 		next();
 	});
 
@@ -78,11 +93,7 @@ exports.addRoutes = function(app, dao, models) {
 		note.destroy({
 			transaction: req.tx
 		}).success(function() {
-			res.result = function(res) {
-				res.status(200).send({
-					message: "Deleted"
-				});
-			};			
+			res.result = makeMessageResult(200, "Deleted");
 			next();
 		}).error(function(error) {
 			next(error);
@@ -114,9 +125,7 @@ exports.addRoutes = function(app, dao, models) {
 			dao.getNoteWithCategories.bind(dao, tx)
 		], function(error, result) {
 			if(!error) {
-				res.result = function(res) {
-					res.status(201).send(result);
-				};
+				res.result = makeNoteResult(201, result);
 				next();
 			} else if(error instanceof DAO.ValidationError) {						
 				next(new ValidationError(error.fields));
@@ -166,9 +175,7 @@ exports.addRoutes = function(app, dao, models) {
 			}
 		], function(error, result) {
 			if(!error) {
-				res.result = function(res) {
-					res.status(200).send(result);
-				};
+				res.result = makeNoteResult(200, result);
 				next();
 			} else if(error instanceof DAO.NoteNotFoundError) {
 				next(new NoteNotFoundError(id));
