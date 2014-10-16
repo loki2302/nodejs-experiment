@@ -53,3 +53,39 @@ BadRequestError.prototype.render = function(res) {
 	res.status(400).send({ "message": this.message });	
 };
 module.exports.BadRequestError = BadRequestError;
+
+function CategoryResult(status, category) {
+	this.status = status;
+	this.category = category;
+};
+CategoryResult.prototype.render = function(res) {
+	res.status(this.status).send(this.category);
+};
+module.exports.CategoryResult = CategoryResult;
+
+function CategoryCollectionResult(status, categoryCollection) {
+	this.status = status;
+	this.categoryCollection = categoryCollection;
+};
+CategoryCollectionResult.prototype.render = function(res) {
+	res.status(this.status).send(this.categoryCollection);
+};
+module.exports.CategoryCollectionResult = CategoryCollectionResult;
+
+function CategoryNotFoundError(id) {
+	this.id = id;
+};
+CategoryNotFoundError.prototype.name = "CategoryNotFoundError";
+CategoryNotFoundError.prototype.render = function(res) {
+	res.status(404).send({ "message": "Category " + this.id + " not found" });
+};
+module.exports.CategoryNotFoundError = CategoryNotFoundError;
+
+function ConflictError(message) {
+	this.message = message;
+};
+ConflictError.prototype.name = "ConflictError";
+ConflictError.prototype.render = function(res) {
+	res.status(409).send({ "message": this.message });	
+};
+module.exports.ConflictError = ConflictError;

@@ -1,10 +1,10 @@
 var async = require("async");
-var DAO = require("../dao.js");
 var validator = require("validator");
+var DAO = require("./dao.js");
 var Responses = require("./responses.js");
 
 exports.addRoutes = function(app, dao, models) {
-	app.use("/api/notes", function(req, res, next) {
+	app.use("/api", function(req, res, next) {
 		console.log("TRANSACTION STARTER");
 		var sequelize = models.sequelize;
 		sequelize.transaction({
@@ -151,7 +151,126 @@ exports.addRoutes = function(app, dao, models) {
 		});		
 	});
 
-	app.use("/api/notes", function(req, res, next) {
+	app.param("category_id", function(req, res, next, category_id) {
+		var id = validator.isInt(category_id) ? validator.toInt(category_id) : null;
+		if(!id) {			
+			next(new CategoryNotFoundError(category_id));
+			return;
+		}
+
+		models.Category.find({ 
+			where: {id: id}
+		}, { 
+			transaction: req.tx 
+		}).success(function(category) {
+			if(!category) {
+				next(new Responses.CategoryNotFoundError(category_id));
+				return;
+			}
+
+			req.category = category;
+			next();
+		}).error(function(error) {
+			next(error);
+		});		
+	});
+
+	app.get("/api/categories/", function(req, res, next) {
+		var criteria = {};
+		var nameStartsWith = req.query.nameStartsWith;
+		if(nameStartsWith) {
+			var lowercaseNameStartsWith = nameStartsWith.toLowerCase();
+			criteria = {
+				where: ["lower(name) like ?", lowercaseNameStartsWith + '%']
+			};
+		}
+
+		models.Category.findAll(criteria, { 
+			transaction: req.tx 
+		}).success(function(categories) {
+			res.result = new Responses.CategoryCollectionResult(200, categories);
+			next();
+		}).error(function(error) {
+			next(error);
+		});
+	});
+
+	app.get("/api/categories/:category_id", function(req, res, next) {
+		res.result = new Responses.CategoryResult(200, req.category);
+		next();
+	});
+
+	app.post("/api/categories/", function(req, res, next) {
+		var body = req.body;
+		var categoryName = body.name;
+		models.Category.find({
+			where: {
+				name: categoryName
+			}
+		}, { 
+			transaction: req.tx 
+		}).success(function(category) {
+			if(category) {
+				next(new Responses.ConflictError("Category " + categoryName + " already exists"));
+				return;
+			}
+
+			models.Category.create({ 
+				name: body.name 
+			}, { 
+				transaction: req.tx 
+			}).success(function(category) {
+				res.result = new Responses.CategoryResult(201, category);
+				next();
+			}).error(function(error) {
+				next(new Responses.ValidationError(error));
+			});
+		}).error(function(error) {
+			next(error);
+		});		
+	});
+
+	app.delete("/api/categories/:category_id", function(req, res, next) {
+		var category = req.category;
+		category.destroy({ 
+			transaction: req.tx 
+		}).success(function() {
+			res.result = new Responses.MessageResult(200, "Deleted");
+			next();
+		}).error(function(error) {
+			next(error);
+		});
+	});
+
+	app.post("/api/categories/:category_id", function(req, res, next) {
+		var category = req.category;
+
+		var categoryName = req.body.name;
+		models.Category.find({
+			where: {
+				name: categoryName
+			}
+		}, { 
+			transaction: req.tx 
+		}).success(function(existingCategoryWithDesiredName) {
+			if(existingCategoryWithDesiredName && existingCategoryWithDesiredName.id !== category.id) {
+				next(new Responses.ConflictError("Category " + category.id + " already exists"));
+				return;
+			}
+
+			category.name = categoryName;
+			category.save({ 
+				transaction: req.tx 
+			}).success(function(category) {
+				res.result = new Responses.CategoryResult(200, category);
+				next();
+			}).error(function(error) {
+				next(new Responses.ValidationError(error));
+			});
+		});
+	});
+
+	app.use("/api", function(req, res, next) {
 		console.log("TRANSACTION COMMITER");
 		var tx = req.tx;
 		tx.commit().success(function() {
@@ -163,7 +282,7 @@ exports.addRoutes = function(app, dao, models) {
 		});
 	});
 
-	app.use("/api/notes", function(error, req, res, next) {
+	app.use("/api", function(error, req, res, next) {
 		console.log("TRANSACTION ROLLBACKER: %s", error);
 		var tx = req.tx;
 		tx.rollback().success(function() {
@@ -173,7 +292,7 @@ exports.addRoutes = function(app, dao, models) {
 		});
 	});	
 
-	app.use("/api/notes", function(error, req, res, next) {
+	app.use("/api", function(error, req, res, next) {
 		console.log("ERROR RENDERER: [%s] %j", error.name, error);
 		if(typeof error.render === "function") {
 			error.render(res);
@@ -182,7 +301,7 @@ exports.addRoutes = function(app, dao, models) {
 		}
 	});
 
-	app.use("/api/notes", function(req, res, next) {
+	app.use("/api", function(req, res, next) {
 		console.log("RESULT RENDERER");
 		res.result.render(res);
 		next();
