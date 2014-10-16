@@ -3,10 +3,6 @@ var DAO = require("../dao.js");
 var validator = require("validator");
 var Responses = require("./responses.js");
 
-function intIdOrNull(idString) {
-	return validator.isInt(idString) ? validator.toInt(idString) : null;
-};
-
 exports.addRoutes = function(app, dao, models) {
 	app.use("/api/notes", function(req, res, next) {
 		console.log("TRANSACTION STARTER");
@@ -21,7 +17,7 @@ exports.addRoutes = function(app, dao, models) {
 	});
 
 	app.param("note_id", function(req, res, next, note_id) {
-		var id = intIdOrNull(note_id);
+		var id = validator.isInt(note_id) ? validator.toInt(note_id) : null;
 		if(!id) {
 			next(new NoteNotFoundError(note_id));
 		} else {
