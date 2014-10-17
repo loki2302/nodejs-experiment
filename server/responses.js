@@ -41,7 +41,14 @@ function ValidationError(fields) {
 };
 ValidationError.prototype.name = "ValidationError";
 ValidationError.prototype.render = function(res) {
-	res.status(400).send(this.fields);
+	var errorMap = {};
+	for(var field in this.fields) {
+		var errorMessages = this.fields[field];
+		var singleErrorMessage = errorMessages.join(". ");
+		errorMap[field] = singleErrorMessage;
+	}
+
+	res.status(400).send(errorMap);
 };
 module.exports.ValidationError = ValidationError;
 
