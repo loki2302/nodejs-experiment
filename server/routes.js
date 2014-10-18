@@ -19,14 +19,14 @@ exports.addRoutes = function(app, dao, models) {
 	app.param("note_id", function(req, res, next, note_id) {
 		var id = validator.isInt(note_id) ? validator.toInt(note_id) : null;
 		if(!id) {
-			next(new NoteNotFoundError(note_id));
+			next(new Responses.NotFoundError("Note", note_id));
 		} else {
 			dao.getNoteWithCategories(req.tx, id, function(error, result) {
 				if(!error) {
 					req.note = result;
 					next();
 				} else if(error instanceof DAO.NoteNotFoundError) {
-					next(new Responses.NoteNotFoundError(id));
+					next(new Responses.NotFoundError("Note", id));
 				} else {
 					next(error);
 				}
@@ -140,7 +140,7 @@ exports.addRoutes = function(app, dao, models) {
 				res.result = new Responses.NoteResult(200, result);
 				next();
 			} else if(error instanceof DAO.NoteNotFoundError) {
-				next(new Responses.NoteNotFoundError(id));
+				next(new Responses.NotFoundError("Note", id));
 			} else if(error instanceof DAO.FailedToFindAllCategoriesError) {
 				next(new Responses.BadRequestError(error.message));
 			} else if(error instanceof DAO.ValidationError) {
@@ -154,7 +154,7 @@ exports.addRoutes = function(app, dao, models) {
 	app.param("category_id", function(req, res, next, category_id) {
 		var id = validator.isInt(category_id) ? validator.toInt(category_id) : null;
 		if(!id) {			
-			next(new CategoryNotFoundError(category_id));
+			next(new Responses.NotFoundError("Category", category_id));
 			return;
 		}
 
@@ -164,7 +164,7 @@ exports.addRoutes = function(app, dao, models) {
 			transaction: req.tx 
 		}).success(function(category) {
 			if(!category) {
-				next(new Responses.CategoryNotFoundError(category_id));
+				next(new Responses.NotFoundError("Category", category_id));
 				return;
 			}
 

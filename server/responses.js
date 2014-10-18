@@ -27,14 +27,15 @@ MessageResult.prototype.render = function(res) {
 };
 module.exports.MessageResult = MessageResult;
 
-function NoteNotFoundError(id) {
+function NotFoundError(entity, id) {
+	this.entity = entity;
 	this.id = id;
 };
-NoteNotFoundError.prototype.name = "NoteNotFoundError";
-NoteNotFoundError.prototype.render = function(res) {
-	res.status(404).send({ "message": "Note " + this.id + " not found" });
+NotFoundError.prototype.name = "NotFoundError";
+NotFoundError.prototype.render = function(res) {
+	res.status(404).send({ "message": this.entity + " " + this.id + " not found" });
 };
-module.exports.NoteNotFoundError = NoteNotFoundError;
+module.exports.NotFoundError = NotFoundError;
 
 function ValidationError(fields) {
 	this.fields = fields;
@@ -78,15 +79,6 @@ CategoryCollectionResult.prototype.render = function(res) {
 	res.status(this.status).send(this.categoryCollection);
 };
 module.exports.CategoryCollectionResult = CategoryCollectionResult;
-
-function CategoryNotFoundError(id) {
-	this.id = id;
-};
-CategoryNotFoundError.prototype.name = "CategoryNotFoundError";
-CategoryNotFoundError.prototype.render = function(res) {
-	res.status(404).send({ "message": "Category " + this.id + " not found" });
-};
-module.exports.CategoryNotFoundError = CategoryNotFoundError;
 
 function ConflictError(message) {
 	this.message = message;
