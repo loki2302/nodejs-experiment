@@ -88,8 +88,8 @@ exports.oneToManyTests = {
 			test.equal(note.id, 1);
 			test.equal(note.content, "hello");
 			test.equal(note.CategoryId, 1);
-			test.equal(note.category.id, 1);
-			test.equal(note.category.name, "js");
+			test.equal(note.Category.id, 1);
+			test.equal(note.Category.name, "js");
 			test.done();
 		});
 	}

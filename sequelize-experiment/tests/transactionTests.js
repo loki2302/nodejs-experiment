@@ -28,9 +28,10 @@ exports.transactionTests = {
 
 	canCommitTransaction: function(test) {
 		var self = this;
+
 		self.sequelize.transaction({
-			isolationLevel: "READ UNCOMMITTED" // Sequelize.Transaction.READ_UNCOMMITTED wtf?
-		}, function(tx) {
+			isolationLevel: Sequelize.Transaction.ISOLATION_LEVELS.READ_UNCOMMITTED
+		}).then(function(tx) {
 			// create note in transaction tx
 			self.Note.create({ 
 				content: "hello" 
@@ -72,15 +73,15 @@ exports.transactionTests = {
 				});
 			}).error(function(e) {
 				test.ok(false);
-			});
-		});		
+			});			
+		});
 	},
 
 	canRollbackTransaction: function(test) {
 		var self = this;
 		self.sequelize.transaction({
-			isolationLevel: "READ UNCOMMITTED" // Sequelize.Transaction.READ_UNCOMMITTED wtf?
-		}, function(tx) {
+			isolationLevel: Sequelize.Transaction.ISOLATION_LEVELS.READ_UNCOMMITTED
+		}).then(function(tx) {
 			// create note in transaction tx
 			self.Note.create({ 
 				content: "hello" 

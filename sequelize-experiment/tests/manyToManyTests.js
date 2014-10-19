@@ -123,11 +123,11 @@ exports.manyToManyTests = {
 		}).then(function(note) {
 			test.equal(note.id, 1);
 			test.equal(note.content, "hello");
-			test.equal(note.categories.length, 2);
-			test.equal(note.categories[0].id, 1);
-			test.equal(note.categories[0].name, "js");
-			test.equal(note.categories[1].id, 2);
-			test.equal(note.categories[1].name, "articles");
+			test.equal(note.Categories.length, 2);
+			test.equal(note.Categories[0].id, 1);
+			test.equal(note.Categories[0].name, "js");
+			test.equal(note.Categories[1].id, 2);
+			test.equal(note.Categories[1].name, "articles");
 			test.done();
 		});
 	}

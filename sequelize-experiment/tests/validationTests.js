@@ -45,10 +45,17 @@ exports.validationTests = {
 	dummy: function(test) {
 		this.Note.create({ title: "", content: "" }).success(function(note) {
 			test.ok(false, "should never get here");
-		}).error(function(e) {			
-			test.ok("title" in e);
-			test.equal(e.title, "title should not be empty");
-			test.ok("content" in e);
+		}).error(function(e) {
+			test.ok(e instanceof Sequelize.ValidationError);
+
+			var errorMap = {};
+			e.errors.forEach(function(error) {
+				errorMap[error.path] = error.message;
+			});
+
+			test.ok("title" in errorMap);
+			test.equal(errorMap.title, "title should not be empty");
+			test.ok("content" in errorMap);
 			test.done();
 		});		
 	}
