@@ -1,3 +1,4 @@
+var Sequelize = require("sequelize");
 var async = require("async");
 
 var ValidationError = function(fields) {
@@ -26,22 +27,26 @@ DAO.prototype.getAllNotes = function(callback) {
 };
 
 DAO.prototype.createNote = function(tx, note, callback) {
+	console.log(note);
 	this.models.Note.create({
 		content: note.content
 	}, {
 		transaction: tx
-	}).success(function(note) {
+	}).success(function(note) {		
 		callback(null, note);
-	}).error(function(error) {
-		// it's assumed that if error is not instanceof Error,
-		// it's a validation error
+	}).error(function(error) {		
+		console.log(error);
+		if(error instanceof Sequelize.ValidationError) {
+			var errorMap = {};
+			error.errors.forEach(function(e) {
+				errorMap[e.path] = e.message;
+			});
 
-		if(error instanceof Error) {
-			callback(error);
+			callback(new ValidationError(errorMap));
 			return;
 		}
 
-		callback(new ValidationError(error));
+		callback(error);
 	});
 };
 
@@ -51,15 +56,17 @@ DAO.prototype.saveNote = function(tx, note, callback) {
 	}).success(function(note) {
 		callback(null, note);
 	}).error(function(error) {
-		// it's assumed that if error is not instanceof Error,
-		// it's a validation error
+		if(error instanceof Sequelize.ValidationError) {
+			var errorMap = {};
+			error.errors.forEach(function(e) {
+				errorMap[e.path] = e.message;
+			});
 
-		if(error instanceof Error) {
-			callback(error);
+			callback(new ValidationError(errorMap));
 			return;
 		}
 
-		callback(new ValidationError(error));
+		callback(error);
 	});
 };
 

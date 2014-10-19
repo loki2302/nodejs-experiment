@@ -1,9 +1,22 @@
+function makeNoteDTO(note) {
+	return {
+		id: note.id,
+		content: note.content,
+		categories: note.Categories
+	};
+};
+
+function makeNoteDTOs(notes) {
+	return notes.map(makeNoteDTO);
+};
+
 function NoteResult(status, note) {
 	this.status = status;
 	this.note = note;
 };
 NoteResult.prototype.render = function(res) {
-	res.status(this.status).send(this.note);
+	var dto = makeNoteDTO(this.note);
+	res.status(this.status).send(dto);
 };
 module.exports.NoteResult = NoteResult;
 
@@ -12,7 +25,8 @@ function NoteCollectionResult(status, noteCollection) {
 	this.noteCollection = noteCollection;
 };
 NoteCollectionResult.prototype.render = function(res) {
-	res.status(this.status).send(this.noteCollection);
+	var dtos = makeNoteDTOs(this.noteCollection);
+	res.status(this.status).send(dtos);
 };
 module.exports.NoteCollectionResult = NoteCollectionResult;
 
@@ -42,14 +56,7 @@ function ValidationError(fields) {
 };
 ValidationError.prototype.name = "ValidationError";
 ValidationError.prototype.render = function(res) {
-	var errorMap = {};
-	for(var field in this.fields) {
-		var errorMessages = this.fields[field];
-		var singleErrorMessage = errorMessages.join(". ");
-		errorMap[field] = singleErrorMessage;
-	}
-
-	res.status(400).send(errorMap);
+	res.status(400).send(this.fields);
 };
 module.exports.ValidationError = ValidationError;
 

@@ -8,6 +8,7 @@ var sequelize = new Sequelize("", "", "", {
 var Note = sequelize.define("Note", {
 	content: {
 		type: Sequelize.TEXT,
+		allowNull: false,
 		validate: {
 			notEmpty: {
 				msg: "Note content should not be empty"
@@ -19,6 +20,7 @@ var Note = sequelize.define("Note", {
 var Category = sequelize.define("Category", {
 	name: {
 		type: Sequelize.STRING,
+		allowNull: false,
 		validate: {
 			notEmpty: {
 				msg: "Category name should not be empty"

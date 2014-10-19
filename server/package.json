@@ -10,13 +10,13 @@
   "author": "loki2302",
   "license": "BSD-2-Clause",
   "dependencies": {
-    "sequelize": "~1.7.10",
+    "sequelize": "~2.0.0-rc1",
     "express": "~4.8.7",
     "request": "~2.40.0",
     "body-parser": "~1.6.7",
-    "sqlite3": "~2.2.7",
+    "sqlite3": "~3.0.2",
     "sleep": "~1.1.8",
     "async": "~0.9.0",
-    "validator": "~3.18.1"
+    "validator": "~3.22.0"
   }
 }

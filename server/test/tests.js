@@ -62,9 +62,30 @@ describe("app", function() {
 		});
 	});
 
-	it("should not let me create a note if fields are not valid", function(done) {
+	it("should not let me create a note if content is empty string", function(done) {
 		client.createNote({
 			content: ""
+		}, function(error, response, body) {
+			assert.ifError(error);
+			assert.equal(response.statusCode, 400);
+			assert.ok("content" in body);
+			done();
+		});
+	});
+
+	it("should not let me create a note if content is null", function(done) {
+		client.createNote({
+			content: null
+		}, function(error, response, body) {
+			assert.ifError(error);
+			assert.equal(response.statusCode, 400);
+			assert.ok("content" in body);
+			done();
+		});
+	});
+
+	it("should not let me create a note if content is not defined", function(done) {
+		client.createNote({
 		}, function(error, response, body) {
 			assert.ifError(error);
 			assert.equal(response.statusCode, 400);

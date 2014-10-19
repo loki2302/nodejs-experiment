@@ -1,3 +1,4 @@
+var Sequelize = require("sequelize");
 var async = require("async");
 var validator = require("validator");
 var DAO = require("./dao.js");
@@ -8,12 +9,12 @@ exports.addRoutes = function(app, dao, models) {
 		console.log("TRANSACTION STARTER");
 		var sequelize = models.sequelize;
 		sequelize.transaction({
-			isolationLevel: "READ UNCOMMITTED"
-		}, function(tx) {
-			req.tx = tx;
+			isolationLevel: Sequelize.Transaction.ISOLATION_LEVELS.READ_UNCOMMITTED
+		}).then(function(transaction) {
 			console.log("TRANSACTION STARTED");
+			req.tx = transaction;
 			next();
-		});
+		});		
 	});
 
 	app.param("note_id", function(req, res, next, note_id) {
@@ -66,6 +67,8 @@ exports.addRoutes = function(app, dao, models) {
 		var body = req.body;
 		var sequelize = models.sequelize;
 		var tx = req.tx;
+
+		console.log("body: %j", body);
 		
 		async.waterfall([
 			dao.createNote.bind(dao, tx, {
@@ -89,7 +92,8 @@ exports.addRoutes = function(app, dao, models) {
 			if(!error) {
 				res.result = new Responses.NoteResult(201, result);
 				next();
-			} else if(error instanceof DAO.ValidationError) {						
+			} else if(error instanceof DAO.ValidationError) {
+				console.log(error);
 				next(new Responses.ValidationError(error.fields));
 			} else if(error instanceof DAO.FailedToFindAllCategoriesError) {
 				next(new Responses.BadRequestError(error.message));
@@ -223,7 +227,17 @@ exports.addRoutes = function(app, dao, models) {
 				res.result = new Responses.CategoryResult(201, category);
 				next();
 			}).error(function(error) {
-				next(new Responses.ValidationError(error));
+				if(error instanceof Sequelize.ValidationError) {
+					var errorMap = {};
+					error.errors.forEach(function(e) {
+						errorMap[e.path] = e.message;
+					});
+
+					next(new Responses.ValidationError(errorMap));
+					return;
+				}
+
+				next(error);
 			});
 		}).error(function(error) {
 			next(error);
@@ -265,7 +279,17 @@ exports.addRoutes = function(app, dao, models) {
 				res.result = new Responses.CategoryResult(200, category);
 				next();
 			}).error(function(error) {
-				next(new Responses.ValidationError(error));
+				if(error instanceof Sequelize.ValidationError) {
+					var errorMap = {};
+					error.errors.forEach(function(e) {
+						errorMap[e.path] = e.message;
+					});
+
+					next(new Responses.ValidationError(errorMap));
+					return;
+				}
+
+				next(error);
 			});
 		});
 	});
