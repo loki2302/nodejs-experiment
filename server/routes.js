@@ -1,10 +1,9 @@
 var Sequelize = require("sequelize");
 var async = require("async");
 var validator = require("validator");
-var DAO = require("./dao.js");
 var Responses = require("./responses.js");
 
-exports.addRoutes = function(app, dao, models) {
+exports.addRoutes = function(app, models) {
 	app.use("/api", function(req, res, next) {
 		console.log("TRANSACTION STARTER");
 		var sequelize = models.sequelize;
@@ -14,35 +13,43 @@ exports.addRoutes = function(app, dao, models) {
 			console.log("TRANSACTION STARTED");
 			req.tx = transaction;
 			next();
-		});		
+		});
 	});
 
 	app.param("note_id", function(req, res, next, note_id) {
 		var id = validator.isInt(note_id) ? validator.toInt(note_id) : null;
-		if(!id) {
+		if(!id) {			
 			next(new Responses.NotFoundError("Note", note_id));
-		} else {
-			dao.getNoteWithCategories(req.tx, id, function(error, result) {
-				if(!error) {
-					req.note = result;
-					next();
-				} else if(error instanceof DAO.NoteNotFoundError) {
-					next(new Responses.NotFoundError("Note", id));
-				} else {
-					next(error);
-				}
-			});
+			return;
 		}
-	});	
+
+		models.Note.find({ 
+			where: { id: id },
+			include: [ models.Category ]
+		}, { 
+			transaction: req.tx 
+		}).success(function(note) {
+			if(!note) {
+				next(new Responses.NotFoundError("Note", note_id));
+				return;
+			}
+
+			req.note = note;
+			next();
+		}).error(function(error) {
+			next(error);
+		});		
+	});
 
 	app.get("/api/notes/", function(req, res, next) {
-		dao.getAllNotes(function(error, result) {
-			if(error) {
-				next(error);
-			} else {
-				res.result = new Responses.NoteCollectionResult(200, result);
-				next();
-			}
+		models.Note.findAll({
+			include: [ models.Category ], 
+			transaction: req.tx 
+		}).success(function(notes) {
+			res.result = new Responses.NoteCollectionResult(200, notes);
+			next();
+		}).error(function(error) {
+			next(error);
 		});
 	});	
 
@@ -67,36 +74,51 @@ exports.addRoutes = function(app, dao, models) {
 		var body = req.body;
 		var sequelize = models.sequelize;
 		var tx = req.tx;
-
-		console.log("body: %j", body);
 		
 		async.waterfall([
-			dao.createNote.bind(dao, tx, {
-				content: body.content
-			}),
-			function(note, callback) {
-				var categories = body.categories || [];				
-				var categoryIds = categories.map(function(category) { 
+			function(callback) {
+				var categoryIds = (body.categories || []).map(function(category) { 
 					return category.id; 
 				});
 
-				async.waterfall([
-					dao.findCategoriesByCategoryIds.bind(dao, tx, categoryIds),
-					dao.setNoteCategories.bind(dao, tx, note)
-				], function(error, result) {
-					callback(error, note.id);
-				});					
+				models.Category.findAll({
+					where: {
+						id: { in: categoryIds }
+					},
+					transaction: tx
+				}).done(function(error, result) {
+					if(error) {
+						callback(error);
+					} else if(result.length !== categoryIds.length) {
+						callback(new Responses.BadRequestError("Failed to find all categories"));
+					} else {
+						callback(null, result);
+					}
+				});
 			},
-			dao.getNoteWithCategories.bind(dao, tx)
+			function(categories, callback) {
+				models.Note.create({
+					content: body.content,
+					Categories: categories
+				}, {					
+					include: [ models.Category ],
+					transaction: tx
+				}).done(callback);
+			},
+			function(result, callback) {
+				callback(null, result);
+			}
 		], function(error, result) {
 			if(!error) {
 				res.result = new Responses.NoteResult(201, result);
 				next();
-			} else if(error instanceof DAO.ValidationError) {
-				console.log(error);
-				next(new Responses.ValidationError(error.fields));
-			} else if(error instanceof DAO.FailedToFindAllCategoriesError) {
-				next(new Responses.BadRequestError(error.message));
+			} else if(error instanceof Sequelize.ValidationError) {
+				var errorMap = {};
+				error.errors.forEach(function(e) {
+					errorMap[e.path] = e.message;
+				});
+
+				next(new Responses.ValidationError(errorMap));			
 			} else {
 				next(error);			
 			}
@@ -110,45 +132,45 @@ exports.addRoutes = function(app, dao, models) {
 		
 		async.waterfall([
 			function(callback) {
-				var categories = req.body.categories;
-				if(!categories) {
-					callback(null, null);
-					return;
-				}
-
-				var categoryIds = categories.map(function(category) { 
+				var categoryIds = (req.body.categories || []).map(function(category) { 
 					return category.id; 
 				});
-				dao.findCategoriesByCategoryIds(tx, categoryIds, callback);				
-			},
-			function(categories, callback) {
-				note.content = req.body.content;					
-				
-				if(!categories) {
-					callback(null, note);
-					return;
-				}
 
-				dao.setNoteCategories(tx, note, categories, function(error) {
-					callback(error, note);
+				models.Category.findAll({
+					where: {
+						id: { in: categoryIds }
+					},
+					transaction: tx
+				}).done(function(error, result) {
+					if(error) {
+						callback(error);
+					} else if(result.length !== categoryIds.length) {
+						callback(new Responses.BadRequestError("Failed to find all categories"));
+					} else {
+						callback(null, result);
+					}
 				});
-			},
-			function(note, callback) {
-				dao.saveNote(tx, note, callback);
-			},
-			function(note, callback) {
-				dao.getNoteWithCategories(tx, note.id, callback);
+			},			
+			function(categories, callback) {
+				note.updateAttributes({
+					content: req.body.content,
+					Categories: categories
+				}, {
+					include: [ models.Category ],
+					transaction: tx
+				}).done(callback);
 			}
 		], function(error, result) {
 			if(!error) {
 				res.result = new Responses.NoteResult(200, result);
-				next();
-			} else if(error instanceof DAO.NoteNotFoundError) {
-				next(new Responses.NotFoundError("Note", id));
-			} else if(error instanceof DAO.FailedToFindAllCategoriesError) {
-				next(new Responses.BadRequestError(error.message));
-			} else if(error instanceof DAO.ValidationError) {
-				next(new Responses.ValidationError(error.fields));
+				next();			
+			} else if(error instanceof Sequelize.ValidationError) {
+				var errorMap = {};
+				error.errors.forEach(function(e) {
+					errorMap[e.path] = e.message;
+				});
+
+				next(new Responses.ValidationError(errorMap));
 			} else {
 				next(error);
 			}			
@@ -163,7 +185,7 @@ exports.addRoutes = function(app, dao, models) {
 		}
 
 		models.Category.find({ 
-			where: {id: id}
+			where: { id: id }
 		}, { 
 			transaction: req.tx 
 		}).success(function(category) {

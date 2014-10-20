@@ -3,7 +3,7 @@ var bodyParser = require("body-parser");
 var sleep = require("sleep");
 var routes = require("./routes.js");
 
-module.exports = function(dao, models, config) {
+module.exports = function(models, config) {
 	var app = express();
 	app.use(express.static(__dirname + "/../client/build/"));
 	app.use(bodyParser.json());
@@ -14,7 +14,7 @@ module.exports = function(dao, models, config) {
 			next();
 		});
 	}
-	routes.addRoutes(app, dao, models);
+	routes.addRoutes(app, models);
 
 	["/", "/notes", "/categories"].forEach(function(route) {
 		app.all(route, function(req, res) {

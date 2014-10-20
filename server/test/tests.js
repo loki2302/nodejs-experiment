@@ -2,7 +2,6 @@ var assert = require("assert");
 var async = require("async");
 
 var models = require("../models.js");
-var DAO = require("../dao.js").DAO;
 var makeApp = require("../app.js");
 var NotepadClient = require("../client.js");
 
@@ -16,8 +15,7 @@ describe("app", function() {
 			}
 
 			client = new NotepadClient("http://localhost:3000/api");
-			var dao = new DAO(models);
-			var app = makeApp(dao, models, {
+			var app = makeApp(models, {
 				// no synth delays for tests
 			});
 			server = app.listen(3000, function() {
