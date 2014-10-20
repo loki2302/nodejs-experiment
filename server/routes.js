@@ -104,9 +104,6 @@ exports.addRoutes = function(app, models) {
 					include: [ models.Category ],
 					transaction: tx
 				}).done(callback);
-			},
-			function(result, callback) {
-				callback(null, result);
 			}
 		], function(error, result) {
 			if(!error) {
