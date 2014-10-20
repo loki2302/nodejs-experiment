@@ -6,6 +6,7 @@ var Responses = require("./responses.js");
 exports.addRoutes = function(app, models) {
 	app.use("/api", function(req, res, next) {
 		console.log("TRANSACTION STARTER");
+		
 		var sequelize = models.sequelize;
 		sequelize.transaction({
 			isolationLevel: Sequelize.Transaction.ISOLATION_LEVELS.READ_UNCOMMITTED
@@ -44,7 +45,8 @@ exports.addRoutes = function(app, models) {
 	app.get("/api/notes/", function(req, res, next) {
 		models.Note.findAll({
 			include: [ models.Category ], 
-			transaction: req.tx 
+		}, {
+			transaction: req.tx		
 		}).success(function(notes) {
 			res.result = new Responses.NoteCollectionResult(200, notes);
 			next();
@@ -59,8 +61,7 @@ exports.addRoutes = function(app, models) {
 	});
 
 	app.delete("/api/notes/:note_id", function(req, res, next) {		
-		var note = req.note;		
-		note.destroy({
+		req.note.destroy({
 			transaction: req.tx
 		}).success(function() {
 			res.result = new Responses.MessageResult(200, "Deleted");
@@ -71,21 +72,18 @@ exports.addRoutes = function(app, models) {
 	});
 
 	app.post("/api/notes/", function(req, res, next) {
-		var body = req.body;
-		var sequelize = models.sequelize;
-		var tx = req.tx;
-		
 		async.waterfall([
 			function(callback) {
-				var categoryIds = (body.categories || []).map(function(category) { 
+				var categoryIds = (req.body.categories || []).map(function(category) { 
 					return category.id; 
 				});
 
 				models.Category.findAll({
 					where: {
 						id: { in: categoryIds }
-					},
-					transaction: tx
+					}
+				}, {
+					transaction: req.tx				
 				}).done(function(error, result) {
 					if(error) {
 						callback(error);
@@ -98,11 +96,11 @@ exports.addRoutes = function(app, models) {
 			},
 			function(categories, callback) {
 				models.Note.create({
-					content: body.content,
+					content: req.body.content,
 					Categories: categories
 				}, {					
 					include: [ models.Category ],
-					transaction: tx
+					transaction: req.tx
 				}).done(callback);
 			}
 		], function(error, result) {
@@ -122,11 +120,7 @@ exports.addRoutes = function(app, models) {
 		});
 	});
 
-	app.post("/api/notes/:note_id", function(req, res, next) {
-		var note = req.note;
-		var sequelize = models.sequelize;
-		var tx = req.tx;
-		
+	app.post("/api/notes/:note_id", function(req, res, next) {	
 		async.waterfall([
 			function(callback) {
 				var categoryIds = (req.body.categories || []).map(function(category) { 
@@ -136,8 +130,9 @@ exports.addRoutes = function(app, models) {
 				models.Category.findAll({
 					where: {
 						id: { in: categoryIds }
-					},
-					transaction: tx
+					}
+				}, {
+					transaction: req.tx				
 				}).done(function(error, result) {
 					if(error) {
 						callback(error);
@@ -149,12 +144,12 @@ exports.addRoutes = function(app, models) {
 				});
 			},			
 			function(categories, callback) {
-				note.updateAttributes({
+				req.note.updateAttributes({
 					content: req.body.content,
 					Categories: categories
 				}, {
 					include: [ models.Category ],
-					transaction: tx
+					transaction: req.tx
 				}).done(callback);
 			}
 		], function(error, result) {
@@ -224,22 +219,20 @@ exports.addRoutes = function(app, models) {
 	});
 
 	app.post("/api/categories/", function(req, res, next) {
-		var body = req.body;
-		var categoryName = body.name;
 		models.Category.find({
 			where: {
-				name: categoryName
+				name: req.body.name
 			}
 		}, { 
 			transaction: req.tx 
 		}).success(function(category) {
 			if(category) {
-				next(new Responses.ConflictError("Category " + categoryName + " already exists"));
+				next(new Responses.ConflictError("Category " + req.body.name + " already exists"));
 				return;
 			}
 
 			models.Category.create({ 
-				name: body.name 
+				name: req.body.name 
 			}, { 
 				transaction: req.tx 
 			}).success(function(category) {
@@ -263,9 +256,8 @@ exports.addRoutes = function(app, models) {
 		});		
 	});
 
-	app.delete("/api/categories/:category_id", function(req, res, next) {
-		var category = req.category;
-		category.destroy({ 
+	app.delete("/api/categories/:category_id", function(req, res, next) {		
+		req.category.destroy({ 
 			transaction: req.tx 
 		}).success(function() {
 			res.result = new Responses.MessageResult(200, "Deleted");
@@ -277,11 +269,9 @@ exports.addRoutes = function(app, models) {
 
 	app.post("/api/categories/:category_id", function(req, res, next) {
 		var category = req.category;
-
-		var categoryName = req.body.name;
 		models.Category.find({
 			where: {
-				name: categoryName
+				name: req.body.name
 			}
 		}, { 
 			transaction: req.tx 
@@ -291,7 +281,7 @@ exports.addRoutes = function(app, models) {
 				return;
 			}
 
-			category.name = categoryName;
+			category.name = req.body.name;
 			category.save({ 
 				transaction: req.tx 
 			}).success(function(category) {
