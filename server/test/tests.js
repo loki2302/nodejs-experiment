@@ -118,8 +118,15 @@ describe("app", function() {
 					assert.equal(body.categories.length, 1);
 					assert.equal(body.categories[0].id, jsCategoryId);
 					assert.equal(body.categories[0].name, "js");
-					done();
+					callback(null, body.id);					
 				});
+			},
+			function(noteId) {
+				// this fails because categories are NOT actually saved
+				client.getNote(noteId, function(error, response, body) {
+					assert.equal(body.categories.length, 1);
+					done();
+				});				
 			}
 		]);
 	});
