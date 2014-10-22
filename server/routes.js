@@ -4,6 +4,9 @@ var validator = require("validator");
 var Responses = require("./responses.js");
 
 exports.addRoutes = function(app, models) {
+	var Note = models.Note;
+	var Category = models.Category;
+
 	app.use("/api", function(req, res, next) {
 		console.log("TRANSACTION STARTER");
 		
@@ -24,9 +27,9 @@ exports.addRoutes = function(app, models) {
 			return;
 		}
 
-		models.Note.find({ 
+		Note.find({ 
 			where: { id: id },
-			include: [ models.Category ]
+			include: [ Category ]
 		}, { 
 			transaction: req.tx 
 		}).success(function(note) {
@@ -43,8 +46,8 @@ exports.addRoutes = function(app, models) {
 	});
 
 	app.get("/api/notes/", function(req, res, next) {
-		models.Note.findAll({
-			include: [ models.Category ], 
+		Note.findAll({
+			include: [ Category ], 
 		}, {
 			transaction: req.tx		
 		}).success(function(notes) {
@@ -72,13 +75,13 @@ exports.addRoutes = function(app, models) {
 	});
 
 	app.post("/api/notes/", function(req, res, next) {
-		async.waterfall([
-			function(callback) {
+		async.auto({
+			categories: function(callback) {
 				var categoryIds = (req.body.categories || []).map(function(category) { 
 					return category.id; 
 				});
 
-				models.Category.findAll({
+				Category.findAll({
 					where: {
 						id: { in: categoryIds }
 					}
@@ -94,18 +97,34 @@ exports.addRoutes = function(app, models) {
 					}
 				});
 			},
-			function(categories, callback) {
-				models.Note.create({
-					content: req.body.content,
-					Categories: categories
-				}, {					
-					include: [ models.Category ],
+			note: function(callback) {
+				Note.create({
+					content: req.body.content
+				}, {
 					transaction: req.tx
 				}).done(callback);
-			}
-		], function(error, result) {
+			},
+			noteAfterCategoriesSet: ["note", "categories", function(callback, results) {
+				var note = results.note;
+				var categories = results.categories;
+				note.setCategories(categories, { 
+					transaction: req.tx 
+				}).done(function(error, result) {
+					callback(error, note);
+				});
+			}],
+			reloadedNote: ["noteAfterCategoriesSet", function(callback, results) {
+				var note = results.noteAfterCategoriesSet;
+				Note.find({ 
+					where: { id: note.id },
+					include: [ Category ]
+				}, { 
+					transaction: req.tx 
+				}).done(callback);
+			}]
+		}, function(error, result) {
 			if(!error) {
-				res.result = new Responses.NoteResult(201, result);
+				res.result = new Responses.NoteResult(201, result.reloadedNote);
 				next();
 			} else if(error instanceof Sequelize.ValidationError) {
 				var errorMap = {};
@@ -127,7 +146,7 @@ exports.addRoutes = function(app, models) {
 					return category.id; 
 				});
 
-				models.Category.findAll({
+				Category.findAll({
 					where: {
 						id: { in: categoryIds }
 					}
@@ -148,7 +167,7 @@ exports.addRoutes = function(app, models) {
 					content: req.body.content,
 					Categories: categories
 				}, {
-					include: [ models.Category ],
+					include: [ Category ],
 					transaction: req.tx
 				}).done(callback);
 			}
@@ -176,7 +195,7 @@ exports.addRoutes = function(app, models) {
 			return;
 		}
 
-		models.Category.find({ 
+		Category.find({ 
 			where: { id: id }
 		}, { 
 			transaction: req.tx 
@@ -203,7 +222,7 @@ exports.addRoutes = function(app, models) {
 			};
 		}
 
-		models.Category.findAll(criteria, { 
+		Category.findAll(criteria, { 
 			transaction: req.tx 
 		}).success(function(categories) {
 			res.result = new Responses.CategoryCollectionResult(200, categories);
@@ -219,7 +238,7 @@ exports.addRoutes = function(app, models) {
 	});
 
 	app.post("/api/categories/", function(req, res, next) {
-		models.Category.find({
+		Category.find({
 			where: {
 				name: req.body.name
 			}
@@ -231,7 +250,7 @@ exports.addRoutes = function(app, models) {
 				return;
 			}
 
-			models.Category.create({ 
+			Category.create({ 
 				name: req.body.name 
 			}, { 
 				transaction: req.tx 
@@ -269,7 +288,7 @@ exports.addRoutes = function(app, models) {
 
 	app.post("/api/categories/:category_id", function(req, res, next) {
 		var category = req.category;
-		models.Category.find({
+		Category.find({
 			where: {
 				name: req.body.name
 			}
