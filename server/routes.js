@@ -4,17 +4,14 @@ var validator = require("validator");
 var Responses = require("./responses.js");
 
 exports.addRoutes = function(app, models) {
+	var sequelize = models.sequelize;
 	var Note = models.Note;
 	var Category = models.Category;
 
-	app.use("/api", function(req, res, next) {
-		console.log("TRANSACTION STARTER");
-		
-		var sequelize = models.sequelize;
+	app.use("/api", function(req, res, next) {		
 		sequelize.transaction({
 			isolationLevel: Sequelize.Transaction.ISOLATION_LEVELS.READ_UNCOMMITTED
 		}).then(function(transaction) {
-			console.log("TRANSACTION STARTED");
 			req.tx = transaction;
 			next();
 		});
@@ -337,19 +334,15 @@ exports.addRoutes = function(app, models) {
 	});
 
 	app.use("/api", function(req, res, next) {
-		console.log("TRANSACTION COMMITER");
 		var tx = req.tx;
 		tx.commit().success(function() {
-			console.log("COMMITTED SUCCESSFULLY");
 			next();
 		}).error(function() {
-			console.log("COMMIT FAILED");
 			next();
 		});
 	});
 
 	app.use("/api", function(error, req, res, next) {
-		console.log("TRANSACTION ROLLBACKER: %s", error);
 		var tx = req.tx;
 		tx.rollback().success(function() {
 			next(error);
@@ -359,7 +352,6 @@ exports.addRoutes = function(app, models) {
 	});	
 
 	app.use("/api", function(error, req, res, next) {
-		console.log("ERROR RENDERER: [%s] %j", error.name, error);
 		if(typeof error.render === "function") {
 			error.render(res);
 		} else {
@@ -368,7 +360,6 @@ exports.addRoutes = function(app, models) {
 	});
 
 	app.use("/api", function(req, res, next) {
-		console.log("RESULT RENDERER");
 		res.result.render(res);
 		next();
 	});	
