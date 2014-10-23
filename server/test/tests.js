@@ -122,11 +122,10 @@ describe("app", function() {
 				});
 			},
 			function(noteId) {
-				// this fails because categories are NOT actually saved
 				client.getNote(noteId, function(error, response, body) {
 					assert.equal(body.categories.length, 1);
 					done();
-				});				
+				});
 			}
 		]);
 	});
@@ -162,6 +161,12 @@ describe("app", function() {
 					assert.equal(body.categories[0].name, "js");
 					assert.equal(body.categories[1].id, javaCategoryId);
 					assert.equal(body.categories[1].name, "java");
+					callback(null, body.id);					
+				});
+			},
+			function(noteId) {
+				client.getNote(noteId, function(error, response, body) {
+					assert.equal(body.categories.length, 2);
 					done();
 				});
 			}
@@ -319,14 +324,19 @@ describe("app", function() {
 					{ id: categories.java.body.id }
 				];
 				note.content = "hi there";
-				client.updateNote(note, callback);
+				client.updateNote(note, function(error, response, body) {
+					assert.equal(response.statusCode, 200);
+					assert.equal(body.content, "hi there");
+					assert.equal(body.categories.length, 2);
+					callback(null, note.id);
+				});
 			},
-			function(response, body, callback) {
-				assert.equal(response.statusCode, 200);
-				assert.equal(body.content, "hi there");
-				assert.equal(body.categories.length, 2);
-				done();
-			}
+			function(noteId) {
+				client.getNote(noteId, function(error, response, body) {
+					assert.equal(body.categories.length, 2);
+					done();
+				});
+			}			
 		]);
 	});
 

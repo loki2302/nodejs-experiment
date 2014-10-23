@@ -144,8 +144,14 @@ exports.addRoutes = function(app, models) {
 	});
 
 	app.post("/api/notes/:note_id", function(req, res, next) {	
-		async.waterfall([
+		async.waterfall([			
 			function(callback) {
+				req.note.content = req.body.content;
+				req.note.save({ 
+					transaction: req.tx 
+				}).done(callback);
+			},
+			function(note, callback) {
 				var categoryIds = (req.body.categories || []).map(function(category) { 
 					return category.id; 
 				});
@@ -165,14 +171,18 @@ exports.addRoutes = function(app, models) {
 						callback(null, result);
 					}
 				});
-			},			
+			},
 			function(categories, callback) {
-				req.note.updateAttributes({
-					content: req.body.content,
-					Categories: categories
-				}, {
-					include: [ Category ],
+				req.note.setCategories(categories, {
 					transaction: req.tx
+				}).done(callback);
+			},
+			function(categories, callback) {
+				Note.find({ 
+					where: { id: req.note.id },
+					include: [ Category ]
+				}, { 
+					transaction: req.tx 
 				}).done(callback);
 			}
 		], function(error, result) {
