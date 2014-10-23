@@ -75,56 +75,60 @@ exports.addRoutes = function(app, models) {
 	});
 
 	app.post("/api/notes/", function(req, res, next) {
-		async.auto({
-			categories: function(callback) {
-				var categoryIds = (req.body.categories || []).map(function(category) { 
-					return category.id; 
-				});
+		async.waterfall([
+			function(callback) {
+				async.auto({
+					categories: function(callback) {
+						var categoryIds = (req.body.categories || []).map(function(category) { 
+							return category.id; 
+						});
 
-				Category.findAll({
-					where: {
-						id: { in: categoryIds }
+						Category.findAll({
+							where: {
+								id: { in: categoryIds }
+							}
+						}, {
+							transaction: req.tx				
+						}).done(function(error, result) {
+							if(error) {
+								callback(error);
+							} else if(result.length !== categoryIds.length) {
+								callback(new Responses.BadRequestError("Failed to find all categories"));
+							} else {
+								callback(null, result);
+							}
+						});
+					},
+					note: function(callback) {
+						Note.create({
+							content: req.body.content
+						}, {
+							transaction: req.tx
+						}).done(callback);
 					}
-				}, {
-					transaction: req.tx				
-				}).done(function(error, result) {
-					if(error) {
-						callback(error);
-					} else if(result.length !== categoryIds.length) {
-						callback(new Responses.BadRequestError("Failed to find all categories"));
-					} else {
-						callback(null, result);
-					}
-				});
+				}, callback);
 			},
-			note: function(callback) {
-				Note.create({
-					content: req.body.content
-				}, {
-					transaction: req.tx
-				}).done(callback);
-			},
-			noteAfterCategoriesSet: ["note", "categories", function(callback, results) {
-				var note = results.note;
-				var categories = results.categories;
+			function(noteAndCategories, callback) {
+				var note = noteAndCategories.note;
+				var categories = noteAndCategories.categories;
+
 				note.setCategories(categories, { 
 					transaction: req.tx 
 				}).done(function(error, result) {
-					callback(error, note);
+					callback(error, note.id);
 				});
-			}],
-			reloadedNote: ["noteAfterCategoriesSet", function(callback, results) {
-				var note = results.noteAfterCategoriesSet;
+			},
+			function(noteId, callback) {
 				Note.find({ 
-					where: { id: note.id },
+					where: { id: noteId },
 					include: [ Category ]
 				}, { 
 					transaction: req.tx 
 				}).done(callback);
-			}]
-		}, function(error, result) {
+			}
+		], function(error, result) {
 			if(!error) {
-				res.result = new Responses.NoteResult(201, result.reloadedNote);
+				res.result = new Responses.NoteResult(201, result);
 				next();
 			} else if(error instanceof Sequelize.ValidationError) {
 				var errorMap = {};
