@@ -20,4 +20,25 @@ describe('pegjs', function() {
 		var result = parser.parse('2+3');
 		assert.equal(result, 5);
 	});
+
+	it('should let me build a DSL', function() {
+		var parser = PEG.buildParser("\
+			start = (s:statement ';' { return s; })+ \
+			statement = 'when ' condition:text ' then ' action:text { \
+				return {condition: condition, action: action} \
+			} \
+			text = c:[a-z]+ { return c.join(''); } \
+			");
+
+		var result = parser.parse('when hungry then eat;when sad then drink;');
+
+		var rules = {};
+		result.forEach(function(rule) {
+			rules[rule.condition] = rule.action;
+		});
+
+		assert.equal(Object.keys(rules).length, 2);
+		assert.equal(rules['hungry'], 'eat');
+		assert.equal(rules['sad'], 'drink');
+	});
 });
