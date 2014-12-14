@@ -1,0 +1,16 @@
+{
+  "name": "showdown-experiment",
+  "version": "0.0.0",
+  "description": "",
+  "main": "tests.js",
+  "scripts": {
+    "test": "mocha ."
+  },
+  "author": "loki2302",
+  "license": "ISC",
+  "dependencies": {
+    "cheerio": "^0.18.0",
+    "pegjs": "^0.8.0",
+    "showdown": "^0.3.1"
+  }
+}
