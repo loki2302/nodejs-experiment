@@ -23,14 +23,25 @@ describe('pegjs', function() {
 
 	it('should let me build a DSL', function() {
 		var parser = PEG.buildParser("\
-			start = (s:statement ';' { return s; })+ \
-			statement = 'when ' condition:text ' then ' action:text { \
+			start = ss:(osp s:statement osp ';' { return s; })+ osp { return ss; } \
+			statement = 'when' msp condition:text msp 'then' msp action:text { \
 				return {condition: condition, action: action} \
 			} \
 			text = c:[a-z]+ { return c.join(''); } \
+			msp = sp+ \
+			osp = sp* \
+			sp = [ \\t\\r\\n] \
 			");
 
-		var result = parser.parse('when hungry then eat;when sad then drink;');
+		var result = parser.parse('\
+\t\r\n\
+			when\thungry\rthen\neat\t\r\n ;  \
+\t\t\t\t\n\n\n\
+			when\n\r  sad\r\t  then\n\r\t  drink  ;\t\t\t  \
+\
+			');
+
+		console.log(result);
 
 		var rules = {};
 		result.forEach(function(rule) {
