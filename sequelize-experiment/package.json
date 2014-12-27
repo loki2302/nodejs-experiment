@@ -4,14 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "nodeunit tests",
-    "start": "nodeunit tests"
+    "test": "node --harmony `which nodeunit` tests"
   },
   "author": "loki2302",
   "license": "BSD-2-Clause",
   "dependencies": {
+    "co": "^4.1.0",
+    "q": "~1.0.1",
     "sequelize": "~2.0.0-rc1",
-    "sqlite3": "~3.0.2",
-    "q": "~1.0.1"
+    "sqlite3": "~3.0.2"
   }
 }
