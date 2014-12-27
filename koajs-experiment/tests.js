@@ -28,7 +28,15 @@ describe('app', function() {
 				json: true
 			});
 			
-			assert.equal(body.message, 'hello there');
+			assert.equal(body.message, 'root');
+
+			body = yield rp({
+				method: 'GET',
+				url: 'http://localhost:3000/hello',
+				json: true
+			});
+			
+			assert.equal(body.message, 'hi there');
 		}).then(done, done);
 	});
 });

@@ -1,5 +1,6 @@
 var koa = require('koa');
 var json = require('koa-json');
+var router = require('koa-router');
 var Q = require('q');
 
 module.exports = function() {
@@ -7,9 +8,17 @@ module.exports = function() {
 
 	var app = koa();	
 	app.use(json());
-	app.use(function* (next) {
-		this.body = { 
-			message: 'hello there' 
+	app.use(router(app));
+
+	app.get('/', function* (next) {
+		this.body = {
+			message: 'root'
+		};
+	});
+
+	app.get('/hello', function* (next) {
+		this.body = {
+			message: 'hi there'
 		};
 	});
 
