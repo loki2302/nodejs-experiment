@@ -7,80 +7,80 @@ var Sequelize = require('sequelize');
 var co = require('co');
 
 module.exports = function() {
-	var sequelize = new Sequelize('database', 'username', 'password', {
-		dialect: 'sqlite',
-		storage: 'my.db'
-	});
+  var sequelize = new Sequelize('database', 'username', 'password', {
+    dialect: 'sqlite',
+    storage: 'my.db'
+  });
 
-	var Note = sequelize.define('Note', {
-		content: Sequelize.STRING
-	});
+  var Note = sequelize.define('Note', {
+    content: Sequelize.STRING
+  });
 
-	var app = koa();
-	app.use(bodyParser());
-	app.use(json());
-	app.use(function* (next) {
-		this.Note = Note;
-		yield* next;
-	});
-	
-	app.use(router(app));	
+  var app = koa();
+  app.use(bodyParser());
+  app.use(json());
+  app.use(function* (next) {
+    this.Note = Note;
+    yield* next;
+  });
+  
+  app.use(router(app)); 
 
-	app.get('/notes', function* (next) {
-		this.body = yield this.Note.findAll();
-	});
+  app.get('/notes', function* (next) {
+    this.body = yield this.Note.findAll();
+  });
 
-	app.post('/notes', function* (next) {		
-		this.body = yield this.Note.create({
-			content: this.request.body.content
-		});
-	});
+  app.post('/notes', function* (next) {   
+    this.body = yield this.Note.create({
+      content: this.request.body.content
+    });
+  });
 
-	app.get('/notes/:id', function* (next) {
-		var noteId = this.params.id;
-		var note = yield this.Note.find(noteId);
-		if(!note) {
-			this.throw(404, 'Note not found');
-			return;
-		}
+  app.get('/notes/:id', function* (next) {
+    var noteId = this.params.id;
+    var note = yield this.Note.find(noteId);
+    if(!note) {
+      this.throw(404, 'Note not found');
+      return;
+    }
 
-		this.body = note;
-	});
+    this.body = note;
+  });
 
-	app.delete('/notes/:id', function* (next) {
-		var noteId = this.params.id;		
-		var note = yield this.Note.find(noteId);
-		if(!note) {			
-			this.throw(404, 'Note not found');
-			return;
-		}
+  app.delete('/notes/:id', function* (next) {
+    var noteId = this.params.id;    
+    var note = yield this.Note.find(noteId);
+    if(!note) {     
+      this.throw(404, 'Note not found');
+      return;
+    }
 
-		yield note.destroy();
+    yield note.destroy();
 
-		this.body = { 'message': 'ok' };
-	});
+    this.body = { 'message': 'ok' };
+  });
 
-	app.put('/notes/:id', function* (next) {
-		var noteId = this.params.id;		
-		var note = yield this.Note.find(noteId);
-		if(!note) {			
-			this.throw(404, 'Note not found');
-			return;
-		}
+  app.put('/notes/:id', function* (next) {
+    var noteId = this.params.id;    
+    var note = yield this.Note.find(noteId);
+    if(!note) {     
+      this.throw(404, 'Note not found');
+      return;
+    }
 
-		note.content = this.request.body.content;
-		yield note.save();
+    note.content = this.request.body.content;
+    yield note.save();
 
-		this.body = { 'message': 'ok' };
-	});
+    this.body = { 'message': 'ok' };
+  });
 
-	return co(function* () {
-		yield sequelize.drop();
-		yield sequelize.sync();
-		return Q.Promise(function(resolve) {
-			server = app.listen(3000, function() {
-				resolve(server);
-			});
-		});
-	});
+  return co(function* () {
+    yield sequelize.drop();
+    yield sequelize.sync();
+    return Q.Promise(function(resolve) {
+      server = app.listen(3000, function() {
+        resolve(server);
+      });
+    });
+  });
 };
