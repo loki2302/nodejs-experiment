@@ -22,9 +22,13 @@ describe('app', function() {
 
 	it('should let me access it', function(done) {
 		co(function* () {
-			var body = yield rp('http://localhost:3000/');
-			assert.equal(body, 'hello there');
-			done();
-		});
+			var body = yield rp({
+				method: 'GET',
+				url: 'http://localhost:3000/',
+				json: true
+			});
+			
+			assert.equal(body.message, 'hello there');
+		}).then(done, done);
 	});
 });

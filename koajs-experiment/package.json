@@ -12,6 +12,7 @@
   "dependencies": {
     "co": "^4.1.0",
     "koa": "^0.14.0",
+    "koa-json": "^1.1.1",
     "q": "^1.1.2",
     "request-promise": "^0.3.2"
   }
