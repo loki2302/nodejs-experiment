@@ -39,4 +39,17 @@ describe('app', function() {
 			assert.equal(body.message, 'hi there');
 		}).then(done, done);
 	});
+
+	it('should let me count the notes', function(done) {
+		co(function* () {
+			var body = yield rp({
+				method: 'GET',
+				url: 'http://localhost:3000/notes/count',
+				json: true
+			});
+			
+			assert.equal(body.count, 0);
+
+		}).then(done, done);
+	});
 });
