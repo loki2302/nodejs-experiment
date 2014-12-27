@@ -21,6 +21,11 @@ module.exports = function() {
   app.use(json());
   app.use(function* (next) {
     this.Note = Note;
+    
+    this.throwNoteNotFound = function() {
+      this.throw(404, 'Note not found');
+    };
+
     yield* next;
   });
   
@@ -40,7 +45,7 @@ module.exports = function() {
     var noteId = this.params.id;
     var note = yield this.Note.find(noteId);
     if(!note) {
-      this.throw(404, 'Note not found');
+      this.throwNoteNotFound();
       return;
     }
 
@@ -51,7 +56,7 @@ module.exports = function() {
     var noteId = this.params.id;    
     var note = yield this.Note.find(noteId);
     if(!note) {     
-      this.throw(404, 'Note not found');
+      this.throwNoteNotFound();
       return;
     }
 
@@ -64,7 +69,7 @@ module.exports = function() {
     var noteId = this.params.id;    
     var note = yield this.Note.find(noteId);
     if(!note) {     
-      this.throw(404, 'Note not found');
+      this.throwNoteNotFound();
       return;
     }
 
