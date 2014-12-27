@@ -1,0 +1,14 @@
+{
+  "name": "harmony-experiment",
+  "version": "1.0.0",
+  "description": "This one requires Node 11.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --harmony ."
+  },
+  "author": "loki2302",
+  "license": "ISC",
+  "dependencies": {
+    "q": "^1.1.2"
+  }
+}
