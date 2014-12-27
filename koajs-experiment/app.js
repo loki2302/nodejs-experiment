@@ -1,5 +1,6 @@
 var koa = require('koa');
 var json = require('koa-json');
+var bodyParser = require('koa-body-parser');
 var router = require('koa-router');
 var Q = require('q');
 var Sequelize = require('sequelize');
@@ -15,7 +16,8 @@ module.exports = function() {
 		content: Sequelize.STRING
 	});
 
-	var app = koa();	
+	var app = koa();
+	app.use(bodyParser());
 	app.use(json());
 	app.use(function* (next) {
 		this.Note = Note;
@@ -24,23 +26,52 @@ module.exports = function() {
 	
 	app.use(router(app));	
 
-	app.get('/notes/count', function* (next) {
-		console.log(this);
-		this.body = {
-			count: yield this.Note.count()
-		};
+	app.get('/notes', function* (next) {
+		this.body = yield this.Note.findAll();
 	});
 
-	app.get('/', function* (next) {
-		this.body = {
-			message: 'root'
-		};
+	app.post('/notes', function* (next) {		
+		this.body = yield this.Note.create({
+			content: this.request.body.content
+		});
 	});
 
-	app.get('/hello', function* (next) {
-		this.body = {
-			message: 'hi there'
-		};
+	app.get('/notes/:id', function* (next) {
+		var noteId = this.params.id;
+		var note = yield this.Note.find(noteId);
+		if(!note) {
+			this.throw(404, 'Note not found');
+			return;
+		}
+
+		this.body = note;
+	});
+
+	app.delete('/notes/:id', function* (next) {
+		var noteId = this.params.id;		
+		var note = yield this.Note.find(noteId);
+		if(!note) {			
+			this.throw(404, 'Note not found');
+			return;
+		}
+
+		yield note.destroy();
+
+		this.body = { 'message': 'ok' };
+	});
+
+	app.put('/notes/:id', function* (next) {
+		var noteId = this.params.id;		
+		var note = yield this.Note.find(noteId);
+		if(!note) {			
+			this.throw(404, 'Note not found');
+			return;
+		}
+
+		note.content = this.request.body.content;
+		yield note.save();
+
+		this.body = { 'message': 'ok' };
 	});
 
 	return co(function* () {
