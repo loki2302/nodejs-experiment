@@ -9,6 +9,7 @@
   "author": "loki2302",
   "license": "ISC",
   "dependencies": {
+    "co": "^4.1.0",
     "q": "^1.1.2"
   }
 }
