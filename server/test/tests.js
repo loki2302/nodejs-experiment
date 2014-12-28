@@ -33,7 +33,7 @@ describe("app", function() {
 
   it("should have no notes by default", function(done) {
     co(function* () {
-      var response = yield client.getAllNotesPromise();
+      var response = yield client.getAllNotes();
       assert.equal(response.statusCode, 200);
       assert.equal(response.body.length, 0);
     }).then(done, done);
@@ -41,7 +41,7 @@ describe("app", function() {
 
   it("should have no categories by default", function(done) {
     co(function* () {
-      var response = yield client.getAllCategoriesPromise();
+      var response = yield client.getAllCategories();
       assert.equal(response.statusCode, 200);
       assert.equal(response.body.length, 0);
     }).then(done, done);
@@ -49,7 +49,7 @@ describe("app", function() {
 
   it("should let me create a note", function(done) {
     co(function* () {
-      var response = yield client.createNotePromise({
+      var response = yield client.createNote({
         content: 'hello'
       });
       assert.equal(response.statusCode, 201);
@@ -61,7 +61,7 @@ describe("app", function() {
   it("should not let me create a note if content is empty string", function(done) {
     co(function* () {
       try {
-        yield client.createNotePromise({
+        yield client.createNote({
           content: ''
         });
         assert.ok(false);
@@ -75,7 +75,7 @@ describe("app", function() {
   it("should not let me create a note if content is null", function(done) {
     co(function* () {
       try {
-        yield client.createNotePromise({
+        yield client.createNote({
           content: null
         });
         assert.ok(false);
@@ -89,7 +89,7 @@ describe("app", function() {
   it("should not let me create a note if content is not defined", function(done) {
     co(function* () {
       try {
-        yield client.createNotePromise({});
+        yield client.createNote({});
         assert.ok(false);
       } catch(e) {
         assert.equal(e.response.statusCode, 400);
@@ -100,13 +100,13 @@ describe("app", function() {
 
   it("should let me create a note with single category", function(done) {
     co(function* () {
-      var createCategoryResponse = yield client.createCategoryPromise({
+      var createCategoryResponse = yield client.createCategory({
         name: 'js'
       });
       assert.equal(createCategoryResponse.statusCode, 201);
 
       var categoryId = createCategoryResponse.body.id;
-      var createNoteResponse = yield client.createNotePromise({
+      var createNoteResponse = yield client.createNote({
         content: 'hello there',
         categories: [
           { id: categoryId }
@@ -121,22 +121,22 @@ describe("app", function() {
       assert.equal(createNoteResponse.body.categories[0].name, "js");
 
       var noteId = createNoteResponse.body.id;
-      var getNoteResponse = yield client.getNotePromise(noteId);
+      var getNoteResponse = yield client.getNote(noteId);
       assert.equal(getNoteResponse.body.categories.length, 1);
     }).then(done, done);
   });
 
   it("should let me create a note with multiple categories", function(done) {
     co(function* () {
-      var jsCategoryId = (yield client.createCategoryPromise({
+      var jsCategoryId = (yield client.createCategory({
         name: 'js'
       })).body.id;
 
-      var javaCategoryId = (yield client.createCategoryPromise({
+      var javaCategoryId = (yield client.createCategory({
         name: 'java'
       })).body.id;
 
-      var createNoteResponse = yield client.createNotePromise({
+      var createNoteResponse = yield client.createNote({
         content: 'hello there',
         categories: [
           { id: jsCategoryId },
@@ -154,19 +154,19 @@ describe("app", function() {
       assert.equal(createNoteResponse.body.categories[1].name, "java");
 
       var noteId = createNoteResponse.body.id;
-      var getNoteResponse = yield client.getNotePromise(noteId);
+      var getNoteResponse = yield client.getNote(noteId);
       assert.equal(getNoteResponse.body.categories.length, 2);
     }).then(done, done);
   });
 
   it("should not let me create a note if at least one category doesn't exist", function(done) {
     co(function* () {
-      var jsCategoryId = (yield client.createCategoryPromise({
+      var jsCategoryId = (yield client.createCategory({
         name: 'js'
       })).body.id;
 
       try {
-        yield client.createNotePromise({
+        yield client.createNote({
           content: 'hello there',
           categories: [
             { id: jsCategoryId },
@@ -180,7 +180,7 @@ describe("app", function() {
         assert.ok("message" in e.response.body);
       }
 
-      var getAllNotesResponse = yield client.getAllNotesPromise();
+      var getAllNotesResponse = yield client.getAllNotes();
       assert.equal(getAllNotesResponse.statusCode, 200);
       assert.equal(getAllNotesResponse.body.length, 0);
     }).then(done, done);
@@ -188,11 +188,11 @@ describe("app", function() {
 
   it("should let me delete a note", function(done) {
     co(function* () {
-      var noteId = (yield client.createNotePromise({
+      var noteId = (yield client.createNote({
         content: 'hello'
       })).body.id;
 
-      var deleteNoteResponse = yield client.deleteNotePromise(noteId);
+      var deleteNoteResponse = yield client.deleteNote(noteId);
       assert.equal(deleteNoteResponse.statusCode, 200);
       assert.ok("message" in deleteNoteResponse.body);
     }).then(done, done);
@@ -201,7 +201,7 @@ describe("app", function() {
   it("should not let me delete a note if note does not exist", function(done) {
     co(function* () {
       try {
-        yield client.deleteNotePromise(123);
+        yield client.deleteNote(123);
         assert.ok(false);
       } catch(e) {
         assert.equal(e.response.statusCode, 404);
@@ -213,7 +213,7 @@ describe("app", function() {
   it("should respond with 404 if note does not exist", function(done) {
     co(function* () {
       try {
-        yield client.getNotePromise(123);
+        yield client.getNote(123);
         assert.ok(false);
       } catch(e) {
         assert.equal(e.response.statusCode, 404);
@@ -224,11 +224,11 @@ describe("app", function() {
 
   it("should let me retrieve a note", function(done) {
     co(function* () {
-      var noteId = (yield client.createNotePromise({
+      var noteId = (yield client.createNote({
         content: 'hello'
       })).body.id;
 
-      var getNoteResponse = yield client.getNotePromise(noteId);
+      var getNoteResponse = yield client.getNote(noteId);
       assert.equal(getNoteResponse.statusCode, 200);
       assert.equal(getNoteResponse.body.id, 1);
       assert.equal(getNoteResponse.body.content, "hello");
@@ -237,11 +237,11 @@ describe("app", function() {
 
   it("should let me update a note", function(done) {
     co(function* () {
-      var noteId = (yield client.createNotePromise({
+      var noteId = (yield client.createNote({
         content: 'hello'
       })).body.id;
 
-      var updateNoteResponse = yield client.updateNotePromise({
+      var updateNoteResponse = yield client.updateNote({
         id: noteId,
         content: 'hi there'
       });
@@ -253,15 +253,15 @@ describe("app", function() {
 
   it("should let me add categories to the note", function(done) {
     co(function* () {
-      var jsCategoryId = (yield client.createCategoryPromise({
+      var jsCategoryId = (yield client.createCategory({
         name: 'js'
       })).body.id;
 
-      var javaCategoryId = (yield client.createCategoryPromise({
+      var javaCategoryId = (yield client.createCategory({
         name: 'java'
       })).body.id;
 
-      var note = (yield client.createNotePromise({
+      var note = (yield client.createNote({
         content: 'hello there'
       })).body;
 
@@ -271,27 +271,27 @@ describe("app", function() {
         { id: javaCategoryId }
       ];
 
-      var updateNoteResponse = yield client.updateNotePromise(note);
+      var updateNoteResponse = yield client.updateNote(note);
       assert.equal(updateNoteResponse.statusCode, 200);
       assert.equal(updateNoteResponse.body.content, "hi there");
       assert.equal(updateNoteResponse.body.categories.length, 2);
 
-      note = (yield client.getNotePromise(note.id)).body;
+      note = (yield client.getNote(note.id)).body;
       assert.equal(note.categories.length, 2);
     }).then(done, done);
   });
 
   it("should not let me update a note when at least one category doesn't exist", function(done) {
     co(function* () {
-      var jsCategoryId = (yield client.createCategoryPromise({
+      var jsCategoryId = (yield client.createCategory({
         name: 'js'
       })).body.id;
 
-      var javaCategoryId = (yield client.createCategoryPromise({
+      var javaCategoryId = (yield client.createCategory({
         name: 'java'
       })).body.id;
 
-      var note = (yield client.createNotePromise({
+      var note = (yield client.createNote({
         content: 'hello there'
       })).body;
 
@@ -303,7 +303,7 @@ describe("app", function() {
       ];
 
       try {
-        yield client.updateNotePromise(note);
+        yield client.updateNote(note);
       } catch(e) {
         assert.equal(e.response.statusCode, 400);
         assert.ok("message" in e.response.body);
@@ -313,15 +313,15 @@ describe("app", function() {
 
   it("should let me remove note categories", function(done) {
     co(function* () {
-      var jsCategoryId = (yield client.createCategoryPromise({
+      var jsCategoryId = (yield client.createCategory({
         name: 'js'
       })).body.id;
 
-      var javaCategoryId = (yield client.createCategoryPromise({
+      var javaCategoryId = (yield client.createCategory({
         name: 'java'
       })).body.id;
 
-      var note = (yield client.createNotePromise({
+      var note = (yield client.createNote({
         content: 'hello there',
         categories: [
           { id: jsCategoryId },
@@ -331,7 +331,7 @@ describe("app", function() {
 
       note.categories = [];
 
-      var updateNoteResponse = yield client.updateNotePromise(note);
+      var updateNoteResponse = yield client.updateNote(note);
       assert.equal(updateNoteResponse.statusCode, 200);
       assert.equal(updateNoteResponse.body.content, 'hello there');
       assert.equal(updateNoteResponse.body.categories.length, 0);
@@ -340,19 +340,19 @@ describe("app", function() {
 
   it("should let me replace note categories", function(done) {
     co(function* () {
-      var jsCategoryId = (yield client.createCategoryPromise({
+      var jsCategoryId = (yield client.createCategory({
         name: 'js'
       })).body.id;
 
-      var javaCategoryId = (yield client.createCategoryPromise({
+      var javaCategoryId = (yield client.createCategory({
         name: 'java'
       })).body.id;
 
-      var dotnetCategoryId = (yield client.createCategoryPromise({
+      var dotnetCategoryId = (yield client.createCategory({
         name: 'dotnet'
       })).body.id;
 
-      var note = (yield client.createNotePromise({
+      var note = (yield client.createNote({
         content: 'hello there',
         categories: [
           { id: jsCategoryId },
@@ -364,7 +364,7 @@ describe("app", function() {
         { id: dotnetCategoryId } 
       ];
 
-      var updateNoteResponse = yield client.updateNotePromise(note);
+      var updateNoteResponse = yield client.updateNote(note);
       assert.equal(updateNoteResponse.statusCode, 200);
       assert.equal(updateNoteResponse.body.content, 'hello there');
       assert.equal(updateNoteResponse.body.categories.length, 1);
@@ -374,7 +374,7 @@ describe("app", function() {
   it("should not let me update a note if note does not exist", function(done) {
     co(function* () {
       try {
-        yield client.updateNotePromise({
+        yield client.updateNote({
           id: 123,
           content: 'hi there'
         });
@@ -388,12 +388,12 @@ describe("app", function() {
 
   it("should not let me update a note if fields are not valid", function(done) {
     co(function* () {
-      var noteId = (yield client.createNotePromise({
+      var noteId = (yield client.createNote({
         content: 'hello'
       })).body.id;
 
       try {
-        yield client.updateNotePromise({
+        yield client.updateNote({
           id: noteId,
           content: ''
         });
@@ -407,7 +407,7 @@ describe("app", function() {
 
   it("should let me create a category", function(done) {
     co(function* () {
-      var response = yield client.createCategoryPromise({
+      var response = yield client.createCategory({
         name: 'js'
       });
       assert.equal(response.statusCode, 201);
@@ -419,7 +419,7 @@ describe("app", function() {
   it("should not let me create a category if fields are not valid", function(done) {
     co(function* () {
       try {
-        yield client.createCategoryPromise({
+        yield client.createCategory({
           name: ''
         });
         assert.ok(false);
@@ -432,12 +432,12 @@ describe("app", function() {
 
   it("should not let me create a category if it already exists", function(done) {
     co(function* () {
-      yield client.createCategoryPromise({
+      yield client.createCategory({
         name: 'js'
       });
 
       try {
-        yield client.createCategoryPromise({
+        yield client.createCategory({
           name: 'js'
         });
         assert.ok(false);
@@ -450,11 +450,11 @@ describe("app", function() {
 
   it("should let me delete a category", function(done) {
     co(function* () {
-      var categoryId = (yield client.createCategoryPromise({
+      var categoryId = (yield client.createCategory({
         name: 'js'
       })).body.id;
 
-      var deleteCategoryResponse = yield client.deleteCategoryPromise(categoryId);
+      var deleteCategoryResponse = yield client.deleteCategory(categoryId);
       assert.equal(deleteCategoryResponse.statusCode, 200);
       assert.ok("message" in deleteCategoryResponse.body);
     }).then(done, done);
@@ -463,7 +463,7 @@ describe("app", function() {
   it("should not let me delete a category if category does not exist", function(done) {
     co(function* () {
       try {
-        yield client.deleteCategoryPromise(123);
+        yield client.deleteCategory(123);
       } catch(e) {
         assert.equal(e.response.statusCode, 404);
         assert.ok("message" in e.response.body);
@@ -473,11 +473,11 @@ describe("app", function() {
 
   it("should let me update a category", function(done) {
     co(function* () {
-      var categoryId = (yield client.createCategoryPromise({
+      var categoryId = (yield client.createCategory({
         name: 'js'
       })).body.id;
 
-      var updateCategoryResponse = yield client.updateCategoryPromise({
+      var updateCategoryResponse = yield client.updateCategory({
         id: categoryId,
         name: 'java'
       });
@@ -490,7 +490,7 @@ describe("app", function() {
   it("should not let me update category if category does not exist", function(done) {
     co(function* () {
       try {
-        yield client.updateCategoryPromise({
+        yield client.updateCategory({
           id: 123,
           name: 'java'
         });
@@ -503,12 +503,12 @@ describe("app", function() {
 
   it("should not let me update a category if fields are not valid", function(done) {
     co(function* () {
-      var categoryId = (yield client.createCategoryPromise({
+      var categoryId = (yield client.createCategory({
         name: 'js'
       })).body.id;
 
       try {
-        yield client.updateCategoryPromise({
+        yield client.updateCategory({
           id: categoryId,
           name: ''
         });
@@ -522,16 +522,16 @@ describe("app", function() {
 
   it("should not let me update a category name if name already used", function(done) {
     co(function* () {
-      var jsCategoryId = (yield client.createCategoryPromise({
+      var jsCategoryId = (yield client.createCategory({
         name: 'js'
       })).body.id;
 
-      var javaCategoryId = (yield client.createCategoryPromise({
+      var javaCategoryId = (yield client.createCategory({
         name: 'java'
       })).body.id;
 
       try {
-        yield client.updateCategoryPromise({
+        yield client.updateCategory({
           id: jsCategoryId,
           name: 'java'
         });
@@ -545,60 +545,60 @@ describe("app", function() {
 
   it("should let me filter categories by first letters", function(done) {
     co(function* () {
-      yield client.createCategoryPromise({ name: 'aaa' });
-      yield client.createCategoryPromise({ name: 'aab' });
-      yield client.createCategoryPromise({ name: 'aba' });
-      yield client.createCategoryPromise({ name: 'abb' });
-      yield client.createCategoryPromise({ name: 'baa' });
-      yield client.createCategoryPromise({ name: 'bbb' });
+      yield client.createCategory({ name: 'aaa' });
+      yield client.createCategory({ name: 'aab' });
+      yield client.createCategory({ name: 'aba' });
+      yield client.createCategory({ name: 'abb' });
+      yield client.createCategory({ name: 'baa' });
+      yield client.createCategory({ name: 'bbb' });
 
-      var aCategories = (yield client.getCategoriesWithNamesStartingWithPromise('a')).body;
+      var aCategories = (yield client.getCategoriesWithNamesStartingWith('a')).body;
       assert.equal(aCategories.length, 4);
 
-      var abCategories = (yield client.getCategoriesWithNamesStartingWithPromise('ab')).body;
+      var abCategories = (yield client.getCategoriesWithNamesStartingWith('ab')).body;
       assert.equal(abCategories.length, 2);
 
-      var bCategories = (yield client.getCategoriesWithNamesStartingWithPromise('b')).body;
+      var bCategories = (yield client.getCategoriesWithNamesStartingWith('b')).body;
       assert.equal(bCategories.length, 2);
     }).then(done, done);
   });
 
   it("should let me delete category linked to note", function(done) {
     co(function* () {
-      var categoryId = (yield client.createCategoryPromise({
+      var categoryId = (yield client.createCategory({
         name: 'js'
       })).body.id;
 
-      var noteId = (yield client.createNotePromise({
+      var noteId = (yield client.createNote({
         content: 'hello there',
         categories: [
           { id: categoryId }
         ]
       })).body.id;
 
-      yield client.deleteCategoryPromise(categoryId);
+      yield client.deleteCategory(categoryId);
 
-      var note = (yield client.getNotePromise(noteId)).body;
+      var note = (yield client.getNote(noteId)).body;
       assert.equal(note.categories.length, 0);
     }).then(done, done);
   });
 
   it("should let me delete note linked to category", function(done) {
     co(function* () {
-      var categoryId = (yield client.createCategoryPromise({
+      var categoryId = (yield client.createCategory({
         name: 'js'
       })).body.id;
 
-      var noteId = (yield client.createNotePromise({
+      var noteId = (yield client.createNote({
         content: 'hello there',
         categories: [
           { id: categoryId }
         ]
       })).body.id;
 
-      yield client.deleteNotePromise(noteId);
+      yield client.deleteNote(noteId);
 
-      var getCategoryResponse = (yield client.getCategoryPromise(categoryId));
+      var getCategoryResponse = (yield client.getCategory(categoryId));
       assert.equal(getCategoryResponse.statusCode, 200);
     }).then(done, done);
   });
