@@ -1,108 +1,95 @@
-var request = require("request");
-var async = require("async");
+var rp = require('request-promise');
 
 function NotepadClient(apiUrl) {
-	this.apiUrl = apiUrl;
+  this.apiUrl = apiUrl;
 };
 
 NotepadClient.prototype.makeUrl = function(relativePath) {
-	return this.apiUrl + relativePath;
+  return this.apiUrl + relativePath;
 };
 
-NotepadClient.prototype.post = function(relativePath, body, callback) {
-	var url = this.makeUrl(relativePath);
-	var params = {
-		url: url,
-		json: body
-	};
-	request.post(params, callback);
+NotepadClient.prototype.getPromise = function(relativePath) {
+  var url = this.makeUrl(relativePath);
+  return rp({
+    method: 'GET',
+    url: url,
+    json: true,
+    resolveWithFullResponse: true
+  });
 };
 
-NotepadClient.prototype.get = function(relativePath, callback) {
-	var url = this.makeUrl(relativePath);
-	var params = {
-		url: url,
-		json: true
-	};
-	request.get(params, callback);
+NotepadClient.prototype.postPromise = function(relativePath, body) {
+  var url = this.makeUrl(relativePath);
+  return rp({
+    method: 'POST',
+    url: url,
+    json: true,
+    body: body,
+    resolveWithFullResponse: true
+  });
 };
 
-NotepadClient.prototype.delete = function(relativePath, callback) {
-	var url = this.makeUrl(relativePath);
-	var params = {
-		url: url,
-		json: true
-	};
-	request.del(params, callback);
+NotepadClient.prototype.deletePromise = function(relativePath) {
+  var url = this.makeUrl(relativePath);
+  return rp({
+    method: 'DELETE',
+    url: url,
+    json: true,
+    resolveWithFullResponse: true
+  });
 };
 
-NotepadClient.prototype.createNote = function(note, callback) {
-	this.post("/notes/", note, callback);
+NotepadClient.prototype.getAllNotesPromise = function() {
+  return this.getPromise("/notes/");
 };
 
-NotepadClient.prototype.getAllNotes = function(callback) {
-	this.get("/notes/", callback);
+NotepadClient.prototype.createNotePromise = function(note) {
+  return this.postPromise("/notes/", note);
 };
 
-NotepadClient.prototype.getNote = function(noteId, callback) {
-	this.get("/notes/" + noteId, callback);
+NotepadClient.prototype.getNotePromise = function(noteId) {
+  return this.getPromise("/notes/" + noteId);
 };
 
-NotepadClient.prototype.deleteNote = function(noteId, callback) {
-	this.delete("/notes/" + noteId, callback);
+NotepadClient.prototype.deleteNotePromise = function(noteId) {
+  return this.deletePromise("/notes/" + noteId);
 };
 
-NotepadClient.prototype.updateNote = function(note, callback) {
-	this.post("/notes/" + note.id, note, callback);
+NotepadClient.prototype.updateNotePromise = function(note) {
+  return this.postPromise("/notes/" + note.id, note);
 };
 
-NotepadClient.prototype.createCategory = function(category, callback) {
-	this.post("/categories/", category, callback);
+NotepadClient.prototype.getAllCategoriesPromise = function() {
+  return this.getPromise("/categories/");
 };
 
-NotepadClient.prototype.createCategories = function(categoriesWithTags, callback) {
-	var self = this;
-	var tasks = categoriesWithTags.reduce(function(memo, item) {		
-		memo[item.tag] = function(callback) {
-			self.createCategory(item.category, function(error, response, body) {
-				callback(error, {
-					response: response,
-					body: body
-				})
-			});
-		};
-		return memo;
-	}, {});
-
-	async.series(tasks, callback);
+NotepadClient.prototype.getCategoriesWithNamesStartingWithPromise = function(namePattern) {
+  var url = this.makeUrl("/categories/");
+  return rp({
+    method: 'GET',
+    url: url,
+    qs: {
+      nameStartsWith: namePattern
+    },
+    json: true,
+    resolveWithFullResponse: true
+  });
 };
 
-NotepadClient.prototype.getAllCategories = function(callback) {
-	this.get("/categories/", callback);
+NotepadClient.prototype.createCategoryPromise = function(category) {
+  return this.postPromise("/categories/", category);
 };
 
-NotepadClient.prototype.getCategoriesWithNameStartingWith = function(namePattern, callback) {
-	var url = this.makeUrl("/categories/");
-	var params = {
-		url: url,
-		qs: {
-			nameStartsWith: namePattern
-		},
-		json: true
-	};
-	request.get(params, callback);
+NotepadClient.prototype.getCategoryPromise = function(categoryId) {
+  return this.getPromise("/categories/" + categoryId);
 };
 
-NotepadClient.prototype.getCategory = function(categoryId, callback) {
-	this.get("/categories/" + categoryId, callback);
+NotepadClient.prototype.deleteCategoryPromise = function(categoryId) {
+  return this.deletePromise("/categories/" + categoryId);
 };
 
-NotepadClient.prototype.deleteCategory = function(categoryId, callback) {
-	this.delete("/categories/" + categoryId, callback);
-};
-
-NotepadClient.prototype.updateCategory = function(category, callback) {
-	this.post("/categories/" + category.id, category, callback);
+NotepadClient.prototype.updateCategoryPromise = function(category) {
+  return this.postPromise("/categories/" + category.id, category);
 };
 
 module.exports = NotepadClient;

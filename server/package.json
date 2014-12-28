@@ -4,19 +4,20 @@
   "description": "",
   "main": "runner.js",
   "scripts": {
-    "start": "node .",
-    "test": "mocha"
+    "start": "node --harmony .",
+    "test": "mocha --harmony"
   },
   "author": "loki2302",
   "license": "BSD-2-Clause",
   "dependencies": {
-    "sequelize": "~2.0.0-rc1",
-    "express": "~4.8.7",
-    "request": "~2.40.0",
-    "body-parser": "~1.6.7",
-    "sqlite3": "~3.0.2",
-    "sleep": "~1.1.8",
     "async": "~0.9.0",
+    "body-parser": "~1.6.7",
+    "co": "^4.1.0",
+    "express": "~4.8.7",
+    "request-promise": "^0.3.2",
+    "sequelize": "~2.0.0-rc1",
+    "sleep": "~1.1.8",
+    "sqlite3": "~3.0.2",
     "validator": "~3.22.0"
   }
 }
