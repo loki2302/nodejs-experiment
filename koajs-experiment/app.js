@@ -1,5 +1,4 @@
 var koa = require('koa');
-var json = require('koa-json');
 var bodyParser = require('koa-body-parser');
 var router = require('koa-router');
 var Q = require('q');
@@ -18,7 +17,6 @@ module.exports = function() {
 
   var app = koa();
   app.use(bodyParser());
-  app.use(json());
   app.use(function* (next) {
     this.Note = Note;
     
