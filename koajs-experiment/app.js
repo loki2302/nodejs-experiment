@@ -25,7 +25,7 @@ module.exports = function() {
       this.body = "Note not found";
     };
 
-    yield* next;
+    yield next;
   });
 
   app.use(function* (next) {
@@ -36,7 +36,7 @@ module.exports = function() {
     this.tx = tx;
     
     try {
-      yield* next;
+      yield next;
 
       try {
         yield tx.commit();
