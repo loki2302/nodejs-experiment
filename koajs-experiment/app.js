@@ -27,7 +27,18 @@ module.exports = function() {
     yield* next;
   });
   
-  app.use(router(app)); 
+  app.use(router(app));
+
+  app.param("note", function* (noteId, next) {
+    var note = yield this.Note.find(noteId);
+    if(!note) {
+      this.throwNoteNotFound();
+      return;
+    }
+
+    this.note = note;
+    yield next;
+  });
 
   app.get('/notes', function* (next) {
     this.body = yield this.Note.findAll();
@@ -39,40 +50,19 @@ module.exports = function() {
     });
   });
 
-  app.get('/notes/:id', function* (next) {
-    var noteId = this.params.id;
-    var note = yield this.Note.find(noteId);
-    if(!note) {
-      this.throwNoteNotFound();
-      return;
-    }
-
-    this.body = note;
+  app.get('/notes/:note', function* (next) {
+    this.body = this.note;
   });
 
-  app.delete('/notes/:id', function* (next) {
-    var noteId = this.params.id;    
-    var note = yield this.Note.find(noteId);
-    if(!note) {     
-      this.throwNoteNotFound();
-      return;
-    }
-
-    yield note.destroy();
+  app.delete('/notes/:note', function* (next) {
+    yield this.note.destroy();
 
     this.body = { 'message': 'ok' };
   });
 
-  app.put('/notes/:id', function* (next) {
-    var noteId = this.params.id;    
-    var note = yield this.Note.find(noteId);
-    if(!note) {     
-      this.throwNoteNotFound();
-      return;
-    }
-
-    note.content = this.request.body.content;
-    yield note.save();
+  app.put('/notes/:note', function* (next) {
+    this.note.content = this.request.body.content;
+    yield this.note.save();
 
     this.body = { 'message': 'ok' };
   });
