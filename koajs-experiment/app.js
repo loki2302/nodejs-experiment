@@ -6,10 +6,7 @@ var Sequelize = require('sequelize');
 var co = require('co');
 
 module.exports = function() {
-  var sequelize = new Sequelize('database', 'username', 'password', {
-    dialect: 'sqlite',
-    storage: 'my.db'
-  });
+  var sequelize = new Sequelize('sqlite://my.db');
 
   var Note = sequelize.define('Note', {
     content: {
