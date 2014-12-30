@@ -12,7 +12,15 @@ module.exports = function() {
   });
 
   var Note = sequelize.define('Note', {
-    content: Sequelize.STRING
+    content: {
+      type: Sequelize.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: {
+          msg: "Note content should not be empty"
+        }
+      }
+    }
   });
 
   var app = koa();
@@ -23,6 +31,11 @@ module.exports = function() {
     this.throwNoteNotFound = function() {
       this.status = 404;
       this.body = "Note not found";
+    };
+
+    this.throwBadRequest = function() {
+      this.status = 400;
+      this.body = "Bad request";
     };
 
     yield next;
@@ -77,12 +90,21 @@ module.exports = function() {
     });
   });
 
-  app.post('/notes', function* (next) {   
-    this.body = yield this.Note.create({
-      content: this.request.body.content
-    }, {
-      transaction: this.tx
-    });
+  app.post('/notes', function* (next) {
+    try {
+      this.body = yield this.Note.create({
+        content: this.request.body.content
+      }, {
+        transaction: this.tx
+      });
+    } catch(e) {
+      if(e instanceof Sequelize.ValidationError) {
+        this.throwBadRequest();
+        return;
+      }
+
+      throw e;
+    }
   });
 
   app.get('/notes/:note', function* (next) {
@@ -97,13 +119,22 @@ module.exports = function() {
     this.body = { 'message': 'ok' };
   });
 
-  app.put('/notes/:note', function* (next) {
+  app.put('/notes/:note', function* (next) {    
     this.note.content = this.request.body.content;
-    yield this.note.save({
-      transaction: this.tx
-    });
+    try {
+      yield this.note.save({
+        transaction: this.tx
+      });
 
-    this.body = { 'message': 'ok' };
+      this.body = { 'message': 'ok' };
+    } catch(e) {
+      if(e instanceof Sequelize.ValidationError) {
+        this.throwBadRequest();
+        return;
+      }
+
+      throw e;
+    }
   });
 
   return co(function* () {

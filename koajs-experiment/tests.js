@@ -53,6 +53,24 @@ describe('app', function() {
     }).then(done, done);
   });
 
+  it('should not let me create a note with empty content', function(done) {
+    co(function* () {
+      try {
+        yield rp({
+          method: 'POST',
+          url: 'http://localhost:3000/notes',
+          json: true,
+          body: {
+            content: ''
+          }          
+        });
+        assert.ok(false);
+      } catch(e) {
+        assert.equal(e.statusCode, 400);
+      }
+    }).then(done, done);
+  });
+
   it('should let me get a note by id', function(done) {
     co(function* () {
       var note = yield rp({
@@ -178,6 +196,34 @@ describe('app', function() {
       } catch(e) {
         assert.equal(e.statusCode, 404);
         assert.equal(e.response.body, 'Note not found');
+      }
+    }).then(done, done);
+  });
+
+  it('should not let me update a note with empty content', function(done) {
+    co(function* () {
+      var note = yield rp({
+        method: 'POST',
+        url: 'http://localhost:3000/notes',
+        json: true,
+        body: {
+          content: 'hello there'
+        }
+      });
+
+      var noteId = note.id;
+      try {
+        yield rp({
+          method: 'PUT',
+          url: 'http://localhost:3000/notes/' + noteId,
+          json: true,
+          body: {
+            content: ''
+          }
+        });
+        assert.ok(false);
+      } catch(e) {
+        assert.equal(e.statusCode, 400);
       }
     }).then(done, done);
   });
