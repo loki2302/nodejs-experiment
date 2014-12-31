@@ -1,9 +1,6 @@
 var Sequelize = require("sequelize");
 
-var sequelize = new Sequelize("", "", "", {
-	dialect: "sqlite",
-	storage: "db"
-});
+var sequelize = new Sequelize('sqlite://my.db');
 
 var Note = sequelize.define("Note", {
 	content: {
