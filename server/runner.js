@@ -7,8 +7,9 @@ models.initialize(function(error) {
 	}
 
 	var app = makeApp(models, {
-		delay: 1
+		delay: 1000
 	});
+  
 	var server = app.listen(3000, function() {
 		console.log("Listening at %j", server.address());
 	});

@@ -1,26 +1,15 @@
 var koa = require('koa');
 var koaStatic = require('koa-static');
 var koaSend = require('koa-send');
-var bodyParser = require('koa-body-parser');
 var Router = require('koa-router');
-var Q = require('q');
-var co = require('co');
-var sleep = require("sleep");
-var router = require('koa-router');
-var routes = require("./routes.js");
+var koaMount = require('koa-mount');
 var path = require('path');
+var apiMiddleware = require('./apiMiddleware');
 
 module.exports = function(models, config) {
 	var app = koa();
-
-	if(config && config.delay) {
-		app.use(function* (next) {
-			sleep.sleep(config.delay);
-			yield next;
-		});
-	}
 	
-	var pathToStaticRoot = path.resolve(__dirname + "/../client/build/");
+	var pathToStaticRoot = path.resolve(__dirname + '/../client/build/');
 	app.use(koaStatic(pathToStaticRoot));
 
 	var pathToIndex = path.resolve(pathToStaticRoot, 'index.html');
@@ -30,11 +19,13 @@ module.exports = function(models, config) {
 			yield koaSend(this, pathToIndex);
 		});
 	});
-	app.use(html5UrlRouter.middleware());
+	app.use(html5UrlRouter.middleware());	
 
-	app.use(bodyParser());	
-
-	routes.addRoutes(app, models);
+	app.use(koaMount('/api', apiMiddleware(
+		config, 
+		models.sequelize, 
+		models.Note, 
+		models.Category)));
 
 	return app;
 };
