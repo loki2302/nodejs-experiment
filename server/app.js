@@ -1,38 +1,40 @@
-var express = require("express");
-var bodyParser = require("body-parser");
+var koa = require('koa');
+var koaStatic = require('koa-static');
+var koaSend = require('koa-send');
+var bodyParser = require('koa-body-parser');
+var Router = require('koa-router');
+var Q = require('q');
+var co = require('co');
 var sleep = require("sleep");
+var router = require('koa-router');
 var routes = require("./routes.js");
+var path = require('path');
 
 module.exports = function(models, config) {
-	var app = express();
-	app.use(express.static(__dirname + "/../client/build/"));
-	app.use(bodyParser.json());
+	var app = koa();
 
 	if(config && config.delay) {
-		app.use(function(req, res, next) {
+		app.use(function* (next) {
 			sleep.sleep(config.delay);
-			next();
+			yield next;
 		});
 	}
-	routes.addRoutes(app, models);
+	
+	var pathToStaticRoot = path.resolve(__dirname + "/../client/build/");
+	app.use(koaStatic(pathToStaticRoot));
 
-	["/", "/notes", "/categories"].forEach(function(route) {
-		app.all(route, function(req, res) {
-			res.sendFile("index.html", { root: __dirname + "/../client/build/" });
+	var pathToIndex = path.resolve(pathToStaticRoot, 'index.html');
+	var html5UrlRouter = new Router();
+	['/', '/notes', '/categories'].forEach(function(route) {
+		html5UrlRouter.all(route, function* () {
+			yield koaSend(this, pathToIndex);
 		});
 	});
+	app.use(html5UrlRouter.middleware());
 
-	app.use(function(err, req, res, next) {
-		if(error instanceof Error) {
-			res.status(500).send({
-				message: error.message
-			});
-		} else {
-			res.status(500).send({
-				message: "Unexpected error"
-			});
-		}
-	});
+	app.use(bodyParser());	
+
+	routes.addRoutes(app, models);
 
 	return app;
 };

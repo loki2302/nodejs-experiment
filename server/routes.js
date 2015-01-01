@@ -1,231 +1,280 @@
 var Sequelize = require("sequelize");
-var async = require("async");
-var validator = require("validator");
-var Responses = require("./responses.js");
+var router = require('koa-router');
 
 exports.addRoutes = function(app, models) {
 	var sequelize = models.sequelize;
 	var Note = models.Note;
 	var Category = models.Category;
 
-	app.use("/api", function(req, res, next) {		
-		sequelize.transaction({
-			isolationLevel: Sequelize.Transaction.ISOLATION_LEVELS.READ_UNCOMMITTED
-		}).then(function(transaction) {
-			req.tx = transaction;
-			next();
-		});
+	app.use(function* (next) {
+		function makeNoteDTO(note) {
+			return {
+				id: note.id,
+				content: note.content,
+				categories: note.Categories
+			};
+		};
+
+		function makeNoteDTOs(notes) {
+			return notes.map(makeNoteDTO);
+		};
+
+		function makeMessageDTO(message) {
+			return { 'message': message };
+		}
+
+		function makeNotFoundDTO(entity, id) {
+			return makeMessageDTO(entity + " " + id + " not found");
+		};
+
+		this.ok = function(message) {
+			this.status = 200;
+			this.body = makeMessageDTO(message);
+		};
+
+		this.okNoteCollection = function(notes) {
+			this.status = 200;
+			this.body = makeNoteDTOs(notes);
+		};
+
+		this.okCategoryCollection = function(categories) {
+			this.status = 200;
+			this.body = categories;
+		};
+
+		this.okNote = function(note) {
+			this.status = 200;
+			this.body = makeNoteDTO(note);
+		};
+
+		this.okCategory = function(category) {
+			this.status = 200;
+			this.body = category;
+		};
+
+		this.createdNote = function(note) {
+			this.status = 201;
+			this.body = makeNoteDTO(note);
+		};
+
+		this.createdCategory = function(category) {
+			this.status = 201;
+			this.body = category;
+		};
+
+		this.noteNotFound = function(id) {
+			this.status = 404;
+			this.body = makeNotFoundDTO('Note', id);
+		};
+
+		this.categoryNotFound = function(id) {
+			this.status = 404;
+			this.body = makeNotFoundDTO('Category', id);
+		};
+
+		this.badRequest = function(message) {
+			this.status = 400;
+			this.body = makeMessageDTO(message);
+		};
+
+		this.conflict = function(message) {
+			this.status = 409;
+			this.body = makeMessageDTO(message);
+		};
+
+		this.validationError = function(error) {
+			var errorMap = {};
+			error.errors.forEach(function(e) {
+				errorMap[e.path] = e.message;
+			});
+
+			this.status = 400;
+			this.body = errorMap;
+		};
+
+		yield next;
 	});
 
-	app.param("note_id", function(req, res, next, note_id) {
-		var id = validator.isInt(note_id) ? validator.toInt(note_id) : null;
-		if(!id) {			
-			next(new Responses.NotFoundError("Note", note_id));
+	app.use(function* (next) {
+    var tx = yield sequelize.transaction({
+      isolationLevel: Sequelize.Transaction.ISOLATION_LEVELS.READ_UNCOMMITTED
+    });
+
+    this.tx = tx;
+    
+    try {
+      yield next;
+
+      try {
+        yield tx.commit();
+        console.log("operation succeeded, commit succeeded");
+      } catch(commitException) {
+        console.log("operation succeeded, commit failed: %s", commitException);
+      }
+    } catch(operationException) {
+      try {
+        yield tx.rollback();
+        console.log("operation failed, rollback succeeded: %j", operationException);
+      } catch(rollbackException) {
+        console.log("operation failed, rollback failed: %s", rollbackException);
+      }
+    }
+  });
+  
+  app.use(router(app));
+
+	app.param("note_id", function* (noteId, next) {
+		var note = yield Note.find({
+			where: { id: noteId },
+			include: [ Category ]
+		}, {
+			transaction: this.tx
+		});
+
+		if(!note) {
+			this.noteNotFound(noteId);
 			return;
 		}
 
-		Note.find({ 
-			where: { id: id },
+		this.note = note;		
+		yield next;
+	});
+
+	app.get("/api/notes/", function* (next) {
+		var notes = yield Note.findAll({
 			include: [ Category ]
 		}, { 
-			transaction: req.tx 
-		}).success(function(note) {
-			if(!note) {
-				next(new Responses.NotFoundError("Note", note_id));
-				return;
-			}
-
-			req.note = note;
-			next();
-		}).error(function(error) {
-			next(error);
-		});		
-	});
-
-	app.get("/api/notes/", function(req, res, next) {
-		Note.findAll({
-			include: [ Category ], 
-		}, {
-			transaction: req.tx		
-		}).success(function(notes) {
-			res.result = new Responses.NoteCollectionResult(200, notes);
-			next();
-		}).error(function(error) {
-			next(error);
+			transaction: this.tx 
 		});
+
+		this.okNoteCollection(notes);
 	});	
 
-	app.get("/api/notes/:note_id", function(req, res, next) {		
-		res.result = new Responses.NoteResult(200, req.note);
-		next();
+	app.get("/api/notes/:note_id", function* (next) {
+		this.okNote(this.note);
 	});
 
-	app.delete("/api/notes/:note_id", function(req, res, next) {		
-		req.note.destroy({
-			transaction: req.tx
-		}).success(function() {
-			res.result = new Responses.MessageResult(200, "Deleted");
-			next();
-		}).error(function(error) {
-			next(error);
+	app.delete("/api/notes/:note_id", function* (next) {
+		yield this.note.destroy({
+			transaction: this.tx
 		});
+
+		this.ok('Deleted');
 	});
 
-	app.post("/api/notes/", function(req, res, next) {
-		async.waterfall([
-			function(callback) {
-				async.auto({
-					categories: function(callback) {
-						var categoryIds = (req.body.categories || []).map(function(category) { 
-							return category.id; 
-						});
-
-						Category.findAll({
-							where: {
-								id: { in: categoryIds }
-							}
-						}, {
-							transaction: req.tx				
-						}).done(function(error, result) {
-							if(error) {
-								callback(error);
-							} else if(result.length !== categoryIds.length) {
-								callback(new Responses.BadRequestError("Failed to find all categories"));
-							} else {
-								callback(null, result);
-							}
-						});
-					},
-					note: function(callback) {
-						Note.create({
-							content: req.body.content
-						}, {
-							transaction: req.tx
-						}).done(callback);
-					}
-				}, callback);
-			},
-			function(noteAndCategories, callback) {
-				var note = noteAndCategories.note;
-				var categories = noteAndCategories.categories;
-
-				note.setCategories(categories, { 
-					transaction: req.tx 
-				}).done(function(error, result) {
-					callback(error, note.id);
-				});
-			},
-			function(noteId, callback) {
-				Note.find({ 
-					where: { id: noteId },
-					include: [ Category ]
-				}, { 
-					transaction: req.tx 
-				}).done(callback);
-			}
-		], function(error, result) {
-			if(!error) {
-				res.result = new Responses.NoteResult(201, result);
-				next();
-			} else if(error instanceof Sequelize.ValidationError) {
-				var errorMap = {};
-				error.errors.forEach(function(e) {
-					errorMap[e.path] = e.message;
-				});
-
-				next(new Responses.ValidationError(errorMap));			
-			} else {
-				next(error);			
-			}
+	app.post('/api/notes/', function* (next) {
+		var categoryIds = (this.request.body.categories || []).map(function(category) {
+			return category.id; 
 		});
-	});
 
-	app.post("/api/notes/:note_id", function(req, res, next) {	
-		async.waterfall([			
-			function(callback) {
-				req.note.content = req.body.content;
-				req.note.save({ 
-					transaction: req.tx 
-				}).done(callback);
-			},
-			function(note, callback) {
-				var categoryIds = (req.body.categories || []).map(function(category) { 
-					return category.id; 
-				});
-
-				Category.findAll({
-					where: {
-						id: { in: categoryIds }
-					}
-				}, {
-					transaction: req.tx				
-				}).done(function(error, result) {
-					if(error) {
-						callback(error);
-					} else if(result.length !== categoryIds.length) {
-						callback(new Responses.BadRequestError("Failed to find all categories"));
-					} else {
-						callback(null, result);
-					}
-				});
-			},
-			function(categories, callback) {
-				req.note.setCategories(categories, {
-					transaction: req.tx
-				}).done(callback);
-			},
-			function(categories, callback) {
-				Note.find({ 
-					where: { id: req.note.id },
-					include: [ Category ]
-				}, { 
-					transaction: req.tx 
-				}).done(callback);
+		var categories = yield Category.findAll({
+			where: {
+				id: { in: categoryIds }
 			}
-		], function(error, result) {
-			if(!error) {
-				res.result = new Responses.NoteResult(200, result);
-				next();			
-			} else if(error instanceof Sequelize.ValidationError) {
-				var errorMap = {};
-				error.errors.forEach(function(e) {
-					errorMap[e.path] = e.message;
-				});
+		}, {
+			transaction: this.tx
+		});
 
-				next(new Responses.ValidationError(errorMap));
-			} else {
-				next(error);
-			}			
-		});		
-	});
-
-	app.param("category_id", function(req, res, next, category_id) {
-		var id = validator.isInt(category_id) ? validator.toInt(category_id) : null;
-		if(!id) {			
-			next(new Responses.NotFoundError("Category", category_id));
+		if(categories.length !== categoryIds.length) {
+			this.badRequest("Failed to find all categories");
 			return;
 		}
 
-		Category.find({ 
-			where: { id: id }
-		}, { 
-			transaction: req.tx 
-		}).success(function(category) {
-			if(!category) {
-				next(new Responses.NotFoundError("Category", category_id));
+		var note;
+		try {
+			note = yield Note.create({
+				content: this.request.body.content
+			}, {
+				transaction: this.tx
+			});
+
+			yield note.setCategories(categories, {
+				transaction: this.tx
+			});
+		} catch(e) {
+			if(e instanceof Sequelize.ValidationError) {
+				this.validationError(e);
 				return;
 			}
 
-			req.category = category;
-			next();
-		}).error(function(error) {
-			next(error);
-		});		
+			throw e;
+		}
+
+		note = yield Note.find({
+			where: { id: note.id },
+			include: [ Category ]
+		}, {
+			transaction: this.tx
+		});
+
+		this.createdNote(note);
 	});
 
-	app.get("/api/categories/", function(req, res, next) {
+	app.post('/api/notes/:note_id', function* (next) {
+		this.note.content = this.request.body.content;
+		try {
+			yield this.note.save({
+				transaction: this.tx
+			});
+		} catch(e) {
+			if(e instanceof Sequelize.ValidationError) {
+				this.validationError(e);
+				return;
+			}
+
+			throw e;
+		}
+
+		var categoryIds = (this.request.body.categories || []).map(function(category) {
+			return category.id; 
+		});
+
+		var categories = yield Category.findAll({
+			where: {
+				id: { in: categoryIds }
+			}
+		}, {
+			transaction: this.tx
+		});
+
+		if(categories.length !== categoryIds.length) {
+			this.badRequest("Failed to find all categories");
+			return;
+		}
+
+		yield this.note.setCategories(categories, {
+			transaction: this.tx
+		});
+
+		var note = yield Note.find({
+			where: { id: this.note.id },
+			include: [ Category ]
+		}, {
+			transaction: this.tx
+		});
+
+		this.okNote(note);
+	});
+
+	app.param("category_id", function* (categoryId, next) {
+		var category = yield Category.find({
+			where: { id: categoryId }
+		}, {
+			transaction: this.tx
+		});
+
+		if(!category) {
+			this.categoryNotFound(categoryId);
+			return;
+		}
+
+		this.category = category;
+		yield next;
+	});
+
+	app.get('/api/categories/', function* (next) {
 		var criteria = {};
-		var nameStartsWith = req.query.nameStartsWith;
+		var nameStartsWith = this.request.query.nameStartsWith;
 		if(nameStartsWith) {
 			var lowercaseNameStartsWith = nameStartsWith.toLowerCase();
 			criteria = {
@@ -233,134 +282,76 @@ exports.addRoutes = function(app, models) {
 			};
 		}
 
-		Category.findAll(criteria, { 
-			transaction: req.tx 
-		}).success(function(categories) {
-			res.result = new Responses.CategoryCollectionResult(200, categories);
-			next();
-		}).error(function(error) {
-			next(error);
+		var categories = yield Category.findAll(criteria, {
+			transaction: this.tx
 		});
+
+		this.okCategoryCollection(categories);
 	});
 
-	app.get("/api/categories/:category_id", function(req, res, next) {
-		res.result = new Responses.CategoryResult(200, req.category);
-		next();
+	app.get('/api/categories/:category_id', function* (next) {
+		this.okCategory(this.category);
 	});
 
-	app.post("/api/categories/", function(req, res, next) {
-		Category.find({
-			where: {
-				name: req.body.name
-			}
-		}, { 
-			transaction: req.tx 
-		}).success(function(category) {
-			if(category) {
-				next(new Responses.ConflictError("Category " + req.body.name + " already exists"));
-				return;
-			}
-
-			Category.create({ 
-				name: req.body.name 
-			}, { 
-				transaction: req.tx 
-			}).success(function(category) {
-				res.result = new Responses.CategoryResult(201, category);
-				next();
-			}).error(function(error) {
-				if(error instanceof Sequelize.ValidationError) {
-					var errorMap = {};
-					error.errors.forEach(function(e) {
-						errorMap[e.path] = e.message;
-					});
-
-					next(new Responses.ValidationError(errorMap));
-					return;
-				}
-
-				next(error);
-			});
-		}).error(function(error) {
-			next(error);
-		});		
-	});
-
-	app.delete("/api/categories/:category_id", function(req, res, next) {		
-		req.category.destroy({ 
-			transaction: req.tx 
-		}).success(function() {
-			res.result = new Responses.MessageResult(200, "Deleted");
-			next();
-		}).error(function(error) {
-			next(error);
+	app.post('/api/categories/', function* (next) {
+		var existingCategory = yield Category.find({
+			where: { name: this.request.body.name }
 		});
-	});
-
-	app.post("/api/categories/:category_id", function(req, res, next) {
-		var category = req.category;
-		Category.find({
-			where: {
-				name: req.body.name
-			}
-		}, { 
-			transaction: req.tx 
-		}).success(function(existingCategoryWithDesiredName) {
-			if(existingCategoryWithDesiredName && existingCategoryWithDesiredName.id !== category.id) {
-				next(new Responses.ConflictError("Category " + category.id + " already exists"));
-				return;
-			}
-
-			category.name = req.body.name;
-			category.save({ 
-				transaction: req.tx 
-			}).success(function(category) {
-				res.result = new Responses.CategoryResult(200, category);
-				next();
-			}).error(function(error) {
-				if(error instanceof Sequelize.ValidationError) {
-					var errorMap = {};
-					error.errors.forEach(function(e) {
-						errorMap[e.path] = e.message;
-					});
-
-					next(new Responses.ValidationError(errorMap));
-					return;
-				}
-
-				next(error);
-			});
-		});
-	});
-
-	app.use("/api", function(req, res, next) {
-		var tx = req.tx;
-		tx.commit().success(function() {
-			next();
-		}).error(function() {
-			next();
-		});
-	});
-
-	app.use("/api", function(error, req, res, next) {
-		var tx = req.tx;
-		tx.rollback().success(function() {
-			next(error);
-		}).error(function() {
-			next(error);
-		});
-	});	
-
-	app.use("/api", function(error, req, res, next) {
-		if(typeof error.render === "function") {
-			error.render(res);
-		} else {
-			next(error);
+		if(existingCategory) {
+			this.conflict('Category ' + this.request.body.name + ' already exists');
+			return;
 		}
+
+		var category;
+		try {
+			category = yield Category.create({
+				name: this.request.body.name
+			});
+		} catch(e) {
+			if(e instanceof Sequelize.ValidationError) {
+				this.validationError(e);
+				return;
+			}
+
+			throw e;
+		}
+
+		this.createdCategory(category);
 	});
 
-	app.use("/api", function(req, res, next) {
-		res.result.render(res);
-		next();
-	});	
+	app.delete('/api/categories/:category_id', function* (next) {
+		yield this.category.destroy({
+			transaction: this.tx
+		});
+
+		this.ok('Deleted');
+	});
+
+	app.post('/api/categories/:category_id', function* (next) {
+		var existingCategory = yield Category.find({
+			where: { name: this.request.body.name }
+		});
+
+		if(existingCategory && existingCategory.id !== this.category.id) {
+			this.conflict('Category ' + this.request.body.name + ' already exists');
+			return;
+		}
+
+		this.category.name = this.request.body.name;
+
+		try {
+			yield this.category.save({
+				transaction: this.tx
+			});
+		} catch(e) {
+			if(e instanceof Sequelize.ValidationError) {
+				this.validationError(e);
+				return;
+			}
+
+			throw e;
+		}
+
+		this.okCategory(this.category);
+	});
 };
