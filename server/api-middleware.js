@@ -2,8 +2,8 @@ var koaBodyParser = require('koa-body-parser');
 var koaCompose = require('koa-compose');
 var koaSleep = require('koa-sleep');
 var transactional = require('./transactional');
-var responseMethods = require('./responseMethods');
-var apiRoutes = require('./apiRoutes');
+var responseMethods = require('./response-methods');
+var apiRoutes = require('./api-routes');
 
 module.exports = function(config, sequelize) {
 	var chain = [];
