@@ -1,6 +1,6 @@
 var assert = require("assert");
 
-var models = require("../models.js");
+var makeModels = require("../models.js");
 var makeApp = require("../app.js");
 var NotepadClient = require("../client.js");
 
@@ -10,6 +10,7 @@ describe("app", function() {
   var client;
   var server;
   beforeEach(function(done) {
+    var models = makeModels();
     models.reset(function(error) {
       if(error) {
         throw new Error("Failed to reset database");

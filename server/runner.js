@@ -1,6 +1,7 @@
 var makeApp = require('./app');
-var models = require('./models');
+var makeModels = require('./models');
 
+var models = makeModels();
 models.initialize(function(error) {
 	if(error) {
 		throw new Error('Failed to initialize models');
