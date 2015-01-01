@@ -5,7 +5,7 @@ var transactional = require('./transactional');
 var responseMethods = require('./responseMethods');
 var apiRoutes = require('./apiRoutes');
 
-module.exports = function(config, sequelize, Note, Category) {
+module.exports = function(config, sequelize) {
 	var chain = [];
 	chain.push(koaBodyParser());
 	chain.push(responseMethods());
@@ -15,7 +15,7 @@ module.exports = function(config, sequelize, Note, Category) {
 		chain.push(koaSleep(config.delay));
 	}
 
-	chain.push(apiRoutes(Note, Category));
+	chain.push(apiRoutes(sequelize.models));
 
 	return koaCompose(chain);
 };

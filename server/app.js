@@ -23,9 +23,7 @@ module.exports = function(models, config) {
 
 	app.use(koaMount('/api', apiMiddleware(
 		config, 
-		models.sequelize, 
-		models.Note, 
-		models.Category)));
+		models.sequelize)));
 
 	return app;
 };

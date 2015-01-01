@@ -1,7 +1,10 @@
 var Sequelize = require('sequelize');
 var Router = require('koa-router');
 
-module.exports = function(Note, Category) {
+module.exports = function(models) {
+  var Note = models.Note;
+  var Category = models.Category;
+
   var apiRouter = new Router();  
 
   apiRouter.param("note_id", function* (noteId, next) {
