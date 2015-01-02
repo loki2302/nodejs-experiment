@@ -1,4 +1,12 @@
 module.exports = function() {
+  
+  function RestError(status, body) {
+    this.status = status;
+    this.body = body;
+  };
+  RestError.prototype = new Error();
+  RestError.prototype.constructor = RestError;
+
   function makeNoteDTO(note) {
     return {
       id: note.id,
@@ -17,7 +25,7 @@ module.exports = function() {
 
   function makeNotFoundDTO(entity, id) {
     return makeMessageDTO(entity + ' ' + id + ' not found');
-  };
+  };  
 
   return function* (next) {
     this.ok = function(message) {
@@ -56,23 +64,19 @@ module.exports = function() {
     };
 
     this.noteNotFound = function(id) {
-      this.status = 404;
-      this.body = makeNotFoundDTO('Note', id);
+      throw new RestError(404, makeNotFoundDTO('Note', id));
     };
 
     this.categoryNotFound = function(id) {
-      this.status = 404;
-      this.body = makeNotFoundDTO('Category', id);
+      throw new RestError(404, makeNotFoundDTO('Category', id));
     };
 
     this.badRequest = function(message) {
-      this.status = 400;
-      this.body = makeMessageDTO(message);
+      throw new RestError(400, makeMessageDTO(message));
     };
 
     this.conflict = function(message) {
-      this.status = 409;
-      this.body = makeMessageDTO(message);
+      throw new RestError(409, makeMessageDTO(message));
     };
 
     this.validationError = function(error) {
@@ -81,10 +85,19 @@ module.exports = function() {
         errorMap[e.path] = e.message;
       });
 
-      this.status = 400;
-      this.body = errorMap;
+      throw new RestError(400, errorMap);
     };
 
-    yield next;
+    try {
+      yield next;
+    } catch(e) {
+      if(e instanceof RestError) {
+        this.status = e.status;
+        this.body = e.body;
+      } else {
+        this.status = 500;
+        this.body = makeMessageDTO('Internal error');
+      }
+    }
   };
 };

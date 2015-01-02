@@ -24,6 +24,8 @@ module.exports = function(sequelize) {
       } catch(rollbackException) {
         console.log("operation failed, rollback failed: %s", rollbackException);
       }
+
+      throw operationException;
     }
   };
 };

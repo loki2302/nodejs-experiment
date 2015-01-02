@@ -17,7 +17,6 @@ module.exports = function(models) {
 
     if(!note) {
       this.noteNotFound(noteId);
-      return;
     }
 
     this.note = note;   
@@ -61,7 +60,6 @@ module.exports = function(models) {
 
     if(categories.length !== categoryIds.length) {
       this.badRequest("Failed to find all categories");
-      return;
     }
 
     var note;
@@ -78,7 +76,6 @@ module.exports = function(models) {
     } catch(e) {
       if(e instanceof Sequelize.ValidationError) {
         this.validationError(e);
-        return;
       }
 
       throw e;
@@ -103,7 +100,6 @@ module.exports = function(models) {
     } catch(e) {
       if(e instanceof Sequelize.ValidationError) {
         this.validationError(e);
-        return;
       }
 
       throw e;
@@ -123,7 +119,6 @@ module.exports = function(models) {
 
     if(categories.length !== categoryIds.length) {
       this.badRequest("Failed to find all categories");
-      return;
     }
 
     yield this.note.setCategories(categories, {
@@ -149,7 +144,6 @@ module.exports = function(models) {
 
     if(!category) {
       this.categoryNotFound(categoryId);
-      return;
     }
 
     this.category = category;
@@ -194,7 +188,6 @@ module.exports = function(models) {
     } catch(e) {
       if(e instanceof Sequelize.ValidationError) {
         this.validationError(e);
-        return;
       }
 
       throw e;
@@ -218,7 +211,6 @@ module.exports = function(models) {
 
     if(existingCategory && existingCategory.id !== this.category.id) {
       this.conflict('Category ' + this.request.body.name + ' already exists');
-      return;
     }
 
     this.category.name = this.request.body.name;
@@ -230,7 +222,6 @@ module.exports = function(models) {
     } catch(e) {
       if(e instanceof Sequelize.ValidationError) {
         this.validationError(e);
-        return;
       }
 
       throw e;
