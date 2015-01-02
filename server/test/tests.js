@@ -308,7 +308,11 @@ describe("app", function() {
       } catch(e) {
         assert.equal(e.response.statusCode, 400);
         assert.ok("message" in e.response.body);
-      }      
+      }
+
+      // TODO: fix ASAP
+      note = (yield client.getNote(note.id)).body;
+      assert.equal(note.content, 'hello there');
     }).then(done, done);
   });
 
