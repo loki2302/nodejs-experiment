@@ -5,7 +5,7 @@ var koaCompose = require('koa-compose');
 var path = require('path');
 
 module.exports = function() {
-  var pathToStaticRoot = path.resolve(__dirname + '/../client/build/');
+  var pathToStaticRoot = path.resolve(__dirname + '/../fe-build/');
 
   var pathToIndex = path.resolve(pathToStaticRoot, 'index.html');
   var html5UrlRouter = new Router();

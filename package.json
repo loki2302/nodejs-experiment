@@ -4,8 +4,12 @@
   "description": "",
   "main": "runner.js",
   "scripts": {
-    "start": "node --harmony .",
-    "test": "mocha --harmony"
+    "start": "node --harmony ./be-src/runner.js",
+    "test": "mocha --harmony ./be-test",
+    "postinstall": "npm install -g bower && npm install -g grunt-cli && bower install && grunt"
+  },
+  "engines": {
+    "node": "0.11.x"
   },
   "author": "loki2302",
   "license": "BSD-2-Clause",
@@ -22,6 +26,12 @@
     "q": "^1.1.2",
     "request-promise": "^0.3.2",
     "sequelize": "^2.0.0-rc4",
-    "sqlite3": "^3.0.4"
+    "sqlite3": "^3.0.4",
+
+    "grunt-contrib-copy": "~0.5.0",
+    "grunt-contrib-clean": "~0.6.0",
+    "grunt-contrib-uglify": "~0.5.1",
+    "grunt": "~0.4.5",
+    "grunt-contrib-concat": "~0.5.0"
   }
 }

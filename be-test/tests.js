@@ -1,8 +1,8 @@
 var assert = require("assert");
 
-var makeModels = require("../models.js");
-var makeApp = require("../app.js");
-var NotepadClient = require("../client.js");
+var makeModels = require("../be-src/models.js");
+var makeApp = require("../be-src/app.js");
+var NotepadClient = require("../be-src/client.js");
 
 var co = require('co');
 

@@ -1,10 +1,10 @@
 module.exports = function(grunt) {
 
 	grunt.initConfig({
-		builddir: 'build',
+		builddir: 'fe-build',
 		uglify: {
 			app: {
-				src: "src/**/*.js",
+				src: "fe-src/**/*.js",
 				dest: "<%= builddir %>/all.js"				
 			}
 		},
@@ -24,7 +24,7 @@ module.exports = function(grunt) {
 			app: {
 				expand: true,
 				flatten: true,				
-				src: "src/**/*.html",
+				src: "fe-src/**/*.html",
 				dest: "<%= builddir %>/"
 			},
 			bootstrap: {
