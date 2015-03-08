@@ -3,6 +3,14 @@ module.exports = function(grunt) {
     buildDir: 'build',
     appBuildDir: '<%= buildDir %>/app',
     testBuildDir: '<%= buildDir %>/test',
+    tsd: {
+      install: {
+        options: {
+          command: 'reinstall',
+          config: 'tsd.json'
+        }
+      }
+    },
     typescript: {
       app: {
         src: 'app.ts',
@@ -34,11 +42,13 @@ module.exports = function(grunt) {
     clean: ['<%= buildDir %>']
   });
 
+  grunt.loadNpmTasks('grunt-tsd');
   grunt.loadNpmTasks('grunt-typescript');
   grunt.loadNpmTasks('grunt-mocha-test');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-execute');
 
+  grunt.registerTask('install', ['tsd:install']);
   grunt.registerTask('test', ['clean', 'typescript:test', 'mochaTest']);
   grunt.registerTask('run', ['clean', 'typescript:app', 'execute']);
 
