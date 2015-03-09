@@ -3,8 +3,20 @@
 
 import assert = require('assert');
 
-describe('Hello World', () => {
+interface HelloWorlder {
+  makeMessage(): string;
+}
+
+class HelloWorlderImpl implements HelloWorlder {
+  makeMessage(): string {
+    return "Hello World!";
+  }
+}
+
+describe('Hello Worlder', () => {
   it('should work', () => {
-    assert.equal(1+2, 3);
+    var helloWorlder: HelloWorlder = new HelloWorlderImpl();
+    var message: string = helloWorlder.makeMessage();
+    assert.equal(message, 'Hello World!');
   });  
 });
