@@ -5,7 +5,7 @@
   "main": "runner.js",
   "scripts": {
     "start": "node --harmony ./be-src/runner.js",
-    "test": "mocha --harmony ./be-test",
+    "test": "mocha --harmony ./be-test && grunt test",
     "postinstall": "npm install -g bower && npm install -g grunt-cli && bower install && grunt"
   },
   "engines": {
@@ -24,6 +24,7 @@
     "jasmine-core": "^2.2.0",
     "karma": "^0.12.31",
     "karma-chrome-launcher": "^0.1.7",
+    "karma-firefox-launcher": "^0.1.4",
     "karma-jasmine": "^0.3.5",
     "koa": "^0.14.0",
     "koa-body-parser": "^1.1.0",

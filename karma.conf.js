@@ -16,10 +16,17 @@ module.exports = function(config) {
 
     autoWatch: true,
     frameworks: ['jasmine'],
-    browsers: ['Chrome'],
+    // browsers: ['Chrome', 'Firefox'],
     plugins: [
       'karma-chrome-launcher',
+      'karma-firefox-launcher',
       'karma-jasmine'
     ]
   });
+
+  if(process.env.TRAVIS) {
+    config.browsers = ['Firefox'];
+  } else {
+    config.browsers = ['Chrome'];
+  }
 };
