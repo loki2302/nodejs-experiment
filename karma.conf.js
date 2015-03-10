@@ -1,5 +1,5 @@
 module.exports = function(config) {
-  config.set({
+  var c = {
     basePath: './',
 
     files: [
@@ -22,11 +22,13 @@ module.exports = function(config) {
       'karma-firefox-launcher',
       'karma-jasmine'
     ]
-  });
+  };  
 
   if(process.env.TRAVIS) {
-    config.browsers = ['Firefox'];
+    c.browsers = ['Firefox'];
   } else {
-    config.browsers = ['Chrome'];
+    c.browsers = ['Chrome'];
   }
+
+  config.set(c);
 };
