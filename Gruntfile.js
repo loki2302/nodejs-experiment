@@ -43,6 +43,17 @@ module.exports = function(grunt) {
 				dest: "<%= builddir %>/"
 			}
 		},
+		karma: {
+			options: {
+				configFile: 'karma.conf.js'
+			},
+			'test': {
+				singleRun: true
+			},
+			'watch': {
+				singleRun: false
+			}
+		},
 		clean: [
 			"<%= builddir %>"
 		]
@@ -52,5 +63,9 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks("grunt-contrib-copy");
 	grunt.loadNpmTasks("grunt-contrib-clean");
 	grunt.loadNpmTasks("grunt-contrib-concat");
+	grunt.loadNpmTasks("grunt-karma");
+	
 	grunt.registerTask("default", ["uglify", "copy", "concat"]);	
+	grunt.registerTask("test", ["karma:test"]);
+	grunt.registerTask("watch", ["karma:watch"]);
 };
