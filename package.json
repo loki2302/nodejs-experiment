@@ -5,8 +5,8 @@
   "main": "runner.js",
   "scripts": {
     "start": "node --harmony ./be-src/runner.js",
-    "test": "mocha --harmony ./be-test && grunt test",
-    "postinstall": "npm install -g bower && npm install -g grunt-cli && bower install && grunt"
+    "test": "./grunt test",
+    "postinstall": "npm install -g bower && bower install && grunt"
   },
   "engines": {
     "node": "0.11.x"
@@ -15,12 +15,14 @@
   "license": "BSD-2-Clause",
   "dependencies": {
     "co": "^4.1.0",
-    "grunt": "~0.4.5",
+    "grunt": "^0.4.5",
+    "grunt-cli": "^0.1.13",
     "grunt-contrib-clean": "~0.6.0",
     "grunt-contrib-concat": "~0.5.0",
     "grunt-contrib-copy": "~0.5.0",
     "grunt-contrib-uglify": "~0.5.1",
     "grunt-karma": "^0.10.1",
+    "grunt-mocha-test": "^0.12.7",
     "grunt-protractor-runner": "^1.2.1",
     "grunt-protractor-webdriver": "^0.2.0",
     "grunt-run": "^0.3.0",

@@ -49,6 +49,13 @@ module.exports = function(grunt) {
 			"<%= builddir %>"
 		],
 
+		// BE tests stuff
+		mochaTest: {
+			test: {
+				src: ['be-test/tests.js']
+			}
+		},
+
 		// Karma stuff
 		karma: {
 			options: {
@@ -103,10 +110,16 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-run");
   grunt.loadNpmTasks("grunt-protractor-webdriver");
   grunt.loadNpmTasks("grunt-protractor-runner");
-	
-	grunt.registerTask("default", ["uglify", "copy", "concat"]);	
-	grunt.registerTask("test", ["karma:test"]);
-	grunt.registerTask("watch", ["karma:watch"]);
+  grunt.loadNpmTasks('grunt-mocha-test');
+
+  grunt.registerTask('fe-build', ["uglify", "copy", "concat"]);		
+	grunt.registerTask("fe-test", ["karma:test"]);
+	grunt.registerTask("fe-watch", ["karma:watch"]);
 	grunt.registerTask('webdriver-update', ['shell:webdriver']);
-	grunt.registerTask('e2e', ['run:app', 'protractor_webdriver', 'protractor', 'stop:app']);
+	grunt.registerTask('e2e-test', ['fe-build', 'run:app', 'protractor_webdriver', 'protractor', 'stop:app']);
+	grunt.registerTask('be-test', ['mochaTest']);
+
+	grunt.registerTask('test', ['be-test', 'fe-test', 'e2e-test']);
+
+	grunt.registerTask("default", ['fe-build']);	
 };
