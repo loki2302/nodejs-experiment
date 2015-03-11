@@ -2,6 +2,8 @@ module.exports = function(grunt) {
 
 	grunt.initConfig({
 		builddir: 'fe-build',
+
+		// FE build stuff
 		uglify: {
 			app: {
 				src: "fe-src/**/*.js",
@@ -43,6 +45,11 @@ module.exports = function(grunt) {
 				dest: "<%= builddir %>/"
 			}
 		},
+		clean: [
+			"<%= builddir %>"
+		],
+
+		// Karma stuff
 		karma: {
 			options: {
 				configFile: 'karma.conf.js'
@@ -54,9 +61,37 @@ module.exports = function(grunt) {
 				singleRun: false
 			}
 		},
-		clean: [
-			"<%= builddir %>"
-		]
+
+		// Protractor-related stuff
+		"shell": {
+      "webdriver": {
+        options: {
+          stdout: true
+        },
+        command: require("path").resolve("node_modules/protractor/bin/webdriver-manager") + " update"
+      }
+    },
+    "run": {
+      "app": {
+        options: {
+          wait: false
+        },
+        args: [
+          "--harmony",
+          "be-src/runner.js"
+        ]
+      }
+    },
+    "protractor_webdriver": {
+      dummyTarget: {}
+    },
+    "protractor": {
+      dummyTarget: {
+        options: {
+          configFile: "protractor.conf.js"
+        }
+      }
+    }		
 	});
 
 	grunt.loadNpmTasks("grunt-contrib-uglify");
@@ -64,8 +99,14 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks("grunt-contrib-clean");
 	grunt.loadNpmTasks("grunt-contrib-concat");
 	grunt.loadNpmTasks("grunt-karma");
+	grunt.loadNpmTasks("grunt-shell");
+  grunt.loadNpmTasks("grunt-run");
+  grunt.loadNpmTasks("grunt-protractor-webdriver");
+  grunt.loadNpmTasks("grunt-protractor-runner");
 	
 	grunt.registerTask("default", ["uglify", "copy", "concat"]);	
 	grunt.registerTask("test", ["karma:test"]);
 	grunt.registerTask("watch", ["karma:watch"]);
+	grunt.registerTask('webdriver-update', ['shell:webdriver']);
+	grunt.registerTask('e2e', ['run:app', 'protractor_webdriver', 'protractor', 'stop:app']);
 };
