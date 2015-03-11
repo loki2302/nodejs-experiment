@@ -44,6 +44,7 @@
     "q": "^1.1.2",
     "request-promise": "^0.3.2",
     "sequelize": "^2.0.0-rc4",
+    "server-destroy": "^1.0.0",
     "sqlite3": "^3.0.4"
   }
 }

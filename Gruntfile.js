@@ -116,7 +116,7 @@ module.exports = function(grunt) {
 	grunt.registerTask("fe-test", ["karma:test"]);
 	grunt.registerTask("fe-watch", ["karma:watch"]);
 	grunt.registerTask('webdriver-update', ['shell:webdriver']);
-	grunt.registerTask('e2e-test', ['fe-build', 'run:app', 'protractor_webdriver', 'protractor', 'stop:app']);
+  grunt.registerTask('e2e-test', ['fe-build', 'protractor_webdriver', 'protractor']);
 	grunt.registerTask('be-test', ['mochaTest']);
 
 	grunt.registerTask('test', ['be-test', 'fe-test', 'e2e-test']);
