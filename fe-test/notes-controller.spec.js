@@ -43,14 +43,19 @@ describe('NotesController', function() {
     });
 
     expect(apiService.createNote).toHaveBeenCalled();
+    expect(apiService.getNotes).not.toHaveBeenCalled();
+
     createNoteResultDeferred.resolve({
       id: 123,
       content: 'hello there'
     });
-    
+
     $rootScope.$apply();
 
     expect(apiService.getNotes).toHaveBeenCalled();
+    expect(apiService.createNote.calls.count()).toBe(1);
+    expect(apiService.getNotes.calls.count()).toBe(1);
+
     $rootScope.$apply();
 
     expect($rootScope.notes.length).toBe(1);
