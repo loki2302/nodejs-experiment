@@ -69,13 +69,13 @@ describe('NotesController', function() {
       apiService: apiService
     });
 
-    $httpBackend.when('POST', '/api/notes')
+    $httpBackend.expect('POST', '/api/notes')
     .respond(201, {
       id: 123,
       content: 'hello there'
     });
 
-    $httpBackend.when('GET', '/api/notes')
+    $httpBackend.expect('GET', '/api/notes')
     .respond(200, [{
       id: 123,
       content: 'hello there'

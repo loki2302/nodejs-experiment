@@ -24,5 +24,26 @@ describe('ApiService', function() {
         categories: []
       }));
     }));
+
+    it('should throw ValidationException when server returns 400', inject(function($httpBackend, apiService) {
+      $httpBackend.expect('POST', '/api/notes').respond(400, {
+        content: 'content is empty'
+      });
+
+      var onError = jasmine.createSpy('onError');
+      apiService.createNote({}).catch(onError);
+
+      $httpBackend.flush();
+      $httpBackend.verifyNoOutstandingExpectation();
+      $httpBackend.verifyNoOutstandingRequest();
+
+      expect(onError).toHaveBeenCalledWith(jasmine.any(apiService.ValidationError));
+      expect(onError).toHaveBeenCalledWith(jasmine.objectContaining({
+        errorMap: {
+          content: 'content is empty'
+        }
+      }));
+      expect(onError.calls.count()).toBe(1);
+    }));
   });  
 });
