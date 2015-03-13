@@ -2,8 +2,26 @@ describe('ApiService', function() {
   beforeEach(module('app'));
 
   describe('createNote', function() {
-    it('should create a note', inject(function($httpBackend, apiService) {
-      $httpBackend.expect('POST', '/api/notes').respond(201, {
+    it('should send a correct request', inject(function($httpBackend, apiService) {
+      $httpBackend.expect('POST', '/api/notes', function(data) {
+        var body = JSON.parse(data);
+        expect(body).toEqual({
+          content: 'hello there'
+        });
+        return true;
+      }).respond(201, {});
+
+      apiService.createNote({
+        content: 'hello there'
+      });
+
+      $httpBackend.flush();
+      $httpBackend.verifyNoOutstandingExpectation();
+      $httpBackend.verifyNoOutstandingRequest();
+    }));
+
+    it('should handle a 200 response', inject(function($httpBackend, apiService) {
+      $httpBackend.when('POST', '/api/notes').respond(201, {
         id: 123,
         content: 'hello there',
         categories: []
@@ -14,28 +32,27 @@ describe('ApiService', function() {
         content: 'hello there'
       }).then(onSuccess);
 
-      $httpBackend.flush();
-      $httpBackend.verifyNoOutstandingExpectation();
-      $httpBackend.verifyNoOutstandingRequest();
+      $httpBackend.flush();      
 
       expect(onSuccess).toHaveBeenCalledWith(jasmine.objectContaining({
         id: 123,
         content: 'hello there',
         categories: []
       }));
+      expect(onSuccess.calls.count()).toBe(1);
+
+      $httpBackend.verifyNoOutstandingRequest();
     }));
 
-    it('should throw ValidationError when server returns 400', inject(function($httpBackend, apiService) {
-      $httpBackend.expect('POST', '/api/notes').respond(400, {
+    it('should handle a 400 response', inject(function($httpBackend, apiService) {
+      $httpBackend.when('POST', '/api/notes').respond(400, {
         content: 'content is empty'
       });
 
       var onError = jasmine.createSpy('onError');
       apiService.createNote({}).catch(onError);
 
-      $httpBackend.flush();
-      $httpBackend.verifyNoOutstandingExpectation();
-      $httpBackend.verifyNoOutstandingRequest();
+      $httpBackend.flush();      
 
       expect(onError).toHaveBeenCalledWith(jasmine.any(apiService.ValidationError));
       expect(onError).toHaveBeenCalledWith(jasmine.objectContaining({
@@ -44,40 +61,22 @@ describe('ApiService', function() {
         }
       }));
       expect(onError.calls.count()).toBe(1);
+
+      $httpBackend.verifyNoOutstandingRequest();
     }));
 
-    it('should throw UnexpectedError when server returns non-400', inject(function($httpBackend, apiService) {
-      $httpBackend.expect('POST', '/api/notes').respond(500, {
-        message: 'internal server error'
-      });
+    it('should handle a connectivity error', inject(function($httpBackend, apiService) {
+      $httpBackend.when('POST', '/api/notes').respond(0, {});
 
       var onError = jasmine.createSpy('onError');
       apiService.createNote({}).catch(onError);
 
-      $httpBackend.flush();
-      $httpBackend.verifyNoOutstandingExpectation();
-      $httpBackend.verifyNoOutstandingRequest();
-
-      expect(onError).toHaveBeenCalledWith(jasmine.any(apiService.UnexpectedError));
-      expect(onError).toHaveBeenCalledWith(jasmine.objectContaining({
-        message: 'internal server error'
-      }));
-      expect(onError.calls.count()).toBe(1);
-    }));
-
-    it('should throw ConnectivityError when status is 0', inject(function($httpBackend, apiService) {
-      // TODO: review what exactly this case look like. Perhaps, the 'data' should be undefined.
-      $httpBackend.expect('POST', '/api/notes').respond(0, {});
-
-      var onError = jasmine.createSpy('onError');
-      apiService.createNote({}).catch(onError);
-
-      $httpBackend.flush();
-      $httpBackend.verifyNoOutstandingExpectation();
-      $httpBackend.verifyNoOutstandingRequest();
+      $httpBackend.flush();      
 
       expect(onError).toHaveBeenCalledWith(jasmine.any(apiService.ConnectivityError));
       expect(onError.calls.count()).toBe(1);
+
+      $httpBackend.verifyNoOutstandingRequest();
     }));
   });  
 });
