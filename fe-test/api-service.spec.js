@@ -2,15 +2,6 @@ describe('ApiService', function() {
   beforeEach(module('app'));
 
   function itShouldSendACorrectRequest(requestDescription) {
-    if(!requestDescription) throw new Error();
-    if(!requestDescription.whenIMakeACallLikeThis) throw new Error();
-    if(!requestDescription.theRequestIsExpectedToBeLikeThis) throw new Error();
-    if(!requestDescription.theRequestIsExpectedToBeLikeThis.method) throw new Error();
-    if(!requestDescription.theRequestIsExpectedToBeLikeThis.url) throw new Error();
-    if(!requestDescription.theRequestIsExpectedToBeLikeThis.data) throw new Error();    
-    if(!requestDescription.the200ResponseIsExpectedToBeLikeThis) throw new Error();
-    if(!requestDescription.the400ResponseIsExpectedToBeLikeThis) throw new Error();
-
     it('should send a correct request', inject(function($httpBackend, apiService) {
       var requestDetails = requestDescription.theRequestIsExpectedToBeLikeThis;
       $httpBackend.expect(requestDetails.method, requestDetails.url, function(data) {
@@ -29,6 +20,15 @@ describe('ApiService', function() {
   };
 
   function describeApi(methodName, requestDescription) {
+    if(!requestDescription) throw new Error();
+    if(!requestDescription.whenIMakeACallLikeThis) throw new Error();
+    if(!requestDescription.theRequestIsExpectedToBeLikeThis) throw new Error();
+    if(!requestDescription.theRequestIsExpectedToBeLikeThis.method) throw new Error();
+    if(!requestDescription.theRequestIsExpectedToBeLikeThis.url) throw new Error();
+    if(!requestDescription.theRequestIsExpectedToBeLikeThis.data) throw new Error();    
+    if(!requestDescription.the200ResponseIsExpectedToBeLikeThis) throw new Error();
+    if(!requestDescription.the400ResponseIsExpectedToBeLikeThis) throw new Error();
+    
     describe(methodName + ' API', function() {
       itShouldSendACorrectRequest(requestDescription);
 
@@ -55,7 +55,8 @@ describe('ApiService', function() {
         $httpBackend.when(requestDetails.method, requestDetails.url).respond(400, expectedResponse);
 
         var onError = jasmine.createSpy('onError');
-        apiService.createNote({}).catch(onError);
+        var apiCallFunc = requestDescription.whenIMakeACallLikeThis;
+        apiCallFunc(apiService).catch(onError);
 
         $httpBackend.flush();
 
@@ -104,6 +105,28 @@ describe('ApiService', function() {
     },
     the400ResponseIsExpectedToBeLikeThis: {
       content: 'content is empty'
+    }
+  });
+
+  describeApi('createCategory', {
+    whenIMakeACallLikeThis: function(apiService) {
+      return apiService.createCategory({
+        name: 'java'
+      });
+    },
+    theRequestIsExpectedToBeLikeThis: {
+      method: 'POST',
+      url: '/api/categories',
+      data: {
+        name: 'java'
+      }    
+    },
+    the200ResponseIsExpectedToBeLikeThis: {
+      id: 123,
+      name: 'java'
+    },
+    the400ResponseIsExpectedToBeLikeThis: {
+      name: 'bad name'
     }
   });
 });
