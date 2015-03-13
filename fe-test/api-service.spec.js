@@ -1,82 +1,109 @@
 describe('ApiService', function() {
   beforeEach(module('app'));
 
-  describe('createNote', function() {
-    it('should send a correct request', inject(function($httpBackend, apiService) {
-      $httpBackend.expect('POST', '/api/notes', function(data) {
-        var body = JSON.parse(data);
-        expect(body).toEqual({
-          content: 'hello there'
-        });
-        return true;
-      }).respond(201, {});
+  function itShouldSendACorrectRequest(requestDescription) {
+    if(!requestDescription) throw new Error();
+    if(!requestDescription.whenIMakeACallLikeThis) throw new Error();
+    if(!requestDescription.theRequestIsExpectedToBeLikeThis) throw new Error();
+    if(!requestDescription.theRequestIsExpectedToBeLikeThis.method) throw new Error();
+    if(!requestDescription.theRequestIsExpectedToBeLikeThis.url) throw new Error();
+    if(!requestDescription.theRequestIsExpectedToBeLikeThis.data) throw new Error();    
+    if(!requestDescription.the200ResponseIsExpectedToBeLikeThis) throw new Error();
+    if(!requestDescription.the400ResponseIsExpectedToBeLikeThis) throw new Error();
 
-      apiService.createNote({
-        content: 'hello there'
-      });
+    it('should send a correct request', inject(function($httpBackend, apiService) {
+      var requestDetails = requestDescription.theRequestIsExpectedToBeLikeThis;
+      $httpBackend.expect(requestDetails.method, requestDetails.url, function(data) {
+        var body = JSON.parse(data);
+        expect(body).toEqual(requestDetails.data);
+        return true;
+      }).respond(200, {});
+
+      var apiCallFunc = requestDescription.whenIMakeACallLikeThis;
+      apiCallFunc(apiService);
 
       $httpBackend.flush();
       $httpBackend.verifyNoOutstandingExpectation();
       $httpBackend.verifyNoOutstandingRequest();
     }));
+  };
 
-    it('should handle a 200 response', inject(function($httpBackend, apiService) {
-      $httpBackend.when('POST', '/api/notes').respond(201, {
-        id: 123,
-        content: 'hello there',
-        categories: []
-      });
+  function describeApi(methodName, requestDescription) {
+    describe(methodName + ' API', function() {
+      itShouldSendACorrectRequest(requestDescription);
 
-      var onSuccess = jasmine.createSpy('onSuccess');
-      apiService.createNote({
+      it('should handle a 200 response', inject(function($httpBackend, apiService) {
+        var requestDetails = requestDescription.theRequestIsExpectedToBeLikeThis;
+        var expectedResponse = requestDescription.the200ResponseIsExpectedToBeLikeThis;
+        $httpBackend.when(requestDetails.method, requestDetails.url).respond(200, expectedResponse);
+
+        var onSuccess = jasmine.createSpy('onSuccess');
+        var apiCallFunc = requestDescription.whenIMakeACallLikeThis;
+        apiCallFunc(apiService).then(onSuccess);
+
+        $httpBackend.flush();
+        
+        expect(onSuccess).toHaveBeenCalledWith(jasmine.objectContaining(expectedResponse));
+        expect(onSuccess.calls.count()).toBe(1);
+
+        $httpBackend.verifyNoOutstandingRequest();
+      }));
+
+      it('should handle a 400 response', inject(function($httpBackend, apiService) {
+        var requestDetails = requestDescription.theRequestIsExpectedToBeLikeThis;
+        var expectedResponse = requestDescription.the400ResponseIsExpectedToBeLikeThis;
+        $httpBackend.when(requestDetails.method, requestDetails.url).respond(400, expectedResponse);
+
+        var onError = jasmine.createSpy('onError');
+        apiService.createNote({}).catch(onError);
+
+        $httpBackend.flush();
+
+        expect(onError).toHaveBeenCalledWith(jasmine.any(apiService.ValidationError));
+        expect(onError).toHaveBeenCalledWith(jasmine.objectContaining({
+          errorMap: expectedResponse
+        }));
+        expect(onError.calls.count()).toBe(1);
+
+        $httpBackend.verifyNoOutstandingRequest();
+      }));
+
+      it('should handle a connectivity error', inject(function($httpBackend, apiService) {
+        var requestDetails = requestDescription.theRequestIsExpectedToBeLikeThis;
+        $httpBackend.when(requestDetails.method, requestDetails.url).respond(0, {});
+
+        var onError = jasmine.createSpy('onError');
+        var apiCallFunc = requestDescription.whenIMakeACallLikeThis;
+        apiCallFunc(apiService).catch(onError);
+
+        $httpBackend.flush();      
+
+        expect(onError).toHaveBeenCalledWith(jasmine.any(apiService.ConnectivityError));
+        expect(onError.calls.count()).toBe(1);
+
+        $httpBackend.verifyNoOutstandingRequest();
+      }));
+    });
+  };
+
+  describeApi('createNote', {
+    whenIMakeACallLikeThis: function(apiService) {
+      return apiService.createNote({
         content: 'hello there'
-      }).then(onSuccess);
-
-      $httpBackend.flush();      
-
-      expect(onSuccess).toHaveBeenCalledWith(jasmine.objectContaining({
-        id: 123,
-        content: 'hello there',
-        categories: []
-      }));
-      expect(onSuccess.calls.count()).toBe(1);
-
-      $httpBackend.verifyNoOutstandingRequest();
-    }));
-
-    it('should handle a 400 response', inject(function($httpBackend, apiService) {
-      $httpBackend.when('POST', '/api/notes').respond(400, {
-        content: 'content is empty'
       });
-
-      var onError = jasmine.createSpy('onError');
-      apiService.createNote({}).catch(onError);
-
-      $httpBackend.flush();      
-
-      expect(onError).toHaveBeenCalledWith(jasmine.any(apiService.ValidationError));
-      expect(onError).toHaveBeenCalledWith(jasmine.objectContaining({
-        errorMap: {
-          content: 'content is empty'
-        }
-      }));
-      expect(onError.calls.count()).toBe(1);
-
-      $httpBackend.verifyNoOutstandingRequest();
-    }));
-
-    it('should handle a connectivity error', inject(function($httpBackend, apiService) {
-      $httpBackend.when('POST', '/api/notes').respond(0, {});
-
-      var onError = jasmine.createSpy('onError');
-      apiService.createNote({}).catch(onError);
-
-      $httpBackend.flush();      
-
-      expect(onError).toHaveBeenCalledWith(jasmine.any(apiService.ConnectivityError));
-      expect(onError.calls.count()).toBe(1);
-
-      $httpBackend.verifyNoOutstandingRequest();
-    }));
-  });  
+    },
+    theRequestIsExpectedToBeLikeThis: {
+      method: 'POST',
+      url: '/api/notes',
+      data: {
+        content: 'hello there'
+      }    
+    },
+    the200ResponseIsExpectedToBeLikeThis: {
+      content: 'hello there'
+    },
+    the400ResponseIsExpectedToBeLikeThis: {
+      content: 'content is empty'
+    }
+  });
 });
