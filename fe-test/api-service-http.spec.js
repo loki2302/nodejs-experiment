@@ -7,7 +7,6 @@ describe('api-service-http', function() {
   }));
 
   describe('Notes API', function() {
-    // +0, +200, +400, +500
     describe('createNote()', function() {
       var typicalApiCall = function(api) {
         return api.createNote({
@@ -44,7 +43,6 @@ describe('api-service-http', function() {
       itShouldThrowAnUnexpectedErrorWhen500(typicalApiCall, typicalRequest);
     });
 
-    // +0, +200, +400, +404, +500
     describe('updateNote()', function() {
       var typicalApiCall = function(api) {
         return api.updateNote({
@@ -83,7 +81,6 @@ describe('api-service-http', function() {
       itShouldThrowAnUnexpectedErrorWhen500(typicalApiCall, typicalRequest);
     });
 
-    // +0, +200, +404, +500
     describe('deleteNote()', function() {
       var typicalApiCall = function(api) {
         return api.deleteNote({
@@ -114,7 +111,6 @@ describe('api-service-http', function() {
       itShouldThrowAnUnexpectedErrorWhen500(typicalApiCall, typicalRequest);
     });
 
-    // +0, +200, +500
     describe('getNotes()', function() {
       var typicalApiCall = function(api) {
         return api.getNotes();
@@ -148,7 +144,6 @@ describe('api-service-http', function() {
   });
 
   describe('Categories API', function() {
-    // +0, +200, +400, +409, +500
     describe('createCategory()', function() {
       var typicalApiCall = function(api) {
         return api.createCategory({
@@ -192,7 +187,6 @@ describe('api-service-http', function() {
       itShouldThrowAnUnexpectedErrorWhen500(typicalApiCall, typicalRequest);
     });
 
-    // +0, +200, +400, +404, +409, +500
     describe('updateCategory()', function() {
       var typicalApiCall = function(api) {
         return api.updateCategory({
@@ -238,7 +232,6 @@ describe('api-service-http', function() {
       itShouldThrowAnUnexpectedErrorWhen500(typicalApiCall, typicalRequest);
     });
 
-    // +0, +200, +404, +500
     describe('deleteCategory()', function() {
       var typicalApiCall = function(api) {
         return api.deleteCategory({
@@ -267,7 +260,6 @@ describe('api-service-http', function() {
       itShouldThrowAnUnexpectedErrorWhen500(typicalApiCall, typicalRequest);
     });
 
-    // +0, +200, +500
     describe('getCategories()', function() {
       var typicalApiCall = function(api) {
         return api.getCategories();
@@ -299,7 +291,6 @@ describe('api-service-http', function() {
       itShouldThrowAnUnexpectedErrorWhen500(typicalApiCall, typicalRequest);
     });
 
-    // +0, +200, +500
     describe('getCategoriesWithNameStartingWith()', function() {
       var typicalApiCall = function(api) {
         return api.getCategoriesWithNameStartingWith('omg');
