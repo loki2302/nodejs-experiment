@@ -1,10 +1,16 @@
 describe('playground', function() {
-  it('should work', function() {
+  var $q;
+  var $controller;
+  var errors;
+  var $rootScope;
+  var $scope;
+
+  beforeEach(function() {
     var $injector = angular.injector(['ng', 'api2', function($controllerProvider) {
       $controllerProvider.register('NoteController', ['$scope', 'api', 'errors', function($scope, api, errors) {
         $scope.createNote = function(note) {
           api.createNote(note).then(function(note) {
-            console.log('created a note!')
+            $scope.note = note;
           }, function(error) {
             throw error;
           });
@@ -19,13 +25,37 @@ describe('playground', function() {
       });
     }]);
 
-    var $q = $injector.get('$q');
-    var $controller = $injector.get('$controller');
-    var errors = $injector.get('errors');
+    $q = $injector.get('$q');
+    $controller = $injector.get('$controller');
+    errors = $injector.get('errors');
 
-    var $rootScope = $injector.get('$rootScope');
-    var $scope = $rootScope.$new();    
+    $rootScope = $injector.get('$rootScope');
+    $scope = $rootScope.$new();    
+  });
 
+  it('should set $scope.note to note created by API', function() {
+    var noteDeferred = $q.defer();
+    var api = {
+      createNote: function(note) {
+        return noteDeferred.promise;
+      }
+    };
+
+    $controller('NoteController', { 
+      $scope: $scope, 
+      api: api 
+    });
+    $scope.createNote();
+    
+    noteDeferred.resolve({content: 'hello'});
+    $rootScope.$apply();
+
+    expect($rootScope.lastError).not.toBeDefined();
+    expect($scope.note).toBeDefined();
+    expect($scope.note.content).toBe('hello');
+  });
+
+  it('should set $rootScope.lastError to error returned by API', function() {
     var noteDeferred = $q.defer();
     var api = {
       createNote: function(note) {
@@ -43,5 +73,6 @@ describe('playground', function() {
     $rootScope.$apply();
 
     expect($rootScope.lastError).toBe('error: ValidationError');
+    expect($scope.note).not.toBeDefined();
   });
 });
