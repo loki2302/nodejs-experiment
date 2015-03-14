@@ -38,6 +38,7 @@ angular.module('api2.rh', [])
 angular.module('api2', ['api2.rh'])
 .service('apiService2', ['$http', '$q', 'responseHandler', 'errors', function($http, $q, responseHandler, errors) {
   this.createNote = function(note) {
+    // TODO: are there any other cases?
     var interpretResponse = responseHandler.make()
       .when(0, throwConnectivityError())
       .when(200, returnData())
@@ -46,6 +47,90 @@ angular.module('api2', ['api2.rh'])
       .wrap;
 
     return interpretResponse($http.post('/api/notes', note));
+  };
+
+  this.updateNote = function(note) {
+    // TODO: are there any other cases?
+    var interpretResponse = responseHandler.make()
+      .when(200, returnData())
+      .otherwise(throwUnexpectedError())
+      .wrap;
+
+    return interpretResponse($http.put('/api/notes/' + note.id, note));
+  };
+
+  this.deleteNote = function(note) {
+    // TODO: are there any other cases?
+    var interpretResponse = responseHandler.make()
+      .when(200, returnData())
+      .otherwise(throwUnexpectedError())
+      .wrap;
+
+    return interpretResponse($http.delete('/api/notes/' + note.id, note));
+  };
+
+  this.getNotes = function() {
+    // TODO: are there any other cases?
+    var interpretResponse = responseHandler.make()
+      .when(200, returnData())
+      .otherwise(throwUnexpectedError())
+      .wrap;
+
+    return interpretResponse($http.get('/api/notes'));
+  };
+
+  this.createCategory = function(category) {
+    // TODO: are there any other cases?
+    var interpretResponse = responseHandler.make()
+      .when(0, throwConnectivityError())
+      .when(200, returnData())
+      .when(400, throwValidationError())
+      .otherwise(throwUnexpectedError())
+      .wrap;
+
+    return interpretResponse($http.post('/api/categories', category));
+  };
+
+  this.updateCategory = function(category) {
+    // TODO: are there any other cases?
+    var interpretResponse = responseHandler.make()
+      .when(200, returnData())
+      .otherwise(throwUnexpectedError())
+      .wrap;
+
+    return interpretResponse($http.put('/api/categories/' + category.id, category));
+  };
+
+  this.deleteCategory = function(category) {
+    // TODO: are there any other cases?
+    var interpretResponse = responseHandler.make()
+      .when(200, returnData())
+      .otherwise(throwUnexpectedError())
+      .wrap;
+
+    return interpretResponse($http.delete('/api/categories/' + category.id, category));
+  };
+
+  this.getCategories = function() {
+    // TODO: are there any other cases?
+    var interpretResponse = responseHandler.make()
+      .when(200, returnData())
+      .otherwise(throwUnexpectedError())
+      .wrap;
+
+    return interpretResponse($http.get('/api/categories'));
+  };
+
+  this.getCategoriesWithNameStartingWith = function(nameStartsWith) {
+    // TODO: are there any other cases?
+    var interpretResponse = responseHandler.make()
+      .when(200, returnData())
+      .otherwise(throwUnexpectedError())
+      .wrap;
+
+    return interpretResponse($http.get('/api/categories', { 
+      params: { nameStartsWith: nameStartsWith } 
+    }));
   };
 
   function throwConnectivityError() {
