@@ -54,6 +54,8 @@ angular.module('api2', ['api2.rh'])
     var interpretResponse = responseHandler.make()
       .when(0, throwConnectivityError())
       .when(200, returnData())
+      .when(400, throwValidationError())
+      .when(404, throwNotFoundError())
       .otherwise(throwUnexpectedError())
       .wrap;
 
@@ -65,6 +67,7 @@ angular.module('api2', ['api2.rh'])
     var interpretResponse = responseHandler.make()
       .when(0, throwConnectivityError())
       .when(200, returnData())
+      .when(404, throwNotFoundError())
       .otherwise(throwUnexpectedError())
       .wrap;
 
@@ -99,6 +102,7 @@ angular.module('api2', ['api2.rh'])
     var interpretResponse = responseHandler.make()
       .when(0, throwConnectivityError())
       .when(200, returnData())
+      .when(404, throwNotFoundError())
       .otherwise(throwUnexpectedError())
       .wrap;
 
@@ -110,6 +114,7 @@ angular.module('api2', ['api2.rh'])
     var interpretResponse = responseHandler.make()
       .when(0, throwConnectivityError())
       .when(200, returnData())
+      .when(404, throwNotFoundError())
       .otherwise(throwUnexpectedError())
       .wrap;
 
@@ -158,6 +163,12 @@ angular.module('api2', ['api2.rh'])
     };
   };
 
+  function throwNotFoundError() {
+    return function(httpResponse) {
+      return $q.reject(new errors.NotFoundError());
+    };
+  };
+
   function throwUnexpectedError() {
     return function(httpResponse) {
       return $q.reject(new errors.UnexpectedError());
@@ -167,5 +178,6 @@ angular.module('api2', ['api2.rh'])
 .value('errors', {
   ConnectivityError: function ConnectivityError() {},
   ValidationError: function ValidationError() {},
+  NotFoundError: function NotFoundError() {},
   UnexpectedError: function UnexpectedError() {}
 });

@@ -7,7 +7,7 @@ describe('api-service-http', function() {
   }));
 
   describe('Notes API', function() {
-    // 0, 200, 400, 500
+    // +0, +200, +400, +500
     describe('createNote()', function() {
       var typicalApiCall = function(api) {
         return api.createNote({
@@ -44,7 +44,7 @@ describe('api-service-http', function() {
       itShouldThrowAnUnexpectedErrorWhen500(typicalApiCall, typicalRequest);
     });
 
-    // 0, 200, 400, 404, 500
+    // +0, +200, +400, +404, +500
     describe('updateNote()', function() {
       var typicalApiCall = function(api) {
         return api.updateNote({
@@ -62,11 +62,28 @@ describe('api-service-http', function() {
         .go();
       });
 
+      it('should return updated note when 200', function() {
+        whenIMakeAnApiCall(typicalApiCall)
+        .itSendsTheRequest(typicalRequest)
+        .andIfServerRespondsWith({ status: 200, body: { id: 123, text: 'hello', categories: [] } })
+        .aCallSucceedsWith({ id: 123, text: 'hello', categories: [] })
+        .go();
+      });
+
+      it('should throw validation error when 400', function() {
+        whenIMakeAnApiCall(typicalApiCall)
+        .itSendsTheRequest(typicalRequest)
+        .andIfServerRespondsWith({ status: 400, body: { errorMap: { content: 'bad content' } } })
+        .aCallFailsWith(errors.ValidationError)
+        .go();
+      });      
+
       itShouldThrowAConnectivityErrorWhen0(typicalApiCall, typicalRequest);
+      itShouldThrowANotFoundErrorWhen404(typicalApiCall, typicalRequest);
       itShouldThrowAnUnexpectedErrorWhen500(typicalApiCall, typicalRequest);
     });
 
-    // 0, 200, 404, 500
+    // +0, +200, +404, +500
     describe('deleteNote()', function() {
       var typicalApiCall = function(api) {
         return api.deleteNote({
@@ -84,11 +101,20 @@ describe('api-service-http', function() {
         .go();
       });
 
+      it('should return empty result when 200', function() {
+        whenIMakeAnApiCall(typicalApiCall)
+        .itSendsTheRequest(typicalRequest)
+        .andIfServerRespondsWith({ status: 200 })
+        .aCallSucceedsWith({})
+        .go();
+      });
+
+      itShouldThrowANotFoundErrorWhen404(typicalApiCall, typicalRequest);
       itShouldThrowAConnectivityErrorWhen0(typicalApiCall, typicalRequest);
       itShouldThrowAnUnexpectedErrorWhen500(typicalApiCall, typicalRequest);
     });
 
-    // 0, 200, 500
+    // +0, +200, +500
     describe('getNotes()', function() {
       var typicalApiCall = function(api) {
         return api.getNotes();
@@ -102,13 +128,27 @@ describe('api-service-http', function() {
         .go();
       });
 
+      it('should return a collection of notes when 200', function() {
+        whenIMakeAnApiCall(typicalApiCall)
+        .itSendsTheRequest(typicalRequest)
+        .andIfServerRespondsWith({ status: 200, body: [
+          { id: 1, content: 'hello', categories: [] },
+          { id: 2, content: 'there', categories: [] }
+        ]})
+        .aCallSucceedsWith([
+          { id: 1, content: 'hello', categories: [] },
+          { id: 2, content: 'there', categories: [] }
+        ])
+        .go();
+      });
+
       itShouldThrowAConnectivityErrorWhen0(typicalApiCall, typicalRequest);
       itShouldThrowAnUnexpectedErrorWhen500(typicalApiCall, typicalRequest);
     });
   });
 
   describe('Categories API', function() {
-    // 0, 200, 400, 409, 500
+    // +0, 200, 400, 409, +500
     describe('createCategory()', function() {
       var typicalApiCall = function(api) {
         return api.createCategory({
@@ -128,7 +168,7 @@ describe('api-service-http', function() {
       itShouldThrowAnUnexpectedErrorWhen500(typicalApiCall, typicalRequest);
     });
 
-    // 0, 200, 400, 404, 409, 500
+    // +0, 200, 400, +404, 409, +500
     describe('updateCategory()', function() {
       var typicalApiCall = function(api) {
         return api.updateCategory({
@@ -145,11 +185,12 @@ describe('api-service-http', function() {
         .go();
       });
 
+      itShouldThrowANotFoundErrorWhen404(typicalApiCall, typicalRequest);
       itShouldThrowAConnectivityErrorWhen0(typicalApiCall, typicalRequest);
       itShouldThrowAnUnexpectedErrorWhen500(typicalApiCall, typicalRequest);
     });
 
-    // 0, 200, 404, 500
+    // +0, +200, +404, +500
     describe('deleteCategory()', function() {
       var typicalApiCall = function(api) {
         return api.deleteCategory({
@@ -165,11 +206,20 @@ describe('api-service-http', function() {
         .go();
       });
 
+      it('should return empty result when 200', function() {
+        whenIMakeAnApiCall(typicalApiCall)
+        .itSendsTheRequest(typicalRequest)
+        .andIfServerRespondsWith({ status: 200 })
+        .aCallSucceedsWith({})
+        .go();
+      });
+
+      itShouldThrowANotFoundErrorWhen404(typicalApiCall, typicalRequest);
       itShouldThrowAConnectivityErrorWhen0(typicalApiCall, typicalRequest);
       itShouldThrowAnUnexpectedErrorWhen500(typicalApiCall, typicalRequest);
     });
 
-    // 0, 200, 500
+    // +0, 200, +500
     describe('getCategories()', function() {
       var typicalApiCall = function(api) {
         return api.getCategories();
@@ -187,7 +237,7 @@ describe('api-service-http', function() {
       itShouldThrowAnUnexpectedErrorWhen500(typicalApiCall, typicalRequest);
     });
 
-    // 0, 200, 500
+    // +0, 200, +500
     describe('getCategoriesWithNameStartingWith()', function() {
       var typicalApiCall = function(api) {
         return api.getCategoriesWithNameStartingWith('omg');
@@ -286,7 +336,17 @@ describe('api-service-http', function() {
       .aCallFailsWith(errors.ConnectivityError)
       .go();
     });
-  }
+  };
+
+  function itShouldThrowANotFoundErrorWhen404(apiCall, apiRequest) {
+    it('should throw not found error when 404', function() {
+      whenIMakeAnApiCall(apiCall)
+      .itSendsTheRequest(apiRequest)
+      .andIfServerRespondsWith({ status: 404 })
+      .aCallFailsWith(errors.NotFoundError)
+      .go();
+    });
+  };
 
   function itShouldThrowAnUnexpectedErrorWhen500(apiCall, apiRequest) {
     it('should throw unexpected error when 500', function() {
