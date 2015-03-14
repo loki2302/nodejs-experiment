@@ -1,16 +1,86 @@
 describe('api-service-http', function() {
   beforeEach(module('api2'));
+  
+  describe('createNote()', function() {
+    var errors;
+    beforeEach(inject(function(_errors_) {
+      errors = _errors_;
+    }));
 
-  function testCase(name) { 
+    it('should return created note when 200', function() {
+      whenIMakeAnApiCall(function(api) {
+        return api.createNote({
+          text: 'hello',
+          categories: []
+        });
+      })
+      .itSendsTheRequest({ method: 'POST', url: '/api/notes' })
+      .andIfServerRespondsWith({ status: 200, body: { id: 123, text: 'hello', categories: [] } })
+      .aCallSucceedsWith({ id: 123, text: 'hello', categories: [] })
+      .go();
+    });
+
+    it('should throw connectivity error when 0', function() {
+      whenIMakeAnApiCall(function(api) {
+        return api.createNote({
+          text: 'hello',
+          categories: []
+        });
+      })
+      .itSendsTheRequest({ method: 'POST', url: '/api/notes' })
+      .andIfServerRespondsWith({ status: 0 })
+      .aCallFailsWith(errors.ConnectivityError)
+      .go();
+    });
+
+    it('should throw validation error when 400', function() {
+      whenIMakeAnApiCall(function(api) {
+        return api.createNote({
+          text: 'hello',
+          categories: []
+        });
+      })
+      .itSendsTheRequest({ method: 'POST', url: '/api/notes' })
+      .andIfServerRespondsWith({ status: 400 })
+      .aCallFailsWith(errors.ValidationError)
+      .go();
+    });
+
+    it('should throw unexpected error when 500', function() {
+      whenIMakeAnApiCall(function(api) {
+        return api.createNote({
+          text: 'hello',
+          categories: []
+        });
+      })
+      .itSendsTheRequest({ method: 'POST', url: '/api/notes' })
+      .andIfServerRespondsWith({ status: 500 })
+      .aCallFailsWith(errors.UnexpectedError)
+      .go();
+    });
+  });
+
+  function whenIMakeAnApiCall(apiCall) {
+    if(!apiCall) throw new Error();
+
     return {
-      whenIMakeAnApiCall: function(apiCall) {
+      itSendsTheRequest: function(requestDefinition) {
+        if(!requestDefinition) throw new Error();
+        if(!requestDefinition.method) throw new Error();
+        if(!requestDefinition.url) throw new Error();
+
         return {
-          itSendsTheRequest: function(requestDefinition) {
+          andIfServerRespondsWith: function(responseDefinition) {
+            if(!responseDefinition) throw new Error();
+            if(responseDefinition.status !== 0 && !responseDefinition.status) throw new Error();
+
             return {
-              andIfServerRespondsWith: function(responseDefinition) {
+              aCallSucceedsWith: function(resultDefinition) {
+                if(!resultDefinition) throw new Error();
+
                 return {
-                  aCallSucceedsWith: function(resultDefinition) {
-                    it(name, inject(function($httpBackend, apiService2) {
+                  go: function() {
+                    inject(function($httpBackend, apiService2) {
                       $httpBackend
                         .expect(requestDefinition.method, requestDefinition.url)
                         .respond(responseDefinition.status, responseDefinition.body);
@@ -24,10 +94,14 @@ describe('api-service-http', function() {
                       $httpBackend.verifyNoOutstandingRequest();
 
                       expect(onSuccess).toHaveBeenCalledWith(jasmine.objectContaining(resultDefinition));
-                    }));
-                  },
-                  aCallFailsWith: function(resultDefinition) {
-                    it(name, inject(function($httpBackend, apiService2) {
+                    });
+                  }
+                }
+              },
+              aCallFailsWith: function(errorDefinition) {
+                return {
+                  go: function() {
+                    inject(function($httpBackend, apiService2) {
                       $httpBackend
                         .expect(requestDefinition.method, requestDefinition.url)
                         .respond(responseDefinition.status, responseDefinition.body);
@@ -40,66 +114,15 @@ describe('api-service-http', function() {
                       $httpBackend.flush();
                       $httpBackend.verifyNoOutstandingRequest();
 
-                      expect(onError).toHaveBeenCalledWith(jasmine.any(resultDefinition()));
-                    }));
+                      expect(onError).toHaveBeenCalledWith(jasmine.any(errorDefinition));
+                    });
                   }
-                }
-              }              
+                };
+              }
             }
-          }
+          }              
         }
       }
     }
   };
-
-  describe('createNote()', function() {
-    var errors;
-    beforeEach(inject(function(_errors_) {
-      errors = _errors_;
-    }));
-
-    testCase('should return created note when 200')
-      .whenIMakeAnApiCall(function(api) {
-        return api.createNote({
-          text: 'hello',
-          categories: []
-        });
-      })
-      .itSendsTheRequest({ method: 'POST', url: '/api/notes' })
-      .andIfServerRespondsWith({ status: 200, body: { id: 123, text: 'hello', categories: [] } })
-      .aCallSucceedsWith({ id: 123, text: 'hello', categories: [] });
-
-    testCase('should throw connectivity error when 0')
-      .whenIMakeAnApiCall(function(api) {
-        return api.createNote({
-          text: 'hello',
-          categories: []
-        });
-      })
-      .itSendsTheRequest({ method: 'POST', url: '/api/notes' })
-      .andIfServerRespondsWith({ status: 0 })
-      .aCallFailsWith(function() { return errors.ConnectivityError; });
-
-    testCase('should throw validation error when 400')
-      .whenIMakeAnApiCall(function(api) {
-        return api.createNote({
-          text: 'hello',
-          categories: []
-        });
-      })
-      .itSendsTheRequest({ method: 'POST', url: '/api/notes' })
-      .andIfServerRespondsWith({ status: 400 })
-      .aCallFailsWith(function() { return errors.ValidationError; });
-
-    testCase('should throw unexpected error when 500')
-      .whenIMakeAnApiCall(function(api) {
-        return api.createNote({
-          text: 'hello',
-          categories: []
-        });
-      })
-      .itSendsTheRequest({ method: 'POST', url: '/api/notes' })
-      .andIfServerRespondsWith({ status: 500 })
-      .aCallFailsWith(function() { return errors.UnexpectedError; });      
-  });  
 });
