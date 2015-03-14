@@ -148,7 +148,7 @@ describe('api-service-http', function() {
   });
 
   describe('Categories API', function() {
-    // +0, 200, 400, 409, +500
+    // +0, +200, +400, +409, +500
     describe('createCategory()', function() {
       var typicalApiCall = function(api) {
         return api.createCategory({
@@ -164,11 +164,35 @@ describe('api-service-http', function() {
         .go();
       });
 
+      it('should return created category when 200', function() {
+        whenIMakeAnApiCall(typicalApiCall)
+        .itSendsTheRequest(typicalRequest)
+        .andIfServerRespondsWith({ status: 200, body: { id: 123, name: 'hello' } })
+        .aCallSucceedsWith({ id: 123, name: 'hello' })
+        .go();
+      });
+
+      it('should throw validation error when 400', function() {
+        whenIMakeAnApiCall(typicalApiCall)
+        .itSendsTheRequest(typicalRequest)
+        .andIfServerRespondsWith({ status: 400, body: { errorMap: { name: 'bad name' } } })
+        .aCallFailsWith(errors.ValidationError)
+        .go();
+      });
+
+      it('should throw conflict error when 409', function() {
+        whenIMakeAnApiCall(typicalApiCall)
+        .itSendsTheRequest(typicalRequest)
+        .andIfServerRespondsWith({ status: 409 })
+        .aCallFailsWith(errors.ConflictError)
+        .go();
+      });
+
       itShouldThrowAConnectivityErrorWhen0(typicalApiCall, typicalRequest);
       itShouldThrowAnUnexpectedErrorWhen500(typicalApiCall, typicalRequest);
     });
 
-    // +0, 200, 400, +404, 409, +500
+    // +0, +200, +400, +404, +409, +500
     describe('updateCategory()', function() {
       var typicalApiCall = function(api) {
         return api.updateCategory({
@@ -182,6 +206,30 @@ describe('api-service-http', function() {
       it('should do PUT /api/categories/{id}', function() {
         whenIMakeAnApiCall(typicalApiCall)
         .itSendsTheRequest(typicalRequest)
+        .go();
+      });
+
+      it('should return updated category when 200', function() {
+        whenIMakeAnApiCall(typicalApiCall)
+        .itSendsTheRequest(typicalRequest)
+        .andIfServerRespondsWith({ status: 200, body: { id: 123, name: 'hello' } })
+        .aCallSucceedsWith({ id: 123, name: 'hello' })
+        .go();
+      });
+
+      it('should throw validation error when 400', function() {
+        whenIMakeAnApiCall(typicalApiCall)
+        .itSendsTheRequest(typicalRequest)
+        .andIfServerRespondsWith({ status: 400, body: { errorMap: { name: 'bad name' } } })
+        .aCallFailsWith(errors.ValidationError)
+        .go();
+      });
+
+      it('should throw conflict error when 409', function() {
+        whenIMakeAnApiCall(typicalApiCall)
+        .itSendsTheRequest(typicalRequest)
+        .andIfServerRespondsWith({ status: 409 })
+        .aCallFailsWith(errors.ConflictError)
         .go();
       });
 
@@ -219,7 +267,7 @@ describe('api-service-http', function() {
       itShouldThrowAnUnexpectedErrorWhen500(typicalApiCall, typicalRequest);
     });
 
-    // +0, 200, +500
+    // +0, +200, +500
     describe('getCategories()', function() {
       var typicalApiCall = function(api) {
         return api.getCategories();
@@ -233,11 +281,25 @@ describe('api-service-http', function() {
         .go();
       });
 
+      it('should return a collection of categories when 200', function() {
+        whenIMakeAnApiCall(typicalApiCall)
+        .itSendsTheRequest(typicalRequest)
+        .andIfServerRespondsWith({ status: 200, body: [
+          { id: 1, name: 'hello' },
+          { id: 2, name: 'there' }
+        ]})
+        .aCallSucceedsWith([
+          { id: 1, name: 'hello' },
+          { id: 2, name: 'there' }
+        ])
+        .go();
+      });
+
       itShouldThrowAConnectivityErrorWhen0(typicalApiCall, typicalRequest);
       itShouldThrowAnUnexpectedErrorWhen500(typicalApiCall, typicalRequest);
     });
 
-    // +0, 200, +500
+    // +0, +200, +500
     describe('getCategoriesWithNameStartingWith()', function() {
       var typicalApiCall = function(api) {
         return api.getCategoriesWithNameStartingWith('omg');
@@ -248,6 +310,20 @@ describe('api-service-http', function() {
       it('should do GET /api/categories?nameStartsWith={nsw}', function() {
         whenIMakeAnApiCall(typicalApiCall)
         .itSendsTheRequest(typicalRequest)
+        .go();
+      });
+
+      it('should return a collection of categories when 200', function() {
+        whenIMakeAnApiCall(typicalApiCall)
+        .itSendsTheRequest(typicalRequest)
+        .andIfServerRespondsWith({ status: 200, body: [
+          { id: 1, name: 'hello' },
+          { id: 2, name: 'there' }
+        ]})
+        .aCallSucceedsWith([
+          { id: 1, name: 'hello' },
+          { id: 2, name: 'there' }
+        ])
         .go();
       });
 
