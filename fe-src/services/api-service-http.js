@@ -52,6 +52,7 @@ angular.module('api2', ['api2.rh'])
   this.updateNote = function(note) {
     // TODO: are there any other cases?
     var interpretResponse = responseHandler.make()
+      .when(0, throwConnectivityError())
       .when(200, returnData())
       .otherwise(throwUnexpectedError())
       .wrap;
@@ -62,6 +63,7 @@ angular.module('api2', ['api2.rh'])
   this.deleteNote = function(note) {
     // TODO: are there any other cases?
     var interpretResponse = responseHandler.make()
+      .when(0, throwConnectivityError())
       .when(200, returnData())
       .otherwise(throwUnexpectedError())
       .wrap;
@@ -72,6 +74,7 @@ angular.module('api2', ['api2.rh'])
   this.getNotes = function() {
     // TODO: are there any other cases?
     var interpretResponse = responseHandler.make()
+      .when(0, throwConnectivityError())
       .when(200, returnData())
       .otherwise(throwUnexpectedError())
       .wrap;
@@ -94,6 +97,7 @@ angular.module('api2', ['api2.rh'])
   this.updateCategory = function(category) {
     // TODO: are there any other cases?
     var interpretResponse = responseHandler.make()
+      .when(0, throwConnectivityError())
       .when(200, returnData())
       .otherwise(throwUnexpectedError())
       .wrap;
@@ -104,6 +108,7 @@ angular.module('api2', ['api2.rh'])
   this.deleteCategory = function(category) {
     // TODO: are there any other cases?
     var interpretResponse = responseHandler.make()
+      .when(0, throwConnectivityError())
       .when(200, returnData())
       .otherwise(throwUnexpectedError())
       .wrap;
@@ -114,6 +119,7 @@ angular.module('api2', ['api2.rh'])
   this.getCategories = function() {
     // TODO: are there any other cases?
     var interpretResponse = responseHandler.make()
+      .when(0, throwConnectivityError())
       .when(200, returnData())
       .otherwise(throwUnexpectedError())
       .wrap;
@@ -124,6 +130,7 @@ angular.module('api2', ['api2.rh'])
   this.getCategoriesWithNameStartingWith = function(nameStartsWith) {
     // TODO: are there any other cases?
     var interpretResponse = responseHandler.make()
+      .when(0, throwConnectivityError())
       .when(200, returnData())
       .otherwise(throwUnexpectedError())
       .wrap;

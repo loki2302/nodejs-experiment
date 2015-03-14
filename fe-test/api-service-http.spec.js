@@ -7,6 +7,7 @@ describe('api-service-http', function() {
   }));
 
   describe('Notes API', function() {
+    // 0, 200, 400, 500
     describe('createNote()', function() {
       var typicalApiCall = function(api) {
         return api.createNote({
@@ -15,45 +16,35 @@ describe('api-service-http', function() {
         });
       };
 
+      var typicalRequest = { method: 'POST', url: '/api/notes' };
+
       it('should do POST /api/notes', function() {
         whenIMakeAnApiCall(typicalApiCall)
-        .itSendsTheRequest({ method: 'POST', url: '/api/notes' })
+        .itSendsTheRequest(typicalRequest)
         .go();
       });
 
       it('should return created note when 200', function() {
         whenIMakeAnApiCall(typicalApiCall)
-        .itSendsTheRequest({ method: 'POST', url: '/api/notes' })
+        .itSendsTheRequest(typicalRequest)
         .andIfServerRespondsWith({ status: 200, body: { id: 123, text: 'hello', categories: [] } })
         .aCallSucceedsWith({ id: 123, text: 'hello', categories: [] })
         .go();
       });
 
-      it('should throw connectivity error when 0', function() {
-        whenIMakeAnApiCall(typicalApiCall)
-        .itSendsTheRequest({ method: 'POST', url: '/api/notes' })
-        .andIfServerRespondsWith({ status: 0 })
-        .aCallFailsWith(errors.ConnectivityError)
-        .go();
-      });
-
       it('should throw validation error when 400', function() {
         whenIMakeAnApiCall(typicalApiCall)
-        .itSendsTheRequest({ method: 'POST', url: '/api/notes' })
+        .itSendsTheRequest(typicalRequest)
         .andIfServerRespondsWith({ status: 400, body: { errorMap: { content: 'bad content' } } })
         .aCallFailsWith(errors.ValidationError)
         .go();
       });
 
-      it('should throw unexpected error when 500', function() {
-        whenIMakeAnApiCall(typicalApiCall)
-        .itSendsTheRequest({ method: 'POST', url: '/api/notes' })
-        .andIfServerRespondsWith({ status: 500 })
-        .aCallFailsWith(errors.UnexpectedError)
-        .go();
-      });
+      itShouldThrowAConnectivityErrorWhen0(typicalApiCall, typicalRequest);
+      itShouldThrowAnUnexpectedErrorWhen500(typicalApiCall, typicalRequest);
     });
 
+    // 0, 200, 400, 404, 500
     describe('updateNote()', function() {
       var typicalApiCall = function(api) {
         return api.updateNote({
@@ -61,15 +52,21 @@ describe('api-service-http', function() {
           text: 'hello',
           categories: []
         });
-      };    
+      };
+
+      var typicalRequest = { method: 'PUT', url: '/api/notes/123' };
 
       it('should do PUT /api/notes/{id}', function() {
         whenIMakeAnApiCall(typicalApiCall)
-        .itSendsTheRequest({ method: 'PUT', url: '/api/notes/123' })
+        .itSendsTheRequest(typicalRequest)
         .go();
       });
+
+      itShouldThrowAConnectivityErrorWhen0(typicalApiCall, typicalRequest);
+      itShouldThrowAnUnexpectedErrorWhen500(typicalApiCall, typicalRequest);
     });
 
+    // 0, 200, 404, 500
     describe('deleteNote()', function() {
       var typicalApiCall = function(api) {
         return api.deleteNote({
@@ -77,29 +74,41 @@ describe('api-service-http', function() {
           text: 'hello',
           categories: []
         });
-      };    
+      };
+
+      var typicalRequest = { method: 'DELETE', url: '/api/notes/123' };
 
       it('should do DELETE /api/notes/{id}', function() {
         whenIMakeAnApiCall(typicalApiCall)
-        .itSendsTheRequest({ method: 'DELETE', url: '/api/notes/123' })
+        .itSendsTheRequest(typicalRequest)
         .go();
       });
+
+      itShouldThrowAConnectivityErrorWhen0(typicalApiCall, typicalRequest);
+      itShouldThrowAnUnexpectedErrorWhen500(typicalApiCall, typicalRequest);
     });
 
+    // 0, 200, 500
     describe('getNotes()', function() {
       var typicalApiCall = function(api) {
         return api.getNotes();
       };    
 
+      var typicalRequest = { method: 'GET', url: '/api/notes' };
+
       it('should do GET /api/notes', function() {
         whenIMakeAnApiCall(typicalApiCall)
-        .itSendsTheRequest({ method: 'GET', url: '/api/notes' })
+        .itSendsTheRequest(typicalRequest)
         .go();
       });
+
+      itShouldThrowAConnectivityErrorWhen0(typicalApiCall, typicalRequest);
+      itShouldThrowAnUnexpectedErrorWhen500(typicalApiCall, typicalRequest);
     });
   });
 
   describe('Categories API', function() {
+    // 0, 200, 400, 409, 500
     describe('createCategory()', function() {
       var typicalApiCall = function(api) {
         return api.createCategory({
@@ -107,13 +116,19 @@ describe('api-service-http', function() {
         });
       };
 
+      var typicalRequest = { method: 'POST', url: '/api/categories' };
+
       it('should do POST /api/categories', function() {
         whenIMakeAnApiCall(typicalApiCall)
-        .itSendsTheRequest({ method: 'POST', url: '/api/categories' })
+        .itSendsTheRequest(typicalRequest)
         .go();
       });
+
+      itShouldThrowAConnectivityErrorWhen0(typicalApiCall, typicalRequest);
+      itShouldThrowAnUnexpectedErrorWhen500(typicalApiCall, typicalRequest);
     });
 
+    // 0, 200, 400, 404, 409, 500
     describe('updateCategory()', function() {
       var typicalApiCall = function(api) {
         return api.updateCategory({
@@ -122,13 +137,19 @@ describe('api-service-http', function() {
         });
       };
 
+      var typicalRequest = { method: 'PUT', url: '/api/categories/123' };
+
       it('should do PUT /api/categories/{id}', function() {
         whenIMakeAnApiCall(typicalApiCall)
-        .itSendsTheRequest({ method: 'PUT', url: '/api/categories/123' })
+        .itSendsTheRequest(typicalRequest)
         .go();
       });
+
+      itShouldThrowAConnectivityErrorWhen0(typicalApiCall, typicalRequest);
+      itShouldThrowAnUnexpectedErrorWhen500(typicalApiCall, typicalRequest);
     });
 
+    // 0, 200, 404, 500
     describe('deleteCategory()', function() {
       var typicalApiCall = function(api) {
         return api.deleteCategory({
@@ -136,35 +157,52 @@ describe('api-service-http', function() {
         });
       };
 
+      var typicalRequest = { method: 'DELETE', url: '/api/categories/123' };
+
       it('should do DELETE /api/categories/{id}', function() {
         whenIMakeAnApiCall(typicalApiCall)
-        .itSendsTheRequest({ method: 'DELETE', url: '/api/categories/123' })
+        .itSendsTheRequest(typicalRequest)
         .go();
       });
+
+      itShouldThrowAConnectivityErrorWhen0(typicalApiCall, typicalRequest);
+      itShouldThrowAnUnexpectedErrorWhen500(typicalApiCall, typicalRequest);
     });
 
+    // 0, 200, 500
     describe('getCategories()', function() {
       var typicalApiCall = function(api) {
         return api.getCategories();
       };
 
+      var typicalRequest = { method: 'GET', url: '/api/categories' };
+
       it('should do GET /api/categories', function() {
         whenIMakeAnApiCall(typicalApiCall)
-        .itSendsTheRequest({ method: 'GET', url: '/api/categories' })
+        .itSendsTheRequest(typicalRequest)
         .go();
       });
+
+      itShouldThrowAConnectivityErrorWhen0(typicalApiCall, typicalRequest);
+      itShouldThrowAnUnexpectedErrorWhen500(typicalApiCall, typicalRequest);
     });
 
+    // 0, 200, 500
     describe('getCategoriesWithNameStartingWith()', function() {
       var typicalApiCall = function(api) {
         return api.getCategoriesWithNameStartingWith('omg');
       };
 
+      var typicalRequest = { method: 'GET', url: '/api/categories?nameStartsWith=omg' };
+
       it('should do GET /api/categories?nameStartsWith={nsw}', function() {
         whenIMakeAnApiCall(typicalApiCall)
-        .itSendsTheRequest({ method: 'GET', url: '/api/categories?nameStartsWith=omg' })
+        .itSendsTheRequest(typicalRequest)
         .go();
       });
+
+      itShouldThrowAConnectivityErrorWhen0(typicalApiCall, typicalRequest);
+      itShouldThrowAnUnexpectedErrorWhen500(typicalApiCall, typicalRequest);
     });
   });
 
@@ -238,5 +276,25 @@ describe('api-service-http', function() {
         }
       }
     }
+  };
+
+  function itShouldThrowAConnectivityErrorWhen0(apiCall, apiRequest) {
+    it('should throw connectivity error when 0', function() {
+      whenIMakeAnApiCall(apiCall)
+      .itSendsTheRequest(apiRequest)
+      .andIfServerRespondsWith({ status: 0 })
+      .aCallFailsWith(errors.ConnectivityError)
+      .go();
+    });
+  }
+
+  function itShouldThrowAnUnexpectedErrorWhen500(apiCall, apiRequest) {
+    it('should throw unexpected error when 500', function() {
+      whenIMakeAnApiCall(apiCall)
+      .itSendsTheRequest(apiRequest)
+      .andIfServerRespondsWith({ status: 500 })
+      .aCallFailsWith(errors.UnexpectedError)
+      .go();
+    });
   };
 });
