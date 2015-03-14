@@ -57,7 +57,7 @@ angular.module('api2', ['api2.rh'])
       .otherwise(throwUnexpectedError())
       .wrap;
 
-    return interpretResponse($http.put('/api/notes/' + note.id, note));
+    return interpretResponse($http.post('/api/notes/' + note.id, note));
   };
 
   this.deleteNote = function(note) {
@@ -103,7 +103,7 @@ angular.module('api2', ['api2.rh'])
       .otherwise(throwUnexpectedError())
       .wrap;
 
-    return interpretResponse($http.put('/api/categories/' + category.id, category));
+    return interpretResponse($http.post('/api/categories/' + category.id, category));
   };
 
   this.deleteCategory = function(category) {
