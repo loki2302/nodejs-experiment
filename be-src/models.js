@@ -27,8 +27,8 @@ module.exports = function() {
 		}
 	});
 
-	Note.hasMany(Category);
-	Category.hasMany(Note);
+	Note.belongsToMany(Category);
+	Category.belongsToMany(Note, { constraints: false });
 
 	return {
 		sequelize: sequelize,
