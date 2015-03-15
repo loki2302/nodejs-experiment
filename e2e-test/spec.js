@@ -20,11 +20,19 @@ var NotesPage = function() {
   
   this.newNoteEditor = element(by.css('#new-note-editor'));
   this.newNoteEditorContent = element(by.css('#new-note-editor #content'));
-  this.newNoteEditorSubmit = element(by.css('#new-note-editor button'));  
+  this.newNoteEditorSubmit = element(by.css('#new-note-editor button'));
 };
 
 var CategoriesPage = function() {
   this.noCategoriesAlert = element(by.css('#no-categories-alert'));
+
+  this.categoryList = element(by.css('#category-list'));
+  this.categoryListCategoryIdByCategoryIndex = function(index) { return element(by.css('#category-list li.category-' + index + ' .category-id')); }
+  this.categoryListCategoryNameByCategoryIndex = function(index) { return element(by.css('#category-list li.category-' + index + ' .category-name')); }
+  
+  this.newCategoryEditor = element(by.css('#new-category-editor'));
+  this.newCategoryEditorName = element(by.css('#new-category-editor #name'));
+  this.newCategoryEditorSubmit = element(by.css('#new-category-editor button'));
 };
 
 describe('app', function() {
@@ -148,6 +156,29 @@ describe('app', function() {
     it('should display "there are no categories" message', function() {
       expect(categoriesPage.noCategoriesAlert.isPresent()).toBe(true);
       expect(categoriesPage.noCategoriesAlert.getText()).toBe('There are no categories so far.');
+    });
+
+    it('should not display a list of categories', function() {
+      expect(categoriesPage.categoryList.isPresent()).toBe(false);
+    });
+
+    it('should have a new category editor', function() {
+      expect(categoriesPage.newCategoryEditor.isPresent()).toBe(true);
+    });
+
+    it('should let me create a category', function() {      
+      expect(categoriesPage.newCategoryEditorName.isPresent()).toBe(true);
+      categoriesPage.newCategoryEditorName.sendKeys('hello');
+
+      expect(categoriesPage.newCategoryEditorSubmit.isPresent()).toBe(true);
+      categoriesPage.newCategoryEditorSubmit.click();
+
+      expect(categoriesPage.noCategoriesAlert.isPresent()).toBe(false);
+      expect(categoriesPage.categoryList.isPresent()).toBe(true);
+      expect(categoriesPage.categoryListCategoryIdByCategoryIndex(0).isPresent()).toBe(true);
+      expect(categoriesPage.categoryListCategoryIdByCategoryIndex(0).getText()).toBe('1');
+      expect(categoriesPage.categoryListCategoryNameByCategoryIndex(0).isPresent()).toBe(true);
+      expect(categoriesPage.categoryListCategoryNameByCategoryIndex(0).getText()).toBe('hello');
     });
   });
 });

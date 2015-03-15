@@ -1,4 +1,4 @@
 <div ng-if="!editing">
-	<span class="badge">{{category.id}}</span> {{category.name}} <button ng-click="deleteCategory()" class="btn btn-default" ng-class="{'disabled': working}">Delete</button> <button ng-click="editCategory()" class="btn btn-default" ng-class="{'disabled': working}">Edit</button>
+	<span class="badge category-id">{{category.id}}</span><span class="category-name">{{category.name}}</span><button ng-click="deleteCategory()" class="btn btn-default" ng-class="{'disabled': working}">Delete</button> <button ng-click="editCategory()" class="btn btn-default" ng-class="{'disabled': working}">Edit</button>
 </div>
 <category-editor ng-if="editing" original-category="category" save="saveCategory(category)" save-title="Save" display-cancel="true" cancel="cancelEditCategory()"></category-editor>

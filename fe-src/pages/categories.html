@@ -2,8 +2,8 @@
 	There are no categories so far.
 </div>
 
-<ul class="list-unstyled" ng-if="categories.length > 0">
-	<li ng-repeat="category in categories"><category-item-view category="category" delete="deleteCategory(category)" save="updateCategory(category)"></category-item-view></li>
+<ul id="category-list" class="list-unstyled" ng-if="categories.length > 0">
+	<li ng-class="'category-' + {{$index}}" ng-repeat="category in categories"><category-item-view category="category" delete="deleteCategory(category)" save="updateCategory(category)"></category-item-view></li>
 </ul>
 
-<category-editor save="createCategory(category)" save-title="Create"></category-editor>
+<category-editor id="new-category-editor" save="createCategory(category)" save-title="Create"></category-editor>
