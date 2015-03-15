@@ -20,7 +20,7 @@ angular.module("notes", [
 
 	$scope.createNote = function(note) {
 		return apiService.createNote(note).then(function(note) {
-			apiService.getNotes().then(function(notes) {
+			return apiService.getNotes().then(function(notes) {
 				$scope.notes = notes;
 			}, function(error) {
 				throw error;
@@ -36,7 +36,7 @@ angular.module("notes", [
 
 	$scope.updateNote = function(note) {
 		return apiService.updateNote(note).then(function(note) {
-			apiService.getNotes().then(function(notes) {
+			return apiService.getNotes().then(function(notes) {
 				$scope.notes = notes;
 			}, function(error) {
 				throw error;
@@ -52,7 +52,7 @@ angular.module("notes", [
 
 	$scope.deleteNote = function(note) {
 		return apiService.deleteNote(note).then(function() {
-			apiService.getNotes().then(function(notes) {
+			return apiService.getNotes().then(function(notes) {
 				$scope.notes = notes;
 			}, function(error) {
 				throw error;

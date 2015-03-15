@@ -20,7 +20,7 @@ angular.module("categories", [
 
 	$scope.createCategory = function(category) {
 		return apiService.createCategory(category).then(function(category) {
-			apiService.getCategories().then(function(categories) {
+			return apiService.getCategories().then(function(categories) {
 				$scope.categories = categories;
 			}, function(error) {
 				throw error;
@@ -36,7 +36,7 @@ angular.module("categories", [
 
 	$scope.updateCategory = function(category) {
 		return apiService.updateCategory(category).then(function(category) {
-			apiService.getCategories().then(function(categories) {
+			return apiService.getCategories().then(function(categories) {
 				$scope.categories = categories;
 			}, function(error) {
 				throw error;
@@ -52,7 +52,7 @@ angular.module("categories", [
 
 	$scope.deleteCategory = function(category) {
 		return apiService.deleteCategory(category).then(function() {
-			apiService.getCategories().then(function(categories) {
+			return apiService.getCategories().then(function(categories) {
 				$scope.categories = categories;
 			}, function(error) {
 				throw error;
