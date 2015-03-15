@@ -15,15 +15,15 @@ angular.module("app", [
 		return function(exception, cause) {
 			$delegate(exception, cause);
 
-			var apiService = $injector.get("apiService");
+			var errors = $injector.get("errors");
 			var $modal = $injector.get("$modal");
 
 			var errorMessage;
-			if(exception instanceof apiService.ConnectivityError) {
+			if(exception instanceof errors.ConnectivityError) {
 				errorMessage = "There's a connectivity issue";
-			} else if(exception instanceof apiService.ValidationError) {
+			} else if(exception instanceof errors.ValidationError) {
 				errorMessage = "There's a validation error";
-			} else if(exception instanceof apiService.UnexpectedError) {
+			} else if(exception instanceof errors.UnexpectedError) {
 				errorMessage = "There's an unexpected API error: " + exception.message;
 			} else {
 				errorMessage = exception.message;

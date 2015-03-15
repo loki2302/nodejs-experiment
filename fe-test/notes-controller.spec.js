@@ -14,16 +14,14 @@ describe('NotesController', function() {
 
   it('should be able to create a new note [apiService mock]', inject(function($controller, $rootScope, $q) {
     var createNoteResultDeferred = $q.defer();
+    var getNotesResultDeferred = $q.defer();
 
     var apiService = {
       createNote: function(note) {
         return createNoteResultDeferred.promise;
       },
       getNotes: function() {
-        return [{
-          id: 123,
-          content: 'hello there'
-        }];
+        return getNotesResultDeferred.promise;
       }
     };
 
@@ -53,43 +51,13 @@ describe('NotesController', function() {
     $rootScope.$apply();
 
     expect(apiService.getNotes).toHaveBeenCalled();
-    expect(apiService.createNote.calls.count()).toBe(1);
-    expect(apiService.getNotes.calls.count()).toBe(1);
 
-    $rootScope.$apply();
-
-    expect($rootScope.notes.length).toBe(1);
-  }));
-
-  it('should be able to create a new note [$httpBackend mock]', inject(function($controller, $rootScope, $q, $httpBackend, apiService) {
-    var notesController = $controller('NotesController', {
-      $scope: $rootScope,
-      $q: $q,
-      notes: [],
-      apiService: apiService
-    });
-
-    $httpBackend.expect('POST', '/api/notes')
-    .respond(201, {
-      id: 123,
-      content: 'hello there'
-    });
-
-    $httpBackend.expect('GET', '/api/notes')
-    .respond(200, [{
+    getNotesResultDeferred.resolve([{
       id: 123,
       content: 'hello there'
     }]);
 
-    $rootScope.createNote({
-      content: 'hello there',
-      categories: []
-    });    
-
-    $httpBackend.flush();    
-
-    $httpBackend.verifyNoOutstandingExpectation();
-    $httpBackend.verifyNoOutstandingRequest();
+    $rootScope.$apply();
 
     expect($rootScope.notes.length).toBe(1);
   }));

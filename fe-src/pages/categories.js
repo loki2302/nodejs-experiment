@@ -15,14 +15,18 @@ angular.module("categories", [
 		}
 	});
 }])
-.controller("CategoriesController", ["$scope", "$q", "categories", "apiService", function($scope, $q, categories, apiService) {
+.controller("CategoriesController", ["$scope", "$q", "categories", "apiService", 'errors', function($scope, $q, categories, apiService, errors) {
 	$scope.categories = categories;
 
 	$scope.createCategory = function(category) {
 		return apiService.createCategory(category).then(function(category) {
-			$scope.categories = apiService.getCategories();
+			apiService.getCategories().then(function(categories) {
+				$scope.categories = categories;
+			}, function(error) {
+				throw error;
+			});
 		}, function(error) {
-			if(error instanceof apiService.ValidationError) {
+			if(error instanceof errors.ValidationError) {
 				return $q.reject(error.errorMap);
 			}
 			
@@ -32,9 +36,13 @@ angular.module("categories", [
 
 	$scope.updateCategory = function(category) {
 		return apiService.updateCategory(category).then(function(category) {
-			$scope.categories = apiService.getCategories();
+			apiService.getCategories().then(function(categories) {
+				$scope.categories = categories;
+			}, function(error) {
+				throw error;
+			});
 		}, function(error) {
-			if(error instanceof apiService.ValidationError) {
+			if(error instanceof errors.ValidationError) {
 				return $q.reject(error.errorMap);
 			}
 
@@ -44,7 +52,11 @@ angular.module("categories", [
 
 	$scope.deleteCategory = function(category) {
 		return apiService.deleteCategory(category).then(function() {
-			$scope.categories = apiService.getCategories();
+			apiService.getCategories().then(function(categories) {
+				$scope.categories = categories;
+			}, function(error) {
+				throw error;
+			});
 		}, function(error) {
 			throw error;
 		});

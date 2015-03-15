@@ -6,7 +6,7 @@ describe('playground', function() {
   var $scope;
 
   beforeEach(function() {
-    var $injector = angular.injector(['ng', 'api2', function($controllerProvider) {
+    var $injector = angular.injector(['ng', 'api', function($controllerProvider) {
       $controllerProvider.register('NoteController', ['$scope', 'api', 'errors', function($scope, api, errors) {
         $scope.createNote = function(note) {
           api.createNote(note).then(function(note) {

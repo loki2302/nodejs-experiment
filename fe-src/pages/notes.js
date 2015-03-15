@@ -15,14 +15,18 @@ angular.module("notes", [
 		}
 	});
 }])
-.controller("NotesController", ["$scope", "$q", "notes", "apiService", function($scope, $q, notes, apiService) {
+.controller("NotesController", ["$scope", "$q", "notes", "apiService", 'errors', function($scope, $q, notes, apiService, errors) {
 	$scope.notes = notes;
 
 	$scope.createNote = function(note) {
 		return apiService.createNote(note).then(function(note) {
-			$scope.notes = apiService.getNotes();
+			apiService.getNotes().then(function(notes) {
+				$scope.notes = notes;
+			}, function(error) {
+				throw error;
+			});
 		}, function(error) {
-			if(error instanceof apiService.ValidationError) {
+			if(error instanceof errors.ValidationError) {
 				return $q.reject(error.errorMap);
 			}
 			
@@ -32,9 +36,13 @@ angular.module("notes", [
 
 	$scope.updateNote = function(note) {
 		return apiService.updateNote(note).then(function(note) {
-			$scope.notes = apiService.getNotes();			
+			apiService.getNotes().then(function(notes) {
+				$scope.notes = notes;
+			}, function(error) {
+				throw error;
+			});
 		}, function(error) {
-			if(error instanceof apiService.ValidationError) {
+			if(error instanceof errors.ValidationError) {
 				return $q.reject(error.errorMap);
 			}
 
@@ -44,21 +52,17 @@ angular.module("notes", [
 
 	$scope.deleteNote = function(note) {
 		return apiService.deleteNote(note).then(function() {
-			$scope.notes = apiService.getNotes();
+			apiService.getNotes().then(function(notes) {
+				$scope.notes = notes;
+			}, function(error) {
+				throw error;
+			});
 		}, function(error) {
 			throw error;
 		});
 	};
 
 	$scope.searchCategoriesStartingWith = function(query) {
-		var deferred = $q.defer();
-
-		apiService.getCategoriesWithNameStartingWith(query).$promise.then(function(categories) {
-			deferred.resolve(categories);
-		}, function(error) {
-			deferred.reject(error);
-		});
-
-		return deferred.promise;
+		return apiService.getCategoriesWithNameStartingWith(query);
 	};
 }]);

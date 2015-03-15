@@ -1,104 +1,186 @@
-angular.module("api", ["resources.notes", "resources.categories"])
-.service("apiService", ["$q", "Note", "Category", function($q, Note, Category) {
-	this.ValidationError = function ValidationError(errorMap) {
-		this.errorMap = errorMap;
-	};
+angular.module('api.rh', [])
+.service('responseHandler', [function() {
+  this.make = function() {
+    return new ResponseHandler();
+  };
 
-	this.ConnectivityError = function ConnectivityError(message) {
-		this.message = message;
-	};
+  function ResponseHandler() {
+    var self = this;
+    self.handlers = {};
+    self.otherwiseHandlerFunc = null;
 
-	this.UnexpectedError = function UnexpectedError(message) {
-		this.message = message;
-	};
+    self.when = function(statusCode, handlerFunc) {
+      self.handlers[statusCode] = handlerFunc;
+      return self;
+    };
 
-	var self = this;
-	function makeRejectionFromResponse(httpResponse) {
-		var httpStatus = httpResponse.status;
-		if(httpStatus === 400) {
-			return $q.reject(new self.ValidationError(httpResponse.data));
-		}
+    self.otherwise = function(handlerFunc) {
+      self.otherwiseHandlerFunc = handlerFunc;
+      return self;
+    };
 
-		if(httpStatus === 0) {
-			return $q.reject(new self.ConnectivityError(httpResponse.data.message));
-		}
+    self.handle = function(httpResponse) {
+      var statusCode = httpResponse.status;        
+      var handlerFunc = self.handlers[statusCode];
+      if(!handlerFunc) {
+        handlerFunc = self.otherwiseHandlerFunc;
+      }
 
-		return $q.reject(new self.UnexpectedError(httpResponse.data.message));
-	};
+      return handlerFunc(httpResponse);
+    };
 
-	this.createNote = function(note) {
-		return Note.save({
-			content: note.content,
-			categories: note.categories
-		}).$promise.then(function(note) {
-			return note;
-		}, function(httpResponse) {
-			return makeRejectionFromResponse(httpResponse);
-		});
-	};
-
-	this.updateNote = function(note) {
-		return Note.save({
-			id: note.id,
-			content: note.content,
-			categories: note.categories
-		}).$promise.then(function(note) {
-			return note;
-		}, function(httpResponse) {
-			return makeRejectionFromResponse(httpResponse);
-		});
-	};
-
-	this.deleteNote = function(note) {
-		return Note.delete({
-			id: note.id
-		}).$promise.then(function() {			
-		}, function(httpResponse) {
-			return makeRejectionFromResponse(httpResponse);
-		});
-	};
-
-	this.getNotes = function() {
-		return Note.query();
-	};
-
-	this.createCategory = function(category) {
-		return Category.save({
-			name: category.name
-		}).$promise.then(function(category) {
-			return category;
-		}, function(httpResponse) {
-			return makeRejectionFromResponse(httpResponse);
-		});
-	};
-
-	this.updateCategory = function(category) {
-		return Category.save({
-			id: category.id,
-			name: category.name
-		}).$promise.then(function(category) {
-			return category;
-		}, function(httpResponse) {
-			return makeRejectionFromResponse(httpResponse);
-		});
-	};
-
-	this.deleteCategory = function(category) {
-		return Category.delete({
-			id: category.id
-		}).$promise.then(function() {			
-		}, function(httpResponse) {
-			return makeRejectionFromResponse(httpResponse);
-		});
-	};
-
-	this.getCategories = function() {
-		return Category.query();
-	};
-
-	this.getCategoriesWithNameStartingWith = function(name) {
-		return Category.search({
-			nameStartsWith: name
-		});
-	};
+    self.wrap = function(promise) {
+      return promise.then(self.handle, self.handle);
+    };
+  };
 }]);
+
+angular.module('api', ['api.rh'])
+.service('apiService', ['$http', '$q', 'responseHandler', 'errors', function($http, $q, responseHandler, errors) {
+  this.createNote = function(note) {
+    var interpretResponse = responseHandler.make()
+      .when(0, throwConnectivityError())
+      .when(201, returnData())
+      .when(400, throwValidationError())
+      .otherwise(throwUnexpectedError())
+      .wrap;
+
+    return interpretResponse($http.post('/api/notes', note));
+  };
+
+  this.updateNote = function(note) {
+    var interpretResponse = responseHandler.make()
+      .when(0, throwConnectivityError())
+      .when(200, returnData())
+      .when(400, throwValidationError())
+      .when(404, throwNotFoundError())
+      .otherwise(throwUnexpectedError())
+      .wrap;
+
+    return interpretResponse($http.post('/api/notes/' + note.id, note));
+  };
+
+  this.deleteNote = function(note) {
+    var interpretResponse = responseHandler.make()
+      .when(0, throwConnectivityError())
+      .when(200, returnData())
+      .when(404, throwNotFoundError())
+      .otherwise(throwUnexpectedError())
+      .wrap;
+
+    return interpretResponse($http.delete('/api/notes/' + note.id, note));
+  };
+
+  this.getNotes = function() {
+    var interpretResponse = responseHandler.make()
+      .when(0, throwConnectivityError())
+      .when(200, returnData())
+      .otherwise(throwUnexpectedError())
+      .wrap;
+
+    return interpretResponse($http.get('/api/notes'));
+  };
+
+  this.createCategory = function(category) {
+    var interpretResponse = responseHandler.make()
+      .when(0, throwConnectivityError())
+      .when(201, returnData())
+      .when(400, throwValidationError())
+      .when(409, throwConflictError())
+      .otherwise(throwUnexpectedError())
+      .wrap;
+
+    return interpretResponse($http.post('/api/categories', category));
+  };
+
+  this.updateCategory = function(category) {
+    var interpretResponse = responseHandler.make()
+      .when(0, throwConnectivityError())
+      .when(200, returnData())
+      .when(400, throwValidationError())
+      .when(404, throwNotFoundError())
+      .when(409, throwConflictError())
+      .otherwise(throwUnexpectedError())
+      .wrap;
+
+    return interpretResponse($http.post('/api/categories/' + category.id, category));
+  };
+
+  this.deleteCategory = function(category) {
+    var interpretResponse = responseHandler.make()
+      .when(0, throwConnectivityError())
+      .when(200, returnData())
+      .when(404, throwNotFoundError())
+      .otherwise(throwUnexpectedError())
+      .wrap;
+
+    return interpretResponse($http.delete('/api/categories/' + category.id, category));
+  };
+
+  this.getCategories = function() {
+    var interpretResponse = responseHandler.make()
+      .when(0, throwConnectivityError())
+      .when(200, returnData())
+      .otherwise(throwUnexpectedError())
+      .wrap;
+
+    return interpretResponse($http.get('/api/categories'));
+  };
+
+  this.getCategoriesWithNameStartingWith = function(nameStartsWith) {
+    var interpretResponse = responseHandler.make()
+      .when(0, throwConnectivityError())
+      .when(200, returnData())
+      .otherwise(throwUnexpectedError())
+      .wrap;
+
+    return interpretResponse($http.get('/api/categories', { 
+      params: { nameStartsWith: nameStartsWith } 
+    }));
+  };
+
+  function throwConnectivityError() {
+    return function(httpResponse) {
+      return $q.reject(new errors.ConnectivityError());
+    };
+  };
+
+  function returnData() {
+    return function(httpResponse) {
+      return httpResponse.data;
+    };
+  };
+
+  function throwValidationError() {
+    return function(httpResponse) {
+      return $q.reject(new errors.ValidationError(httpResponse.data.errorMap));
+    };
+  };
+
+  function throwNotFoundError() {
+    return function(httpResponse) {
+      return $q.reject(new errors.NotFoundError());
+    };
+  };
+
+  function throwConflictError() {
+    return function(httpResponse) {
+      return $q.reject(new errors.ConflictError());
+    };
+  };
+
+  function throwUnexpectedError() {
+    return function(httpResponse) {
+      return $q.reject(new errors.UnexpectedError());
+    };
+  };  
+}])
+.value('errors', {
+  ConnectivityError: function ConnectivityError() {},
+  ValidationError: function ValidationError(errorMap) {
+    this.errorMap = errorMap;
+  },
+  NotFoundError: function NotFoundError() {},
+  ConflictError: function ConflictError() {},
+  UnexpectedError: function UnexpectedError() {}
+});
