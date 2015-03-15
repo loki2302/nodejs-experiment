@@ -90,6 +90,7 @@ module.exports = function(grunt) {
       }
     },
     "protractor_webdriver": {
+      options: { keepAlive: true },
       dummyTarget: {}
     },
     "protractor": {

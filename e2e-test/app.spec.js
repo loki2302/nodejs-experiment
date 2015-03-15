@@ -98,13 +98,13 @@ describe('app', function() {
 
       it('should switch from notes to categories, when notes page is active and one clicks categories', function() {
         browser.get('/notes');
-        appNavbar.categoriesItem.click();
+        appNavbar.categoriesItem.$('a').click(); // Chrome doesn't need xxx.$('a'), while FireFox does
         expect(browser.getLocationAbsUrl()).toBe('/categories');
       });
 
       it('should switch from categories to notes, when categories page is active and one clicks notes', function() {
         browser.get('/categories');
-        appNavbar.notesItem.click();
+        appNavbar.notesItem.$('a').click(); // Chrome doesn't need xxx.$('a'), while FireFox does
         expect(browser.getLocationAbsUrl()).toBe('/notes');
       });
     });    

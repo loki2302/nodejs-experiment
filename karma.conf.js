@@ -27,7 +27,7 @@ module.exports = function(config) {
   if(process.env.TRAVIS) {
     c.browsers = ['Firefox'];
   } else {
-    c.browsers = ['Chrome'];
+    c.browsers = ['Chrome', 'Firefox'];
   }
 
   config.set(c);
