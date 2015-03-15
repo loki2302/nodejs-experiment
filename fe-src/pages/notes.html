@@ -1,9 +1,9 @@
-<div class="alert alert-info" ng-if="notes.length === 0">
+<div id="no-notes-alert" class="alert alert-info" ng-if="notes.length === 0">
 	There are no notes so far.
 </div>
 
-<ul class="list-unstyled" ng-if="notes.length > 0">
+<ul id="note-list" class="list-unstyled" ng-if="notes.length > 0">
 	<li ng-repeat="note in notes"><note-item-view note="note" delete="deleteNote(note)" save="updateNote(note)" search-categories="searchCategoriesStartingWith($query)"></note-item-view></li>
 </ul>
 
-<note-editor save="createNote(note)" save-title="Create" search-categories="searchCategoriesStartingWith(query)"></note-editor>
+<note-editor id="new-note-editor" save="createNote(note)" save-title="Create" search-categories="searchCategoriesStartingWith(query)"></note-editor>

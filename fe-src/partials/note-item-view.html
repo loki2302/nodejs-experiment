@@ -1,5 +1,5 @@
 <div ng-if="!editing">
-	<span class="badge">{{note.id}}</span> {{note.content}} <button ng-click="deleteNote()" class="btn btn-default" ng-class="{'disabled': working}">Delete</button> <button ng-click="editNote()" class="btn btn-default" ng-class="{'disabled': working}">Edit</button>
+	<span class="badge note-id">{{note.id}}</span><span class="note-content">{{note.content}}</span><button ng-click="deleteNote()" class="btn btn-default" ng-class="{'disabled': working}">Delete</button> <button ng-click="editNote()" class="btn btn-default" ng-class="{'disabled': working}">Edit</button>
 	<span ng-if="note.categories.length === 0">Linked to no categories</span>
 	<span ng-if="note.categories.length > 0"><span class="badge" ng-repeat="category in note.categories">{{category.name}}</span></span>
 </div>
