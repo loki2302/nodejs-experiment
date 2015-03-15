@@ -2,6 +2,20 @@ var enableDestroy = require('server-destroy');
 var makeModels = require("../be-src/models.js");
 var makeApp = require("../be-src/app.js");
 
+var NotesPage = function() {
+  this.getTitle = function() { return browser.getTitle(); };
+  
+  this.noNotesAlert = element(by.css('#no-notes-alert'));
+  
+  this.noteList = element(by.css('#note-list'));
+  this.noteListNoteIdByNoteIndex = function(index) { return element(by.css('#note-list li.note-' + index + ' .note-id')); }
+  this.noteListNoteContentByNoteIndex = function(index) { return element(by.css('#note-list li.note-' + index + ' .note-content')); }
+  
+  this.newNoteEditor = element(by.css('#new-note-editor'));
+  this.newNoteEditorContent = element(by.css('#new-note-editor #content'));
+  this.newNoteEditorSubmit = element(by.css('#new-note-editor button'));  
+};
+
 describe('app', function() {
   var server;
   beforeEach(function(done) {
@@ -28,40 +42,43 @@ describe('app', function() {
   });
 
   describe('by default', function() {
+    var notesPage;
+
     beforeEach(function() {
       browser.get('/');
+      notesPage = new NotesPage();
     });
 
-    it('should have page title set to nodejs-app-experiment', function() {      
-      expect(browser.getTitle()).toEqual('nodejs-app-experiment');
+    it('should have page title set to nodejs-app-experiment', function() {
+      expect(notesPage.getTitle()).toBe('nodejs-app-experiment');
     });
 
     it('should display "there are no notes" message', function() {
-      expect(element(by.css('#no-notes-alert')).isPresent()).toBe(true);
-      expect(element(by.css('#no-notes-alert')).getText()).toEqual('There are no notes so far.');
+      expect(notesPage.noNotesAlert.isPresent()).toBe(true);
+      expect(notesPage.noNotesAlert.getText()).toBe('There are no notes so far.');
     });
 
     it('should not display a list of notes', function() {
-      expect(element(by.css('#note-list')).isPresent()).toBe(false);
+      expect(notesPage.noteList.isPresent()).toBe(false);
     });
 
     it('should have a new note editor', function() {
-      expect(element(by.css('#new-note-editor')).isPresent()).toBe(true);
+      expect(notesPage.newNoteEditor.isPresent()).toBe(true);
     });
 
-    it('should let me create a note', function() {
-      expect(element(by.css('#new-note-editor #content')).isPresent()).toBe(true);
-      element(by.css('#new-note-editor #content')).sendKeys('hello there');
+    it('should let me create a note', function() {      
+      expect(notesPage.newNoteEditorContent.isPresent()).toBe(true);
+      notesPage.newNoteEditorContent.sendKeys('hello there');
 
-      expect(element(by.css('#new-note-editor button')).isPresent()).toBe(true);
-      element(by.css('#new-note-editor button')).click();
+      expect(notesPage.newNoteEditorSubmit.isPresent()).toBe(true);
+      notesPage.newNoteEditorSubmit.click();
 
-      expect(element(by.css('#no-notes-alert')).isPresent()).toBe(false);
-      expect(element(by.css('#note-list')).isPresent()).toBe(true);
-      expect(element(by.css('#note-list li .note-id')).isPresent()).toBe(true);
-      expect(element(by.css('#note-list li .note-id')).getText()).toBe('1');
-      expect(element(by.css('#note-list li .note-content')).isPresent()).toBe(true);
-      expect(element(by.css('#note-list li .note-content')).getText()).toBe('hello there');
+      expect(notesPage.noNotesAlert.isPresent()).toBe(false);
+      expect(notesPage.noteList.isPresent()).toBe(true);
+      expect(notesPage.noteListNoteIdByNoteIndex(0).isPresent()).toBe(true);
+      expect(notesPage.noteListNoteIdByNoteIndex(0).getText()).toBe('1');
+      expect(notesPage.noteListNoteContentByNoteIndex(0).isPresent()).toBe(true);
+      expect(notesPage.noteListNoteContentByNoteIndex(0).getText()).toBe('hello there');
     });
   });
 });
