@@ -153,7 +153,7 @@ angular.module('api2', ['api2.rh'])
 
   function throwValidationError() {
     return function(httpResponse) {
-      return $q.reject(new errors.ValidationError());
+      return $q.reject(new errors.ValidationError(httpResponse.data.errorMap));
     };
   };
 
@@ -177,7 +177,9 @@ angular.module('api2', ['api2.rh'])
 }])
 .value('errors', {
   ConnectivityError: function ConnectivityError() {},
-  ValidationError: function ValidationError() {},
+  ValidationError: function ValidationError(errorMap) {
+    this.errorMap = errorMap;
+  },
   NotFoundError: function NotFoundError() {},
   ConflictError: function ConflictError() {},
   UnexpectedError: function UnexpectedError() {}

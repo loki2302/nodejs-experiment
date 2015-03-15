@@ -35,7 +35,7 @@ describe('api-service-http', function() {
         whenIMakeAnApiCall(typicalApiCall)
         .itSendsTheRequest(typicalRequest)
         .andIfServerRespondsWith({ status: 400, body: { errorMap: { content: 'bad content' } } })
-        .aCallFailsWith(errors.ValidationError)
+        .aCallFailsWith(errors.ValidationError, { errorMap: { content: 'bad content' } })
         .go();
       });
 
@@ -72,7 +72,7 @@ describe('api-service-http', function() {
         whenIMakeAnApiCall(typicalApiCall)
         .itSendsTheRequest(typicalRequest)
         .andIfServerRespondsWith({ status: 400, body: { errorMap: { content: 'bad content' } } })
-        .aCallFailsWith(errors.ValidationError)
+        .aCallFailsWith(errors.ValidationError, { errorMap: { content: 'bad content' } })
         .go();
       });      
 
@@ -171,7 +171,7 @@ describe('api-service-http', function() {
         whenIMakeAnApiCall(typicalApiCall)
         .itSendsTheRequest(typicalRequest)
         .andIfServerRespondsWith({ status: 400, body: { errorMap: { name: 'bad name' } } })
-        .aCallFailsWith(errors.ValidationError)
+        .aCallFailsWith(errors.ValidationError, { errorMap: { name: 'bad name' } })
         .go();
       });
 
@@ -215,7 +215,7 @@ describe('api-service-http', function() {
         whenIMakeAnApiCall(typicalApiCall)
         .itSendsTheRequest(typicalRequest)
         .andIfServerRespondsWith({ status: 400, body: { errorMap: { name: 'bad name' } } })
-        .aCallFailsWith(errors.ValidationError)
+        .aCallFailsWith(errors.ValidationError, { errorMap: { name: 'bad name' } })
         .go();
       });
 
@@ -369,7 +369,7 @@ describe('api-service-http', function() {
                   }
                 }
               },
-              aCallFailsWith: function(errorDefinition) {
+              aCallFailsWith: function(errorType, containing) {
                 return {
                   go: function() {
                     inject(function($httpBackend, apiService2) {
@@ -383,7 +383,12 @@ describe('api-service-http', function() {
                       $httpBackend.flush();
                       $httpBackend.verifyNoOutstandingRequest();
 
-                      expect(onError).toHaveBeenCalledWith(jasmine.any(errorDefinition));
+                      expect(onError).toHaveBeenCalledWith(jasmine.any(errorType));
+
+                      if(containing) {
+                        if(!angular.isObject(containing)) throw new Error();
+                        expect(onError).toHaveBeenCalledWith(jasmine.objectContaining(containing));
+                      }
                     });
                   }
                 };
