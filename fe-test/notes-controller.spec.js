@@ -1,5 +1,8 @@
 describe('NotesController', function() {
-  beforeEach(module('app'));
+  beforeEach(module('notes'));
+  beforeEach(module(function($exceptionHandlerProvider) {
+    $exceptionHandlerProvider.mode('log');
+  }));
 
   it('should publish notes on the scope', inject(function($controller, $rootScope, $q) {
     var $scope = $rootScope.$new();
@@ -14,7 +17,7 @@ describe('NotesController', function() {
     expect($scope.notes).toBeDefined();
   }));
 
-  describe('create note functionality', function() {
+  describe('createNote()', function() {
     var createNoteResultDeferred;
     var getNotesResultDeferred;
     var apiService;
@@ -52,48 +55,69 @@ describe('NotesController', function() {
       expect(apiService.createNote).toHaveBeenCalled();
     }));
 
-    it('should wait for apiService.createNote() to finish before loading an updated list of notes', inject(function($rootScope) {
-      $rootScope.createNote({
-        content: 'hello there',
-        categories: []
-      });
-
-      expect(apiService.getNotes).not.toHaveBeenCalled();      
-
-      $rootScope.$apply(function() {
-        createNoteResultDeferred.resolve({
-          id: 123,
+    describe('when apiService.createNote() finishes', function() {
+      beforeEach(inject(function($rootScope) {
+        $rootScope.createNote({
           content: 'hello there',
           categories: []
         });
-      });
 
-      expect(apiService.getNotes).toHaveBeenCalled();
-    }));
+        expect(apiService.getNotes).not.toHaveBeenCalled();
+      }));
 
-    it('should publish an updated list of notes on the scope', inject(function($rootScope) {
-      $rootScope.createNote({
-        content: 'hello there',
-        categories: []
-      });
+      describe('successfully', function() {
+        beforeEach(inject(function($rootScope) {
+          $rootScope.$apply(function() {
+            createNoteResultDeferred.resolve({
+              id: 123,
+              content: 'hello there',
+              categories: []
+            });
+          });
+        }));
 
-      $rootScope.$apply(function() {
-        createNoteResultDeferred.resolve({
-          id: 123,
-          content: 'hello there',
-          categories: []
+        it('should request an updated list of notes', function() {
+          expect(apiService.getNotes).toHaveBeenCalled();
+        });
+
+        describe('when updated list of notes is available', function() {
+          it('should publish those notes on the scope', inject(function($rootScope) {
+            $rootScope.$apply(function() {
+              getNotesResultDeferred.resolve([{
+                id: 123,
+                content: 'hello there',
+                categories: []
+              }]);
+            });
+
+            expect($rootScope.notes.length).toBe(1);
+          }));
         });
       });
 
-      $rootScope.$apply(function() {
-        getNotesResultDeferred.resolve([{
-          id: 123,
-          content: 'hello there',
-          categories: []
-        }]);
-      });
+      describe('with error', function() {
+        describe('when error is ValidationError', function() {
+          it('should not rethrow it', inject(function($rootScope, errors, $exceptionHandler) {
+            $rootScope.$apply(function() {
+              createNoteResultDeferred.reject(new errors.ValidationError());
+            });
 
-      expect($rootScope.notes.length).toBe(1);
-    }));    
+            console.log($exceptionHandler.errors);
+            expect($exceptionHandler.errors.length).toBe(0);
+          }));
+        });
+
+        describe('when error is UnexpectedError', function() {
+          it('should rethrow it', inject(function($rootScope, errors, $exceptionHandler) {
+            $rootScope.$apply(function() {
+              createNoteResultDeferred.reject(new errors.UnexpectedError());
+            });
+
+            expect($exceptionHandler.errors.length).toBe(1);
+            expect($exceptionHandler.errors[0].constructor).toBe(errors.UnexpectedError);
+          }));
+        });
+      });
+    });
   });
 });
