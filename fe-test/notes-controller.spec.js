@@ -65,7 +65,7 @@ describe('NotesController', function() {
     beforeEach(inject(function($rootScope, $q, apiService) {
       createNoteResultDeferred = $q.defer();
       spyOn(apiService, 'createNote').and.returnValue(createNoteResultDeferred.promise);
-      spyOn($rootScope, 'reloadNotes')
+      spyOn($rootScope, 'reloadNotes');
     }));
 
     it('should call apiService.createNote() when new note is submitted', inject(function($rootScope, apiService) {

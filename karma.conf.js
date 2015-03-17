@@ -14,13 +14,24 @@ module.exports = function(config) {
       'fe-test/**/*.spec.js'
     ],
 
+    preprocessors: {
+      'fe-src/**/*.js': 'coverage'
+    },
+
+    reporters: ['coverage'],
+
+    coverageReporter: {
+      type: 'text'
+    },
+
     autoWatch: true,
     frameworks: ['jasmine'],
     // browsers: ['Chrome', 'Firefox'],
     plugins: [
       'karma-chrome-launcher',
       'karma-firefox-launcher',
-      'karma-jasmine'
+      'karma-jasmine',
+      'karma-coverage'
     ]
   };  
 
