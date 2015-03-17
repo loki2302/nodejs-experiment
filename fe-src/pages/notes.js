@@ -20,11 +20,7 @@ angular.module("notes", [
 
 	$scope.createNote = function(note) {
 		return apiService.createNote(note).then(function(note) {
-			return apiService.getNotes().then(function(notes) {
-				$scope.notes = notes;
-			}, function(error) {
-				throw error;
-			});
+			return $scope.reloadNotes();
 		}, function(error) {
 			if(error instanceof errors.ValidationError) {
 				return $q.reject(error.errorMap);
@@ -36,11 +32,7 @@ angular.module("notes", [
 
 	$scope.updateNote = function(note) {
 		return apiService.updateNote(note).then(function(note) {
-			return apiService.getNotes().then(function(notes) {
-				$scope.notes = notes;
-			}, function(error) {
-				throw error;
-			});
+			return $scope.reloadNotes();
 		}, function(error) {
 			if(error instanceof errors.ValidationError) {
 				return $q.reject(error.errorMap);
@@ -52,11 +44,7 @@ angular.module("notes", [
 
 	$scope.deleteNote = function(note) {
 		return apiService.deleteNote(note).then(function() {
-			return apiService.getNotes().then(function(notes) {
-				$scope.notes = notes;
-			}, function(error) {
-				throw error;
-			});
+			return $scope.reloadNotes();
 		}, function(error) {
 			throw error;
 		});
@@ -64,5 +52,13 @@ angular.module("notes", [
 
 	$scope.searchCategoriesStartingWith = function(query) {
 		return apiService.getCategoriesWithNameStartingWith(query);
+	};
+
+	$scope.reloadNotes = function() {
+		return apiService.getNotes().then(function(notes) {
+			$scope.notes = notes;
+		}, function(error) {
+			throw error;
+		});
 	};
 }]);

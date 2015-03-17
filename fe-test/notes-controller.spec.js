@@ -17,19 +17,14 @@ describe('NotesController', function() {
     expect($scope.notes).toBeDefined();
   }));
 
-  describe('createNote()', function() {
-    var createNoteResultDeferred;
+  describe('reloadNotes()', function() {
     var getNotesResultDeferred;
     var apiService;
 
     beforeEach(inject(function($controller, $rootScope, $q) {
-      createNoteResultDeferred = $q.defer();
       getNotesResultDeferred = $q.defer();
 
       apiService = {
-        createNote: function(note) {
-          return createNoteResultDeferred.promise;
-        },
         getNotes: function() {
           return getNotesResultDeferred.promise;
         }
@@ -42,8 +37,68 @@ describe('NotesController', function() {
         apiService: apiService
       });
 
-      spyOn(apiService, 'createNote').and.callThrough();
       spyOn(apiService, 'getNotes').and.callThrough();
+
+      $rootScope.reloadNotes();
+    }));
+
+    it('should call apiService.getNotes()', inject(function($rootScope) {
+      expect(apiService.getNotes).toHaveBeenCalled();
+    }));
+
+    describe('when the call to apiService.getNotes() succeeds', function() {
+      beforeEach(inject(function($rootScope) {
+        $rootScope.$apply(function() {
+          getNotesResultDeferred.resolve([{
+            id: 123,
+            content: 'hello there',
+            categories: []
+          }]);
+        });
+      }));
+
+      it('should update the list of notes', inject(function($rootScope) {
+        expect($rootScope.notes.length).toBe(1);
+      }));
+    });
+
+    describe('when call fails', function() {
+      beforeEach(inject(function($rootScope, errors) {
+        $rootScope.$apply(function() {
+          getNotesResultDeferred.reject(new errors.UnexpectedError());
+        });
+      }));
+
+      it('should throw', inject(function($exceptionHandler, errors) {
+        expect($exceptionHandler.errors.length).toBe(1);
+        expect($exceptionHandler.errors[0].constructor).toBe(errors.UnexpectedError);
+      }));
+    });
+  });
+
+  describe('createNote()', function() {
+    var createNoteResultDeferred;
+    var apiService;
+
+    beforeEach(inject(function($controller, $rootScope, $q) {
+      createNoteResultDeferred = $q.defer();
+
+      apiService = {
+        createNote: function(note) {
+          return createNoteResultDeferred.promise;
+        }
+      };
+
+      $controller('NotesController', {
+        $scope: $rootScope,
+        $q: $q,
+        notes: [],
+        apiService: apiService
+      });
+
+      spyOn(apiService, 'createNote').and.callThrough();
+
+      spyOn($rootScope, 'reloadNotes')
     }));
 
     it('should call apiService.createNote() when new note is submitted', inject(function($rootScope) {
@@ -61,8 +116,6 @@ describe('NotesController', function() {
           content: 'hello there',
           categories: []
         });
-
-        expect(apiService.getNotes).not.toHaveBeenCalled();
       }));
 
       describe('successfully', function() {
@@ -76,23 +129,9 @@ describe('NotesController', function() {
           });
         }));
 
-        it('should request an updated list of notes', function() {
-          expect(apiService.getNotes).toHaveBeenCalled();
-        });
-
-        describe('when updated list of notes is available', function() {
-          it('should publish those notes on the scope', inject(function($rootScope) {
-            $rootScope.$apply(function() {
-              getNotesResultDeferred.resolve([{
-                id: 123,
-                content: 'hello there',
-                categories: []
-              }]);
-            });
-
-            expect($rootScope.notes.length).toBe(1);
-          }));
-        });
+        it('should request an updated list of notes', inject(function($rootScope) {
+          expect($rootScope.reloadNotes).toHaveBeenCalled();
+        }));
       });
 
       describe('with error', function() {
@@ -102,7 +141,6 @@ describe('NotesController', function() {
               createNoteResultDeferred.reject(new errors.ValidationError());
             });
 
-            console.log($exceptionHandler.errors);
             expect($exceptionHandler.errors.length).toBe(0);
           }));
         });
