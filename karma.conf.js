@@ -14,15 +14,15 @@ module.exports = function(config) {
       'fe-test/**/*.spec.js'
     ],
 
-    preprocessors: {
-      'fe-src/**/*.js': 'coverage'
-    },
+    // preprocessors: {
+    //   'fe-src/**/*.js': 'coverage'
+    // },
 
-    reporters: ['coverage'],
+    // reporters: ['coverage'],
 
-    coverageReporter: {
-      type: 'text'
-    },
+    // coverageReporter: {
+    //   type: 'text'
+    // },
 
     autoWatch: true,
     frameworks: ['jasmine'],
@@ -30,8 +30,8 @@ module.exports = function(config) {
     plugins: [
       'karma-chrome-launcher',
       'karma-firefox-launcher',
-      'karma-jasmine',
-      'karma-coverage'
+      'karma-jasmine'/*,
+      'karma-coverage'*/
     ]
   };  
 

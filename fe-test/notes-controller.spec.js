@@ -30,7 +30,7 @@ describe('NotesController', function() {
     }));
 
     describe('when the call to apiService.getNotes() succeeds', function() {
-      beforeEach(inject(function($rootScope) {
+      it('should update the list of notes', inject(function($rootScope) {
         $rootScope.$apply(function() {
           getNotesResultDeferred.resolve([{
             id: 123,
@@ -38,21 +38,17 @@ describe('NotesController', function() {
             categories: []
           }]);
         });
-      }));
 
-      it('should update the list of notes', inject(function($rootScope) {
         expect($rootScope.notes.length).toBe(1);
       }));
     });
 
-    describe('when call fails', function() {
-      beforeEach(inject(function($rootScope, errors) {
+    describe('when the call to apiService.getNotes() fails', function() {
+      it('should rethrow the rejection', inject(function($exceptionHandler, $rootScope, errors) {
         $rootScope.$apply(function() {
           getNotesResultDeferred.reject(new errors.UnexpectedError());
         });
-      }));
 
-      it('should throw', inject(function($exceptionHandler, errors) {
         expect($exceptionHandler.errors.length).toBe(1);
         expect($exceptionHandler.errors[0].constructor).toBe(errors.UnexpectedError);
       }));
@@ -66,27 +62,20 @@ describe('NotesController', function() {
       createNoteResultDeferred = $q.defer();
       spyOn(apiService, 'createNote').and.returnValue(createNoteResultDeferred.promise);
       spyOn($rootScope, 'reloadNotes');
-    }));
 
-    it('should call apiService.createNote() when new note is submitted', inject(function($rootScope, apiService) {
       $rootScope.createNote({
         content: 'hello there',
         categories: []
       });
+    }));
 
+    it('should call apiService.createNote() when new note is submitted', inject(function($rootScope, apiService) {
       expect(apiService.createNote).toHaveBeenCalled();
     }));
 
     describe('when apiService.createNote() finishes', function() {
-      beforeEach(inject(function($rootScope) {
-        $rootScope.createNote({
-          content: 'hello there',
-          categories: []
-        });
-      }));
-
-      describe('successfully', function() {
-        beforeEach(inject(function($rootScope) {
+      describe('when the call to apiService.createNote() succeeds', function() {
+        it('should request an updated list of notes', inject(function($rootScope) {
           $rootScope.$apply(function() {
             createNoteResultDeferred.resolve({
               id: 123,
@@ -94,14 +83,12 @@ describe('NotesController', function() {
               categories: []
             });
           });
-        }));
 
-        it('should request an updated list of notes', inject(function($rootScope) {
           expect($rootScope.reloadNotes).toHaveBeenCalled();
         }));
       });
 
-      describe('with error', function() {
+      describe('when the call to apiService.createNote() fails', function() {
         describe('when error is ValidationError', function() {
           it('should not rethrow it', inject(function($rootScope, errors, $exceptionHandler) {
             $rootScope.$apply(function() {
