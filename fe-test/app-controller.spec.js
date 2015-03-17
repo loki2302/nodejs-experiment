@@ -1,5 +1,4 @@
 describe('AppController', function() {
-  var appController;
   var $scope;
   var $location;
 
@@ -9,7 +8,7 @@ describe('AppController', function() {
     $scope = $rootScope;
     $location = _$location_;
 
-    appController = $controller('AppController', { 
+    $controller('AppController', { 
       $scope: $scope,  
       $location: $location
     });

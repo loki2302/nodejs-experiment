@@ -1,48 +1,31 @@
 describe('NotesController', function() {
-  beforeEach(module('notes'));
-  beforeEach(module(function($exceptionHandlerProvider) {
+  beforeEach(module('notes', function($exceptionHandlerProvider) {
     $exceptionHandlerProvider.mode('log');
   }));
 
-  it('should publish notes on the scope', inject(function($controller, $rootScope, $q) {
-    var $scope = $rootScope.$new();
-
-    var notesController = $controller('NotesController', {
-      $scope: $scope,
+  beforeEach(inject(function($controller, $rootScope, $q, apiService) {
+    $controller('NotesController', {
+      $scope: $rootScope,
       $q: $q,
       notes: [],
-      apiService: {}
+      apiService: apiService
     });
+  }));
 
-    expect($scope.notes).toBeDefined();
+  it('should publish notes on the scope', inject(function($rootScope) {
+    expect($rootScope.notes).toBeDefined();
   }));
 
   describe('reloadNotes()', function() {
     var getNotesResultDeferred;
-    var apiService;
 
-    beforeEach(inject(function($controller, $rootScope, $q) {
+    beforeEach(inject(function($rootScope, $q, apiService) {
       getNotesResultDeferred = $q.defer();
-
-      apiService = {
-        getNotes: function() {
-          return getNotesResultDeferred.promise;
-        }
-      };
-
-      $controller('NotesController', {
-        $scope: $rootScope,
-        $q: $q,
-        notes: [],
-        apiService: apiService
-      });
-
-      spyOn(apiService, 'getNotes').and.callThrough();
-
+      spyOn(apiService, 'getNotes').and.returnValue(getNotesResultDeferred.promise);
       $rootScope.reloadNotes();
     }));
 
-    it('should call apiService.getNotes()', inject(function($rootScope) {
+    it('should call apiService.getNotes()', inject(function(apiService) {
       expect(apiService.getNotes).toHaveBeenCalled();
     }));
 
@@ -78,30 +61,14 @@ describe('NotesController', function() {
 
   describe('createNote()', function() {
     var createNoteResultDeferred;
-    var apiService;
 
-    beforeEach(inject(function($controller, $rootScope, $q) {
+    beforeEach(inject(function($rootScope, $q, apiService) {
       createNoteResultDeferred = $q.defer();
-
-      apiService = {
-        createNote: function(note) {
-          return createNoteResultDeferred.promise;
-        }
-      };
-
-      $controller('NotesController', {
-        $scope: $rootScope,
-        $q: $q,
-        notes: [],
-        apiService: apiService
-      });
-
-      spyOn(apiService, 'createNote').and.callThrough();
-
+      spyOn(apiService, 'createNote').and.returnValue(createNoteResultDeferred.promise);
       spyOn($rootScope, 'reloadNotes')
     }));
 
-    it('should call apiService.createNote() when new note is submitted', inject(function($rootScope) {
+    it('should call apiService.createNote() when new note is submitted', inject(function($rootScope, apiService) {
       $rootScope.createNote({
         content: 'hello there',
         categories: []
@@ -153,6 +120,17 @@ describe('NotesController', function() {
 
             expect($exceptionHandler.errors.length).toBe(1);
             expect($exceptionHandler.errors[0].constructor).toBe(errors.UnexpectedError);
+          }));
+        });
+
+        describe('when error is ConnectivityError', function() {
+          it('should rethrow it', inject(function($rootScope, errors, $exceptionHandler) {
+            $rootScope.$apply(function() {
+              createNoteResultDeferred.reject(new errors.ConnectivityError());
+            });
+
+            expect($exceptionHandler.errors.length).toBe(1);
+            expect($exceptionHandler.errors[0].constructor).toBe(errors.ConnectivityError);
           }));
         });
       });
