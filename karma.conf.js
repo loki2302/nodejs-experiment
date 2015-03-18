@@ -11,8 +11,13 @@ module.exports = function(config) {
       'bower_components/angular-mocks/angular-mocks.js',
       'bower_components/ng-tags-input/ng-tags-input.js',
       'fe-src/**/*.js',
+      'fe-src/**/*.html',
       'fe-test/**/*.spec.js'
     ],
+
+    preprocessors: {
+      'fe-src/**/*.html': ['ng-html2js']
+    },
 
     // preprocessors: {
     //   'fe-src/**/*.js': 'coverage'
@@ -30,9 +35,19 @@ module.exports = function(config) {
     plugins: [
       'karma-chrome-launcher',
       'karma-firefox-launcher',
-      'karma-jasmine'/*,
-      'karma-coverage'*/
-    ]
+      'karma-jasmine',
+      'karma-ng-html2js-preprocessor'      
+      // 'karma-coverage'
+    ],
+
+    ngHtml2JsPreprocessor: {
+      // looks like it's not possible to specify multiple stripPrefixes
+      stripPrefix: 'fe-src/partials/'
+      /*cacheIdFromPath: function(filepath) {
+        console.log(filepath);
+        return filepath;
+      }*/
+    }
   };  
 
   if(process.env.TRAVIS) {
