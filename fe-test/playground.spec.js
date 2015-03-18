@@ -1,78 +1,86 @@
 describe('playground', function() {
-  var $q;
-  var $controller;
-  var errors;
-  var $rootScope;
-  var $scope;
+  beforeEach(module(function($compileProvider) {
+    $compileProvider.directive('testNoteView', function() {
+      return {
+        restrict: 'E',
+        require: 'ngModel',
+        scope: {
+          note: "=ngModel",
+          edit: "&"
+        },
+        template: 
+        '<div>' + 
+        '  <span class="note-text">{{note.text}}</span>' + 
+        '  <button class="note-edit" type="button" ng-click="edit({note: note})">Edit</button>' + 
+        '</div>',
+        controller: function($scope, $element, $attrs, $transclude, /*any injectables*/ $log) {
+          // console.log('controller'); // 1: before link
+        },
+        link: function(scope, element, attrs /*, parentController */) {
+          // console.log('link'); // 2: after controller
+        }        
+      };
+    });
+  }));
 
-  beforeEach(function() {
-    var $injector = angular.injector(['ng', 'api', function($controllerProvider) {
-      $controllerProvider.register('NoteController', ['$scope', 'api', 'errors', function($scope, api, errors) {
-        $scope.createNote = function(note) {
-          api.createNote(note).then(function(note) {
-            $scope.note = note;
-          }, function(error) {
-            throw error;
-          });
-        };
-      }]);
-    }, function($provide) {
-      $provide.factory('$exceptionHandler', function($injector) {        
-        return function(exception, cause) {
-          var $rootScope = $injector.get('$rootScope');
-          $rootScope.lastError = 'error: ' + exception.constructor.name;
-        };
+  describe("testNoteView directive", function() {
+    var $rootScope;
+    var $scope;    
+    beforeEach(inject(function(_$rootScope_) {
+      $rootScope = _$rootScope_;
+      $scope = $rootScope.$new();
+    }));
+
+    // TODO
+    it('should pass the clicking test', inject(function($compile) {
+      element = $compile('<test-note-view ng-model="myNote" edit="onEdit(note)"></test-note-view>')($scope);
+      $scope.myNote = {
+        text: 'hello there',        
+      };
+      $scope.onEdit = jasmine.createSpy('onEdit');
+      $rootScope.$digest();
+      element.find('.note-edit').click();
+      expect($scope.onEdit).toHaveBeenCalledWith($scope.myNote);
+    }));
+
+    describe('when there is no ngModel', function() {
+      it('should not compile', inject(function($compile) {        
+        expect(function() {
+          $compile('<test-note-view></test-note-view>')($scope);
+        }).toThrow();
+      }));
+    });
+
+    describe('when there is ngModel', function() {
+      var element;
+      beforeEach(inject(function($compile) {
+        element = $compile('<test-note-view ng-model="myNote"></test-note-view>')($scope);
+      }));
+
+      it('should have a note-text element', inject(function() {
+        expect(element.find('.note-text')).toBeDefined();
+      }));
+
+      it('should have a note-edit element', inject(function() {
+        expect(element.find('.note-edit')).toBeDefined();
+      }));
+
+      describe('and ngModel references an undefined', function() {
+        it('should display an empty text', inject(function() {
+          $rootScope.$digest();
+          expect(element.find('.note-text').text()).toBe('');
+        }));
       });
-    }]);
 
-    $q = $injector.get('$q');
-    $controller = $injector.get('$controller');
-    errors = $injector.get('errors');
-
-    $rootScope = $injector.get('$rootScope');
-    $scope = $rootScope.$new();    
-  });
-
-  it('should set $scope.note to note created by API', function() {
-    var noteDeferred = $q.defer();
-    var api = {
-      createNote: function(note) {
-        return noteDeferred.promise;
-      }
-    };
-
-    $controller('NoteController', { 
-      $scope: $scope, 
-      api: api 
+      describe('and ngModel references an object', function() {
+        it('should display a text', inject(function() {
+          $scope.myNote = {
+            text: 'hello there'
+          };
+          $rootScope.$digest();
+          expect(element.find('.note-text').text()).toBe('hello there');
+        }));
+      });
     });
-    $scope.createNote();
-    
-    noteDeferred.resolve({content: 'hello'});
-    $rootScope.$apply();
-
-    expect($rootScope.lastError).not.toBeDefined();
-    expect($scope.note).toBeDefined();
-    expect($scope.note.content).toBe('hello');
-  });
-
-  it('should set $rootScope.lastError to error returned by API', function() {
-    var noteDeferred = $q.defer();
-    var api = {
-      createNote: function(note) {
-        return noteDeferred.promise;
-      }
-    };
-
-    $controller('NoteController', { 
-      $scope: $scope, 
-      api: api 
-    });
-    $scope.createNote();
-    
-    noteDeferred.reject(new errors.ValidationError());
-    $rootScope.$apply();
-
-    expect($rootScope.lastError).toBe('error: ValidationError');
-    expect($scope.note).not.toBeDefined();
   });
 });
