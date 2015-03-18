@@ -16,45 +16,6 @@ describe('NotesController', function() {
     expect($rootScope.notes).toBeDefined();
   }));
 
-  describe('reloadNotes()', function() {
-    var getNotesResultDeferred;
-
-    beforeEach(inject(function($rootScope, $q, apiService) {
-      getNotesResultDeferred = $q.defer();
-      spyOn(apiService, 'getNotes').and.returnValue(getNotesResultDeferred.promise);
-      $rootScope.reloadNotes();
-    }));
-
-    it('should call apiService.getNotes()', inject(function(apiService) {
-      expect(apiService.getNotes).toHaveBeenCalled();
-    }));
-
-    describe('when the call to apiService.getNotes() succeeds', function() {
-      it('should update the list of notes', inject(function($rootScope) {
-        $rootScope.$apply(function() {
-          getNotesResultDeferred.resolve([{
-            id: 123,
-            content: 'hello there',
-            categories: []
-          }]);
-        });
-
-        expect($rootScope.notes.length).toBe(1);
-      }));
-    });
-
-    describe('when the call to apiService.getNotes() fails', function() {
-      it('should rethrow the rejection', inject(function($exceptionHandler, $rootScope, errors) {
-        $rootScope.$apply(function() {
-          getNotesResultDeferred.reject(new errors.UnexpectedError());
-        });
-
-        expect($exceptionHandler.errors.length).toBe(1);
-        expect($exceptionHandler.errors[0].constructor).toBe(errors.UnexpectedError);
-      }));
-    });
-  });
-
   describe('createNote()', function() {
     var createNoteResultDeferred;
 
@@ -69,7 +30,7 @@ describe('NotesController', function() {
       });
     }));
 
-    it('should call apiService.createNote() when new note is submitted', inject(function($rootScope, apiService) {
+    it('should call apiService.createNote()', inject(function($rootScope, apiService) {
       expect(apiService.createNote).toHaveBeenCalled();
     }));
 
@@ -121,6 +82,100 @@ describe('NotesController', function() {
           }));
         });
       });
+    });
+  });
+
+  describe('updateNote()', function() {
+    var updateNoteResultDeferred;
+
+    beforeEach(inject(function($rootScope, $q, apiService) {
+      updateNoteResultDeferred = $q.defer();
+      spyOn(apiService, 'updateNote').and.returnValue(updateNoteResultDeferred.promise);
+      spyOn($rootScope, 'reloadNotes');
+
+      $rootScope.updateNote({
+        id: 123,
+        content: 'hello there',
+        categories: []
+      });
+    }));
+
+    it('should call apiService.updateNote()', inject(function($rootScope, apiService) {
+      expect(apiService.updateNote).toHaveBeenCalled();
+    }));
+  });
+
+  describe('deleteNote()', function() {
+    var deleteNoteResultDeferred;
+
+    beforeEach(inject(function($rootScope, $q, apiService) {
+      deleteNoteResultDeferred = $q.defer();
+      spyOn(apiService, 'deleteNote').and.returnValue(deleteNoteResultDeferred.promise);
+      spyOn($rootScope, 'reloadNotes');
+
+      $rootScope.deleteNote({
+        id: 123,
+        content: 'hello there',
+        categories: []
+      });
+    }));
+
+    it('should call apiService.deleteNote()', inject(function($rootScope, apiService) {
+      expect(apiService.deleteNote).toHaveBeenCalled();
+    }));
+  });
+
+  describe('searchCategoriesStartingWith()', function() {
+    var searchCategoriesStartingWithResultDeferred;
+
+    beforeEach(inject(function($rootScope, $q, apiService) {
+      searchCategoriesStartingWithResultDeferred = $q.defer();
+      spyOn(apiService, 'getCategoriesWithNameStartingWith').and.returnValue(searchCategoriesStartingWithResultDeferred.promise);
+
+      $rootScope.searchCategoriesStartingWith('progra');
+    }));
+
+    it('should call apiService.searchCategoriesStartingWith()', inject(function($rootScope, apiService) {
+      expect(apiService.getCategoriesWithNameStartingWith).toHaveBeenCalled();
+    }));    
+  });
+
+  describe('reloadNotes()', function() {
+    var getNotesResultDeferred;
+
+    beforeEach(inject(function($rootScope, $q, apiService) {
+      getNotesResultDeferred = $q.defer();
+      spyOn(apiService, 'getNotes').and.returnValue(getNotesResultDeferred.promise);
+      $rootScope.reloadNotes();
+    }));
+
+    it('should call apiService.getNotes()', inject(function(apiService) {
+      expect(apiService.getNotes).toHaveBeenCalled();
+    }));
+
+    describe('when the call to apiService.getNotes() succeeds', function() {
+      it('should update the list of notes', inject(function($rootScope) {
+        $rootScope.$apply(function() {
+          getNotesResultDeferred.resolve([{
+            id: 123,
+            content: 'hello there',
+            categories: []
+          }]);
+        });
+
+        expect($rootScope.notes.length).toBe(1);
+      }));
+    });
+
+    describe('when the call to apiService.getNotes() fails', function() {
+      it('should rethrow the rejection', inject(function($exceptionHandler, $rootScope, errors) {
+        $rootScope.$apply(function() {
+          getNotesResultDeferred.reject(new errors.UnexpectedError());
+        });
+
+        expect($exceptionHandler.errors.length).toBe(1);
+        expect($exceptionHandler.errors[0].constructor).toBe(errors.UnexpectedError);
+      }));
     });
   });
 });
