@@ -103,6 +103,26 @@ describe('NotesController', function() {
     it('should call apiService.updateNote()', inject(function($rootScope, apiService) {
       expect(apiService.updateNote).toHaveBeenCalled();
     }));
+
+    describe('when apiService.updateNote() finishes', function() {
+      describe('when the call to apiService.updateNote() succeeds', function() {
+        it('should request an updated list of notes', inject(function($rootScope) {
+          $rootScope.$apply(function() {
+            updateNoteResultDeferred.resolve({
+              id: 123,
+              content: 'hello there',
+              categories: []
+            });
+          });
+
+          expect($rootScope.reloadNotes).toHaveBeenCalled();
+        }));
+      });
+
+      describe('when the call to apiService.updateNote() fails', function() {
+        // TODO
+      });
+    });
   });
 
   describe('deleteNote()', function() {
@@ -123,21 +143,57 @@ describe('NotesController', function() {
     it('should call apiService.deleteNote()', inject(function($rootScope, apiService) {
       expect(apiService.deleteNote).toHaveBeenCalled();
     }));
+
+    describe('when apiService.deleteNote() finishes', function() {
+      describe('when the call to apiService.deleteNote() succeeds', function() {
+        it('should request an updated list of notes', inject(function($rootScope) {
+          $rootScope.$apply(function() {
+            deleteNoteResultDeferred.resolve();
+          });
+
+          expect($rootScope.reloadNotes).toHaveBeenCalled();
+        }));
+      });
+
+      describe('when the call to apiService.deleteNote() fails', function() {
+        // TODO
+      });
+    });
   });
 
   describe('searchCategoriesStartingWith()', function() {
-    var searchCategoriesStartingWithResultDeferred;
+    var getCategoriesWithNameStartingWithResultDeferred;
+    var searchCategoriesStartingWithResultPromise;
 
     beforeEach(inject(function($rootScope, $q, apiService) {
-      searchCategoriesStartingWithResultDeferred = $q.defer();
-      spyOn(apiService, 'getCategoriesWithNameStartingWith').and.returnValue(searchCategoriesStartingWithResultDeferred.promise);
+      getCategoriesWithNameStartingWithResultDeferred = $q.defer();
+      spyOn(apiService, 'getCategoriesWithNameStartingWith').and.returnValue(getCategoriesWithNameStartingWithResultDeferred.promise);
 
-      $rootScope.searchCategoriesStartingWith('progra');
+      searchCategoriesStartingWithResultPromise = $rootScope.searchCategoriesStartingWith('progra');
     }));
 
     it('should call apiService.searchCategoriesStartingWith()', inject(function($rootScope, apiService) {
       expect(apiService.getCategoriesWithNameStartingWith).toHaveBeenCalled();
-    }));    
+    }));
+
+    describe('when apiService.searchCategoriesStartingWith() finishes', function() {
+      describe('when the call to apiService.searchCategoriesStartingWith() succeeds', function() {
+        it('should successfully resolve the promise it returned previously', inject(function($rootScope) {
+          var onSearchCategoriesStartingWithResultPromiseResolved = jasmine.createSpy('onSearchCategoriesStartingWithResultPromiseResolved');
+          searchCategoriesStartingWithResultPromise.then(onSearchCategoriesStartingWithResultPromiseResolved);
+
+          $rootScope.$apply(function() {
+            getCategoriesWithNameStartingWithResultDeferred.resolve(['hello']);
+          });
+
+          expect(onSearchCategoriesStartingWithResultPromiseResolved).toHaveBeenCalledWith(['hello']);
+        }));
+      });
+
+      describe('when the call to apiService.searchCategoriesStartingWith() fails', function() {
+        // TODO
+      });
+    });
   });
 
   describe('reloadNotes()', function() {
