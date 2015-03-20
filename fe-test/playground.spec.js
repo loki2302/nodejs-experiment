@@ -11,29 +11,26 @@ describe('playground', function() {
             note: '=ngModel'
           },
           template: 
-          '<form ng-submit="handleSubmit()">' +
-          '<input type="text" class="note-text" ng-model="note.text">' +
-          '<button type="submit" class="submit">Submit</button>' +
+          '<form ng-submit="handleSubmit()" validation-facade="vf">' +
+          ' <div class="text-form-group" ng-class="{' + "'has-error':vf.isError('text')" + '}">' +
+          '  <input type="text" class="note-text" name="text" ng-model="note.text">' +
+          ' </div>' +
+          ' <button type="submit" class="submit">Submit</button>' +
           '</form>',
           link: function(scope) {
-            // do setAllFieldsValid
             scope.handleSubmit = function() {
-              //scope.vf.setAllFieldsValid();
-              console.log("SUBMIT", navigator.userAgent);
-
+              scope.vf.setAllFieldsValid();
               scope.submit({note: scope.note}).then(function(resolution) {
-                // success, resolution is ignored
-                console.log('success', resolution, navigator.userAgent);
+                console.log('success', resolution);
               }, function(error) {
-                // error, resoltion is expected to be a validation error map
                 console.log('error', error);
-                //scope.vf.setFieldErrors(error);
+                scope.vf.setFieldErrors(error);
               });
             };
           }
         };
       })
-      /*.directive('validationFacade', function() {
+      .directive('validationFacade', function() {
         // use like this: <form be="be">
         // this will publish 'be' with setAllFieldsValid and setFieldErrors
         // to the related scope
@@ -54,6 +51,11 @@ describe('playground', function() {
               },
               setFieldErrors: function(errorMap) {
                 angular.forEach(errorMap, function(message, fieldName) {
+                  var field = ctrl[fieldName];
+                  if(!field) {
+                    throw new Error('No field with name ' + fieldName);
+                  }
+
                   ctrl[fieldName].$setValidity('omg', false);
                   ctrl[fieldName].$setPristine();
                 });
@@ -68,7 +70,7 @@ describe('playground', function() {
             };
           }
         };
-      });*/
+      });
     }));
 
     var $rootScope;
@@ -83,32 +85,29 @@ describe('playground', function() {
       $scope.note = {
         text: 'hello'
       };
-      $scope.onSubmitClicked = jasmine.createSpy('onSubmitClicked').and.returnValue($q.when(123));
+      $scope.onSubmitClicked = jasmine.createSpy('onSubmitClicked').and.returnValue($q.when());
       $rootScope.$digest();
 
-      element.find('.submit').submit(); // WTF??? works OK in FF and Chrome
-      // element.find('button[type="submit"]').click(); // WTF??? only triggers in Chrome
-      // element.find('.submit').click(); // WTF??? only triggers in Chrome
-      // element.find('button').click(); // WTF??? only triggers in Chrome
-
-      console.log(element.find('button'));
-      
+      element.find('form').submit();      
       expect($scope.onSubmitClicked).toHaveBeenCalled();
+      expect(element.find('form .text-form-group').hasClass('has-error')).toBe(false);
     }));
 
-    /*it('should work', inject(function($compile, $q) {
+    it('negative case should work', inject(function($compile, $q) {
       var element = $compile('<test-note-edit ng-model="note" submit="onSubmitClicked(note)"></test-note-edit>')($scope);
-      $scope.onSubmitClicked = function(m) {
-        console.log('onSubmitClicked', m);
-        return $q.when();
+      $scope.note = {
+        text: 'hello'
       };
-
+      $scope.onSubmitClicked = jasmine.createSpy('onSubmitClicked').and.returnValue($q.reject({
+        text: 'very bad'
+      }));
       $rootScope.$digest();
-      //expect(element.find('div').text()).toBe('hello');
-      element.find('button').click();
-    }));*/
-  });
-  
+
+      element.find('form').submit();
+      expect($scope.onSubmitClicked).toHaveBeenCalled();
+      expect(element.find('form .text-form-group').hasClass('has-error')).toBe(true);
+    }));    
+  });  
 
   describe("testNoteView directive", function() {
     beforeEach(module(function($compileProvider) {
