@@ -59,9 +59,9 @@ angular.module("directives.testNote", [])
       scope.handleSubmit = function() {
         scope.vf.setAllFieldsValid();
         scope.submit({note: scope.note}).then(function(resolution) {
-          console.log('success', resolution);
+          // console.log('success', resolution);
         }, function(error) {
-          console.log('error', error);
+          // console.log('error', error);
           scope.vf.setFieldErrors(error);
         });
       };

@@ -1,7 +1,22 @@
 describe('directives.testNote', function() {
   beforeEach(module('directives.testNote'));
 
-  describe("testNoteEdit directive", function() {
+  describe('testNoteInlineEdit directive', function() {
+    beforeEach(module(function($compileProvider) {
+      $compileProvider.directive('testNoteInlineEdit', function() {
+        return {
+          template: '<div>hello</div>'
+        };
+      });
+    }));
+
+    it('should even exist', inject(function($compile, $rootScope) {
+      var element = $compile('<test-note-inline-edit></test-note-inline-edit>')($rootScope);
+      expect(element.text()).toBe('hello');
+    }));
+  });
+
+  describe('testNoteEdit directive', function() {
     var $rootScope;
     var $scope;    
     beforeEach(inject(function(_$rootScope_) {
@@ -38,7 +53,7 @@ describe('directives.testNote', function() {
     }));    
   });  
 
-  describe("testNoteView directive", function() {
+  describe('testNoteView directive', function() {
     var $rootScope;
     var $scope;    
     beforeEach(inject(function(_$rootScope_) {
