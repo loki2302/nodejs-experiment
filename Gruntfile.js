@@ -23,41 +23,35 @@ module.exports = function(grunt) {
           'fe-src/**/*.js',
           '<%= tmpdir %>/*.js'
         ],
-				dest: "<%= builddir %>/all.js"				
+				dest: "<%= tmpdir %>/app.js"
 			}
 		},
 		concat: {
-			angular: {
+			js: {
 				src: [
 					"bower_components/angular/angular.min.js",
 					"bower_components/angular-resource/angular-resource.min.js",
 					"bower_components/angular-route/angular-route.min.js",
 					"bower_components/ng-tags-input/ng-tags-input.min.js",
-					"bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"
+					"bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js",
+          '<%= tmpdir %>/app.js'
 				],
-				dest: "<%= builddir %>/angular.js"
-			}			
+				dest: "<%= builddir %>/app.js"
+			},
+      css: {
+        src: [
+          'bower_components/bootstrap/dist/css/bootstrap.min.css',
+          'bower_components/ng-tags-input/ng-tags-input.min.css',
+          'bower_components/ng-tags-input/ng-tags-input.bootstrap.min.css'
+        ],
+        dest: '<%= builddir %>/app.css'
+      }			
 		},
 		copy: {
 			app: {
 				expand: true,
 				flatten: true,				
 				src: "fe-src/index.html",
-				dest: "<%= builddir %>/"
-			},
-			bootstrap: {
-				expand: true,
-				flatten: true,				
-				src: "bower_components/bootstrap/dist/css/bootstrap.min.css", 
-				dest: "<%= builddir %>/"				
-			},
-			ngTagsInput: {
-				expand: true,
-				flatten: true,
-				src: [
-					"bower_components/ng-tags-input/ng-tags-input.min.css",
-					"bower_components/ng-tags-input/ng-tags-input.bootstrap.min.css"
-				],
 				dest: "<%= builddir %>/"
 			}
 		},
