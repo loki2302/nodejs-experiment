@@ -29,9 +29,13 @@ angular.module('directives.notes.noteItem', [
     '        <input type="text" class="form-control" id="content" name="content" ng-model="editingNote.content">' +
     '        <p class="help-block" ng-if="vf.isError(' + "'content'" + ')">{{vf.getFieldError(' + "'content'" + ')}}</p>' +
     '      </div>' +
-    '      <tags-input ng-model="editingNote.categories" display-property="name">' +
-    '        <auto-complete source="onSearchCategories({$query: $query})"></auto-complete>' +
-    '      </tags-input>' +
+    '      <div class="form-group" ng-class="{' + "'has-error'" + ':vf.isError(' + "'categories'" + ')}">' +
+    '        <label for="categories" class="control-label">Categories</label>' +
+    '        <tags-input name="categories" id="categories" ng-model="editingNote.categories" display-property="name">' +
+    '          <auto-complete source="onSearchCategories({$query: $query})"></auto-complete>' +
+    '        </tags-input>' +
+    '        <p class="help-block" ng-if="vf.isError(' + "'categories'" + ')">{{vf.getFieldError(' + "'categories'" + ')}}</p>' +
+    '      </div>' +
     '      <div class="form-group">' +
     '        <button type="submit" class="btn btn-default">Update</button>' +
     '        <button type="button" class="btn btn-default" ng-click="switchToViewMode()">Cancel</button>' +

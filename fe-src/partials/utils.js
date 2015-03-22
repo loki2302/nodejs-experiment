@@ -4,7 +4,7 @@ angular.module('app.directives.utils', [])
   // this will publish 'be' with setAllFieldsValid and setFieldErrors
   // to the related scope
   return {
-    require: 'form',
+    require: '^form',
     link: function(scope, element, attrs, ctrl) {
       var errors = {};
       scope[attrs.validationFacade] = {
@@ -34,7 +34,17 @@ angular.module('app.directives.utils', [])
           return errors[fieldName];
         },
         isError: function(fieldName) {
-          return ctrl[fieldName].$invalid && ctrl[fieldName].$pristine;
+          var field = ctrl[fieldName];
+          if(!field) {
+            // because form's child elements get linked _before_ the
+            // form itself is ready, isError() may get called _before_
+            // the control has had registered. In this case we just
+            // say the field is valid
+            // TODO: is there a better approach?
+            return false;
+          }
+
+          return field.$invalid && field.$pristine;
         }
       };
     }
