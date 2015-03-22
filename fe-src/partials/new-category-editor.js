@@ -1,4 +1,6 @@
-angular.module('directives.categories.newCategoryEditor', ['app.directives.utils'])
+angular.module('directives.categories.newCategoryEditor', [
+  'app.directives.validation'
+])
 .directive('newCategoryEditor', function() {
   return {
     restrict: 'E',

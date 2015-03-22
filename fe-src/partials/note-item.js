@@ -1,5 +1,5 @@
 angular.module('directives.notes.noteItem', [
-  'app.directives.utils',
+  'app.directives.validation',
   'ngTagsInput'
 ])
 .directive('noteItem', function() {

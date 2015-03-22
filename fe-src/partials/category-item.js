@@ -1,4 +1,6 @@
-angular.module('directives.categories.categoryItem', ['app.directives.utils'])
+angular.module('directives.categories.categoryItem', [
+  'app.directives.validation'
+])
 .directive('categoryItem', function() {
   return {
     restrict: 'E',

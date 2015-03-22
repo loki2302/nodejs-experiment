@@ -1,5 +1,5 @@
 angular.module('directives.notes.newNoteEditor', [
-  'app.directives.utils', 
+  'app.directives.validation', 
   'ngTagsInput'
 ])
 .directive('newNoteEditor', function() {

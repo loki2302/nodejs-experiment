@@ -1,4 +1,4 @@
-angular.module('app.directives.utils', [])
+angular.module('app.directives.validation', [])
 .directive('validationFacade', function() {
   // use like this: <form validation-facade="be">
   // this will publish 'be' with setAllFieldsValid and setFieldErrors
