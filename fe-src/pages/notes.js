@@ -1,13 +1,13 @@
 angular.module("notes", [
-	"ngRoute", 
+	'ngRoute', 
 	'directives.notes.newNoteEditor',
 	'directives.notes.noteItem',
-	"api",
+	'api',
 	'operationExecutor'
 ])
-.config(["$routeProvider", function($routeProvider) {
+.config(['$routeProvider', function($routeProvider) {
 	$routeProvider.when("/notes", {
-		templateUrl: "notes.html",
+		templateUrl: 'notes.html',
 		controller: "NotesController",
 		resolve: {
 			notes: ["apiService", function(apiService) {
@@ -16,8 +16,8 @@ angular.module("notes", [
 		}
 	});
 }])
-.controller("NotesController", 
-	["$scope", "$q", "notes", "apiService", 'errors', 'execute', 
+.controller('NotesController', 
+	['$scope', '$q', 'notes', 'apiService', 'errors', 'execute', 
 	function($scope, $q, notes, apiService, errors, execute) {
 
 	$scope.notes = notes;
