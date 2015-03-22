@@ -1,6 +1,6 @@
 angular.module('categories', [
 	'ngRoute', 
-	'directives.categories.createCategory',
+	'directives.categories.newCategoryEditor',
 	'directives.categories.categoryItem',
 	'api',
 	'operationExecutor'

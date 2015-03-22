@@ -1,5 +1,5 @@
-angular.module('directives.categories.createCategory', ['app.directives.utils'])
-.directive('createCategory', function() {
+angular.module('directives.categories.newCategoryEditor', ['app.directives.utils'])
+.directive('newCategoryEditor', function() {
   return {
     restrict: 'E',
     scope: {
