@@ -180,5 +180,9 @@ describe('app', function() {
       expect(categoriesPage.categoryListCategoryNameByCategoryIndex(0).isPresent()).toBe(true);
       expect(categoriesPage.categoryListCategoryNameByCategoryIndex(0).getText()).toBe('hello');
     });
+
+    // TODO: should let me edit category
+    // TODO: should let me start editing category and then cancel it
+    // TODO: should let me delete a category
   });
 });

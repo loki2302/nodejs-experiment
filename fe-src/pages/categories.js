@@ -1,7 +1,5 @@
 angular.module("categories", [
 	"ngRoute", 
-	"directives.categories.categoryItemView", 
-	"directives.categories.categoryEditor",
 	'directives.categories.categoryEditor2',
 	"api",
 	'operationExecutor'
