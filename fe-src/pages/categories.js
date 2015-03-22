@@ -24,11 +24,7 @@ angular.module('categories', [
 
 	$scope.createCategory = function(category) {
 		return execute(apiService.createCategory(category).then(function(category) {
-			return apiService.getCategories().then(function(categories) {
-				$scope.categories = categories;
-			}, function(error) {
-				throw error;
-			});
+			return $scope.reloadCategories();
 		}, function(error) {
 			if(error instanceof errors.ValidationError) {
 				return $q.reject(error.errorMap);
@@ -44,11 +40,7 @@ angular.module('categories', [
 
 	$scope.updateCategory = function(category) {
 		return execute(apiService.updateCategory(category).then(function(category) {
-			return apiService.getCategories().then(function(categories) {
-				$scope.categories = categories;
-			}, function(error) {
-				throw error;
-			});
+			return $scope.reloadCategories();
 		}, function(error) {
 			if(error instanceof errors.ValidationError) {
 				return $q.reject(error.errorMap);
@@ -64,13 +56,17 @@ angular.module('categories', [
 
 	$scope.deleteCategory = function(category) {
 		return execute(apiService.deleteCategory(category).then(function() {
-			return apiService.getCategories().then(function(categories) {
-				$scope.categories = categories;
-			}, function(error) {
-				throw error;
-			});
+			return $scope.reloadCategories();
 		}, function(error) {
 			throw error;
 		}));
+	};
+
+	$scope.reloadCategories = function() {
+		return apiService.getCategories().then(function(categories) {
+			$scope.categories = categories;
+		}, function(error) {
+			throw error;
+		});
 	};
 }]);
