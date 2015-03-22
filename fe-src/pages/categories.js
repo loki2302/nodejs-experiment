@@ -7,7 +7,7 @@ angular.module('categories', [
 ])
 .config(['$routeProvider', function($routeProvider) {
 	$routeProvider.when('/categories', {
-		templateUrl: 'categories.html',
+		templateUrl: 'pages/categories.html',
 		controller: 'CategoriesController',
 		resolve: {
 			categories: ['apiService', function(apiService) {

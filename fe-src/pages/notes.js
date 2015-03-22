@@ -7,7 +7,7 @@ angular.module("notes", [
 ])
 .config(['$routeProvider', function($routeProvider) {
 	$routeProvider.when("/notes", {
-		templateUrl: 'notes.html',
+		templateUrl: 'pages/notes.html',
 		controller: "NotesController",
 		resolve: {
 			notes: ["apiService", function(apiService) {

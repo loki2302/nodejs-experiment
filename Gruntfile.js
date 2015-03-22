@@ -2,11 +2,27 @@ module.exports = function(grunt) {
 
 	grunt.initConfig({
 		builddir: 'fe-build',
+    tmpdir: 'fe-tmp',
 
 		// FE build stuff
+    ngtemplates: {
+      app: {
+        // do I need index.html here?
+        src: 'fe-src/**/*.html',
+        dest: '<%= tmpdir %>/templates.js',
+        options: {
+          url: function(url) {
+            return url.replace('fe-src/', '');
+          }
+        }
+      }
+    },
 		uglify: {
 			app: {
-				src: "fe-src/**/*.js",
+				src: [
+          'fe-src/**/*.js',
+          '<%= tmpdir %>/*.js'
+        ],
 				dest: "<%= builddir %>/all.js"				
 			}
 		},
@@ -26,7 +42,7 @@ module.exports = function(grunt) {
 			app: {
 				expand: true,
 				flatten: true,				
-				src: "fe-src/**/*.html",
+				src: "fe-src/index.html",
 				dest: "<%= builddir %>/"
 			},
 			bootstrap: {
@@ -45,9 +61,10 @@ module.exports = function(grunt) {
 				dest: "<%= builddir %>/"
 			}
 		},
-		clean: [
-			"<%= builddir %>"
-		],
+		clean: {
+      'build': ['<%= builddir %>'],
+      'tmp' : ['<%= tmpdir %>']
+		},
 
 		// BE tests stuff
 		mochaTest: {
@@ -112,8 +129,9 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-protractor-webdriver");
   grunt.loadNpmTasks("grunt-protractor-runner");
   grunt.loadNpmTasks('grunt-mocha-test');
+  grunt.loadNpmTasks('grunt-angular-templates');
 
-  grunt.registerTask('fe-build', ["uglify", "copy", "concat"]);		
+  grunt.registerTask('fe-build', ['clean', 'ngtemplates', 'uglify', 'copy', 'concat', 'clean:tmp']);		
 	grunt.registerTask("fe-test", ["karma:test"]);
 	grunt.registerTask("fe-watch", ["karma:watch"]);
 	grunt.registerTask('webdriver-update', ['shell:webdriver']);
