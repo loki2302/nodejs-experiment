@@ -18,8 +18,8 @@ angular.module("categories", [
 	});
 }])
 .controller("CategoriesController", 
-	['$rootScope', "$scope", "$q", "categories", "apiService", 'errors', 'operationExecutor', 
-	function($rootScope, $scope, $q, categories, apiService, errors, operationExecutor) {
+	["$scope", "$q", "categories", "apiService", 'errors', 'operationExecutor', 
+	function($scope, $q, categories, apiService, errors, operationExecutor) {
 
 	$scope.categories = categories;
 
@@ -44,7 +44,8 @@ angular.module("categories", [
 	};
 
 	$scope.updateCategory = function(category) {
-		return apiService.updateCategory(category).then(function(category) {
+		console.log('UPDATE CATEGORY CALLED!', category);
+		return operationExecutor.execute(apiService.updateCategory(category).then(function(category) {
 			return apiService.getCategories().then(function(categories) {
 				$scope.categories = categories;
 			}, function(error) {
@@ -55,12 +56,16 @@ angular.module("categories", [
 				return $q.reject(error.errorMap);
 			}
 
+			if(error instanceof errors.ConflictError) {
+				return $q.reject({ name: 'Already exists' });
+			}
+
 			throw error;
-		});
+		}));
 	};
 
 	$scope.deleteCategory = function(category) {
-		return apiService.deleteCategory(category).then(function() {
+		return operationExecutor.execute(apiService.deleteCategory(category).then(function() {
 			return apiService.getCategories().then(function(categories) {
 				$scope.categories = categories;
 			}, function(error) {
@@ -68,6 +73,6 @@ angular.module("categories", [
 			});
 		}, function(error) {
 			throw error;
-		});
+		}));
 	};
 }]);

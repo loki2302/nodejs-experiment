@@ -3,7 +3,13 @@
 </div>
 
 <ul id="category-list" class="list-unstyled" ng-if="categories.length > 0">
-	<li ng-class="'category-' + {{$index}}" ng-repeat="category in categories"><category-item-view category="category" delete="deleteCategory(category)" save="updateCategory(category)"></category-item-view></li>
+  <li ng-class="'category-' + {{$index}}" ng-repeat="category in categories">
+    <category-item 
+      category="category" 
+      busy="busy" 
+      on-delete="deleteCategory(category)" 
+      on-update="updateCategory(updatedCategory)"></category-item>
+  </li>
 </ul>
 
 <create-category id="new-category-editor" create="createCategory(category)" busy="busy"></create-category>
