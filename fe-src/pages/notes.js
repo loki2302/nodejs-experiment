@@ -1,7 +1,7 @@
 angular.module("notes", [
 	"ngRoute", 
-	"directives.notes.noteItemView", 
 	'directives.notes.newNoteEditor',
+	'directives.notes.noteItem',
 	"api",
 	'operationExecutor'
 ])
@@ -35,7 +35,7 @@ angular.module("notes", [
 	};
 
 	$scope.updateNote = function(note) {
-		return apiService.updateNote(note).then(function(note) {
+		return execute(apiService.updateNote(note).then(function(note) {
 			return $scope.reloadNotes();
 		}, function(error) {
 			if(error instanceof errors.ValidationError) {
@@ -43,15 +43,15 @@ angular.module("notes", [
 			}
 
 			throw error;
-		});
+		}));
 	};
 
 	$scope.deleteNote = function(note) {
-		return apiService.deleteNote(note).then(function() {
+		return execute(apiService.deleteNote(note).then(function() {
 			return $scope.reloadNotes();
 		}, function(error) {
 			throw error;
-		});
+		}));
 	};
 
 	$scope.searchCategoriesStartingWith = function(query) {

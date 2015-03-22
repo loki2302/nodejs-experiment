@@ -3,7 +3,14 @@
 </div>
 
 <ul id="note-list" class="list-unstyled" ng-if="notes.length > 0">
-	<li ng-class="'note-' + {{$index}}" ng-repeat="note in notes"><note-item-view note="note" delete="deleteNote(note)" save="updateNote(note)" search-categories="searchCategoriesStartingWith($query)"></note-item-view></li>
+  <li ng-class="'note-' + {{$index}}" ng-repeat="note in notes">
+    <note-item 
+      note="note"
+      busy="busy" 
+      on-delete="deleteNote(note)" 
+      on-update="updateNote(updatedNote)"
+      on-search-categories="searchCategoriesStartingWith($query)"></note-item>
+  </li>
 </ul>
 
 <new-note-editor
