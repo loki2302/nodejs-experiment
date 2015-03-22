@@ -3,7 +3,8 @@ angular.module("categories", [
 	"directives.categories.categoryItemView", 
 	"directives.categories.categoryEditor",
 	'directives.categories.categoryEditor2',
-	"api"
+	"api",
+	'operationExecutor'
 ])
 .config(["$routeProvider", function($routeProvider) {
 	$routeProvider.when("/categories", {
@@ -16,12 +17,14 @@ angular.module("categories", [
 		}
 	});
 }])
-.controller("CategoriesController", ['$rootScope', "$scope", "$q", "categories", "apiService", 'errors', function($rootScope, $scope, $q, categories, apiService, errors) {
+.controller("CategoriesController", 
+	['$rootScope', "$scope", "$q", "categories", "apiService", 'errors', 'operationExecutor', 
+	function($rootScope, $scope, $q, categories, apiService, errors, operationExecutor) {
+
 	$scope.categories = categories;
 
 	$scope.createCategory = function(category) {
-		$rootScope.busy = true;
-		return apiService.createCategory(category).then(function(category) {
+		return operationExecutor.execute(apiService.createCategory(category).then(function(category) {
 			return apiService.getCategories().then(function(categories) {
 				$scope.categories = categories;
 			}, function(error) {
@@ -37,9 +40,7 @@ angular.module("categories", [
 			}
 			
 			throw error;
-		}).finally(function() {
-			$rootScope.busy = false;
-		});
+		}));
 	};
 
 	$scope.updateCategory = function(category) {
