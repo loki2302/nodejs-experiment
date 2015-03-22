@@ -1,22 +1,23 @@
-angular.module("categories", [
-	"ngRoute", 
-	'directives.categories.categoryEditor2',
-	"api",
+angular.module('categories', [
+	'ngRoute', 
+	'directives.categories.createCategory',
+	'directives.categories.categoryItem',
+	'api',
 	'operationExecutor'
 ])
-.config(["$routeProvider", function($routeProvider) {
-	$routeProvider.when("/categories", {
-		templateUrl: "categories.html",
-		controller: "CategoriesController",
+.config(['$routeProvider', function($routeProvider) {
+	$routeProvider.when('/categories', {
+		templateUrl: 'categories.html',
+		controller: 'CategoriesController',
 		resolve: {
-			categories: ["apiService", function(apiService) {
+			categories: ['apiService', function(apiService) {
 				return apiService.getCategories();
 			}]
 		}
 	});
 }])
-.controller("CategoriesController", 
-	["$scope", "$q", "categories", "apiService", 'errors', 'operationExecutor', 
+.controller('CategoriesController', 
+	['$scope', '$q', 'categories', 'apiService', 'errors', 'operationExecutor', 
 	function($scope, $q, categories, apiService, errors, operationExecutor) {
 
 	$scope.categories = categories;
@@ -42,7 +43,6 @@ angular.module("categories", [
 	};
 
 	$scope.updateCategory = function(category) {
-		console.log('UPDATE CATEGORY CALLED!', category);
 		return operationExecutor.execute(apiService.updateCategory(category).then(function(category) {
 			return apiService.getCategories().then(function(categories) {
 				$scope.categories = categories;
