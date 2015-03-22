@@ -79,12 +79,16 @@ module.exports = function() {
       throw new RestError(409, makeMessageDTO(message));
     };
 
-    this.validationError = function(error) {
+    this.validationErrorFromSequelizeValidationError = function(error) {
       var errorMap = {};
       error.errors.forEach(function(e) {
         errorMap[e.path] = e.message;
       });
 
+      this.validationError(errorMap);
+    };
+
+    this.validationError = function(errorMap) {
       throw new RestError(400, errorMap);
     };
 

@@ -178,7 +178,7 @@ describe("app", function() {
         assert.ok(false);
       } catch(e) {
         assert.equal(e.response.statusCode, 400);
-        assert.ok("message" in e.response.body);
+        assert.ok("categories" in e.response.body);
       }
 
       var getAllNotesResponse = yield client.getAllNotes();
@@ -307,7 +307,7 @@ describe("app", function() {
         yield client.updateNote(note);
       } catch(e) {
         assert.equal(e.response.statusCode, 400);
-        assert.ok("message" in e.response.body);
+        assert.ok('categories' in e.response.body);
       }
 
       note = (yield client.getNote(note.id)).body;

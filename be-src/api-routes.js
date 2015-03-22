@@ -59,7 +59,9 @@ module.exports = function(models) {
     });
 
     if(categories.length !== categoryIds.length) {
-      this.badRequest("Failed to find all categories");
+      this.validationError({
+        categories: 'At least one category does not exist'
+      });
     }
 
     var note;
@@ -75,7 +77,7 @@ module.exports = function(models) {
       });
     } catch(e) {
       if(e instanceof Sequelize.ValidationError) {
-        this.validationError(e);
+        this.validationErrorFromSequelizeValidationError(e);
       }
 
       throw e;
@@ -99,7 +101,7 @@ module.exports = function(models) {
       });
     } catch(e) {
       if(e instanceof Sequelize.ValidationError) {
-        this.validationError(e);
+        this.validationErrorFromSequelizeValidationError(e);
       }
 
       throw e;
@@ -118,7 +120,9 @@ module.exports = function(models) {
     });
 
     if(categories.length !== categoryIds.length) {
-      this.badRequest("Failed to find all categories");
+      this.validationError({
+        categories: 'At least one category does not exist'
+      });
     }
 
     yield this.note.setCategories(categories, {
@@ -187,7 +191,7 @@ module.exports = function(models) {
       });
     } catch(e) {
       if(e instanceof Sequelize.ValidationError) {
-        this.validationError(e);
+        this.validationErrorFromSequelizeValidationError(e);
       }
 
       throw e;
@@ -221,7 +225,7 @@ module.exports = function(models) {
       });
     } catch(e) {
       if(e instanceof Sequelize.ValidationError) {
-        this.validationError(e);
+        this.validationErrorFromSequelizeValidationError(e);
       }
 
       throw e;
