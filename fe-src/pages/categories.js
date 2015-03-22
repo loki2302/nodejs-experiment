@@ -17,13 +17,13 @@ angular.module('categories', [
 	});
 }])
 .controller('CategoriesController', 
-	['$scope', '$q', 'categories', 'apiService', 'errors', 'operationExecutor', 
-	function($scope, $q, categories, apiService, errors, operationExecutor) {
+	['$scope', '$q', 'categories', 'apiService', 'errors', 'execute', 
+	function($scope, $q, categories, apiService, errors, execute) {
 
 	$scope.categories = categories;
 
 	$scope.createCategory = function(category) {
-		return operationExecutor.execute(apiService.createCategory(category).then(function(category) {
+		return execute(apiService.createCategory(category).then(function(category) {
 			return apiService.getCategories().then(function(categories) {
 				$scope.categories = categories;
 			}, function(error) {
@@ -43,7 +43,7 @@ angular.module('categories', [
 	};
 
 	$scope.updateCategory = function(category) {
-		return operationExecutor.execute(apiService.updateCategory(category).then(function(category) {
+		return execute(apiService.updateCategory(category).then(function(category) {
 			return apiService.getCategories().then(function(categories) {
 				$scope.categories = categories;
 			}, function(error) {
@@ -63,7 +63,7 @@ angular.module('categories', [
 	};
 
 	$scope.deleteCategory = function(category) {
-		return operationExecutor.execute(apiService.deleteCategory(category).then(function() {
+		return execute(apiService.deleteCategory(category).then(function() {
 			return apiService.getCategories().then(function(categories) {
 				$scope.categories = categories;
 			}, function(error) {

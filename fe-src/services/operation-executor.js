@@ -1,6 +1,6 @@
 angular.module('operationExecutor', [])
-.service('operationExecutor', ['$rootScope', function($rootScope) {
-  this.execute = function(promise) {
+.factory('execute', ['$rootScope', function($rootScope) {
+  return function(promise) {
     $rootScope.busy = true;
     return promise.finally(function() {
       $rootScope.busy = false;
