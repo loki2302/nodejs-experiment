@@ -10,27 +10,7 @@ angular.module('directives.notes.newNoteEditor', [
       onSearchCategories: '&',
       busy: '='
     },
-    template:
-    '<h3>Create note</h3>' +
-    '<form ng-submit="createNote()" validation-facade="vf">' + 
-    '  <fieldset ng-disabled="busy">' +
-    '    <div class="form-group" ng-class="{' + "'has-error'" + ':vf.isError(' + "'content'" + ')}">' +
-    '      <label for="content" class="control-label">Content</label>' +
-    '      <input type="text" class="form-control" id="content" name="content" ng-model="note.content">' +
-    '      <p class="help-block" ng-if="vf.isError(' + "'content'" + ')">{{vf.getFieldError(' + "'content'" + ')}}</p>' +
-    '    </div>' +
-    '    <div class="form-group" ng-class="{' + "'has-error'" + ':vf.isError(' + "'categories'" + ')}">' +
-    '      <label for="categories" class="control-label">Categories</label>' +
-    '      <tags-input name="categories" id="categories" ng-model="note.categories" display-property="name">' +
-    '        <auto-complete source="onSearchCategories({$query: $query})"></auto-complete>' +
-    '      </tags-input>' +
-    '      <p class="help-block" ng-if="vf.isError(' + "'categories'" + ')">{{vf.getFieldError(' + "'categories'" + ')}}</p>' +
-    '    </div>' +
-    '    <div class="form-group">' +
-    '      <button type="submit" class="btn btn-default">Create</button>' +
-    '    </div>' +
-    '  </fieldset>' +
-    '</form>',
+    templateUrl: 'partials/new-note-editor.html',
     link: function(scope) {
       scope.note = makeNoteTemplate();
 
