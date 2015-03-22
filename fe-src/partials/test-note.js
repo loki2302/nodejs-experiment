@@ -1,4 +1,4 @@
-angular.module("directives.testNote", [])
+angular.module('app.directives.utils', [])
 .directive('validationFacade', function() {
   // use like this: <form be="be">
   // this will publish 'be' with setAllFieldsValid and setFieldErrors
@@ -39,7 +39,9 @@ angular.module("directives.testNote", [])
       };
     }
   };
-})
+});
+
+angular.module("directives.testNote", ['app.directives.utils'])
 .directive('testNoteEdit', function() {
   return {
     restrict: 'E',
