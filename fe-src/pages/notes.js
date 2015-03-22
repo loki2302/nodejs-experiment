@@ -1,8 +1,9 @@
 angular.module("notes", [
 	"ngRoute", 
 	"directives.notes.noteItemView", 
-	"directives.notes.noteEditor",
-	"api"
+	'directives.notes.newNoteEditor',
+	"api",
+	'operationExecutor'
 ])
 .config(["$routeProvider", function($routeProvider) {
 	$routeProvider.when("/notes", {
@@ -15,11 +16,14 @@ angular.module("notes", [
 		}
 	});
 }])
-.controller("NotesController", ["$scope", "$q", "notes", "apiService", 'errors', function($scope, $q, notes, apiService, errors) {
+.controller("NotesController", 
+	["$scope", "$q", "notes", "apiService", 'errors', 'execute', 
+	function($scope, $q, notes, apiService, errors, execute) {
+
 	$scope.notes = notes;
 
 	$scope.createNote = function(note) {
-		return apiService.createNote(note).then(function(note) {
+		return execute(apiService.createNote(note).then(function(note) {
 			return $scope.reloadNotes();
 		}, function(error) {
 			if(error instanceof errors.ValidationError) {
@@ -27,7 +31,7 @@ angular.module("notes", [
 			}
 			
 			throw error;
-		});
+		}));
 	};
 
 	$scope.updateNote = function(note) {

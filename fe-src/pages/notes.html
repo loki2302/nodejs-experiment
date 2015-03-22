@@ -6,4 +6,8 @@
 	<li ng-class="'note-' + {{$index}}" ng-repeat="note in notes"><note-item-view note="note" delete="deleteNote(note)" save="updateNote(note)" search-categories="searchCategoriesStartingWith($query)"></note-item-view></li>
 </ul>
 
-<note-editor id="new-note-editor" save="createNote(note)" save-title="Create" search-categories="searchCategoriesStartingWith(query)"></note-editor>
+<new-note-editor
+  id="new-note-editor"
+  busy="busy"
+  on-create="createNote(note)"
+  on-search-categories="searchCategoriesStartingWith($query)"></new-note-editor>
