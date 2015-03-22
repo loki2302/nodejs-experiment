@@ -1,5 +1,4 @@
 module.exports = function(grunt) {
-
 	grunt.initConfig({
 		builddir: 'fe-build',
     tmpdir: 'fe-tmp',
@@ -23,20 +22,20 @@ module.exports = function(grunt) {
           'fe-src/**/*.js',
           '<%= tmpdir %>/*.js'
         ],
-				dest: "<%= tmpdir %>/app.js"
+				dest: '<%= tmpdir %>/app.js'
 			}
 		},
 		concat: {
 			js: {
 				src: [
-					"bower_components/angular/angular.min.js",
-					"bower_components/angular-resource/angular-resource.min.js",
-					"bower_components/angular-route/angular-route.min.js",
-					"bower_components/ng-tags-input/ng-tags-input.min.js",
-					"bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js",
+					'bower_components/angular/angular.min.js',
+					'bower_components/angular-resource/angular-resource.min.js',
+					'bower_components/angular-route/angular-route.min.js',
+					'bower_components/ng-tags-input/ng-tags-input.min.js',
+					'bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js',
           '<%= tmpdir %>/app.js'
 				],
-				dest: "<%= builddir %>/app.js"
+				dest: '<%= builddir %>/app.js'
 			},
       css: {
         src: [
@@ -51,8 +50,8 @@ module.exports = function(grunt) {
 			app: {
 				expand: true,
 				flatten: true,				
-				src: "fe-src/index.html",
-				dest: "<%= builddir %>/"
+				src: 'fe-src/index.html',
+				dest: '<%= builddir %>/'
 			}
 		},
 		clean: {
@@ -81,58 +80,58 @@ module.exports = function(grunt) {
 		},
 
 		// Protractor-related stuff
-		"shell": {
-      "webdriver": {
+		'shell': {
+      'webdriver': {
         options: {
           stdout: true
         },
-        command: require("path").resolve("node_modules/protractor/bin/webdriver-manager") + " update"
+        command: require('path').resolve('node_modules/protractor/bin/webdriver-manager') + ' update'
       }
     },
-    "run": {
-      "app": {
+    'run': {
+      'app': {
         options: {
           wait: false
         },
         args: [
-          "--harmony",
-          "be-src/runner.js"
+          '--harmony',
+          'be-src/runner.js'
         ]
       }
     },
-    "protractor_webdriver": {
+    'protractor_webdriver': {
       options: { keepAlive: true },
       dummyTarget: {}
     },
-    "protractor": {
+    'protractor': {
       dummyTarget: {
         options: {
-          configFile: "protractor.conf.js"
+          configFile: 'protractor.conf.js'
         }
       }
     }		
 	});
 
-	grunt.loadNpmTasks("grunt-contrib-uglify");
-	grunt.loadNpmTasks("grunt-contrib-copy");
-	grunt.loadNpmTasks("grunt-contrib-clean");
-	grunt.loadNpmTasks("grunt-contrib-concat");
-	grunt.loadNpmTasks("grunt-karma");
-	grunt.loadNpmTasks("grunt-shell");
-  grunt.loadNpmTasks("grunt-run");
-  grunt.loadNpmTasks("grunt-protractor-webdriver");
-  grunt.loadNpmTasks("grunt-protractor-runner");
+	grunt.loadNpmTasks('grunt-contrib-uglify');
+	grunt.loadNpmTasks('grunt-contrib-copy');
+	grunt.loadNpmTasks('grunt-contrib-clean');
+	grunt.loadNpmTasks('grunt-contrib-concat');
+	grunt.loadNpmTasks('grunt-karma');
+	grunt.loadNpmTasks('grunt-shell');
+  grunt.loadNpmTasks('grunt-run');
+  grunt.loadNpmTasks('grunt-protractor-webdriver');
+  grunt.loadNpmTasks('grunt-protractor-runner');
   grunt.loadNpmTasks('grunt-mocha-test');
   grunt.loadNpmTasks('grunt-angular-templates');
 
   grunt.registerTask('fe-build', ['clean', 'ngtemplates', 'uglify', 'copy', 'concat', 'clean:tmp']);		
-	grunt.registerTask("fe-test", ["karma:test"]);
-	grunt.registerTask("fe-watch", ["karma:watch"]);
+	grunt.registerTask('fe-test', ['karma:test']);
+	grunt.registerTask('fe-watch', ['karma:watch']);
 	grunt.registerTask('webdriver-update', ['shell:webdriver']);
   grunt.registerTask('e2e-test', ['fe-build', 'protractor_webdriver', 'protractor']);
 	grunt.registerTask('be-test', ['mochaTest']);
 
 	grunt.registerTask('test', ['be-test', 'fe-test', 'e2e-test']);
 
-	grunt.registerTask("default", ['fe-build']);	
+	grunt.registerTask('default', ['fe-build']);	
 };
