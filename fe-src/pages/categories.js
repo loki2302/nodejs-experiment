@@ -2,6 +2,7 @@ angular.module("categories", [
 	"ngRoute", 
 	"directives.categories.categoryItemView", 
 	"directives.categories.categoryEditor",
+	'directives.categories.categoryEditor2',
 	"api"
 ])
 .config(["$routeProvider", function($routeProvider) {
@@ -28,6 +29,10 @@ angular.module("categories", [
 		}, function(error) {
 			if(error instanceof errors.ValidationError) {
 				return $q.reject(error.errorMap);
+			}
+
+			if(error instanceof errors.ConflictError) {
+				return $q.reject({ name: 'Already exists' });
 			}
 			
 			throw error;

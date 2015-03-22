@@ -153,7 +153,7 @@ angular.module('api', ['api.rh'])
 
   function throwValidationError() {
     return function(httpResponse) {
-      return $q.reject(new errors.ValidationError(httpResponse.data.errorMap));
+      return $q.reject(new errors.ValidationError(httpResponse.data));
     };
   };
 

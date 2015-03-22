@@ -6,4 +6,4 @@
 	<li ng-class="'category-' + {{$index}}" ng-repeat="category in categories"><category-item-view category="category" delete="deleteCategory(category)" save="updateCategory(category)"></category-item-view></li>
 </ul>
 
-<category-editor id="new-category-editor" save="createCategory(category)" save-title="Create"></category-editor>
+<create-category id="new-category-editor" create="createCategory(category)"></create-category>

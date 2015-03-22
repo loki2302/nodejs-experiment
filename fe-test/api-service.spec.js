@@ -34,7 +34,7 @@ describe('api-service', function() {
       it('should throw validation error when 400', function() {
         whenIMakeAnApiCall(typicalApiCall)
         .itSendsTheRequest(typicalRequest)
-        .andIfServerRespondsWith({ status: 400, body: { errorMap: { content: 'bad content' } } })
+        .andIfServerRespondsWith({ status: 400, body: { content: 'bad content' } })
         .aCallFailsWith(errors.ValidationError, { errorMap: { content: 'bad content' } })
         .go();
       });
@@ -71,7 +71,7 @@ describe('api-service', function() {
       it('should throw validation error when 400', function() {
         whenIMakeAnApiCall(typicalApiCall)
         .itSendsTheRequest(typicalRequest)
-        .andIfServerRespondsWith({ status: 400, body: { errorMap: { content: 'bad content' } } })
+        .andIfServerRespondsWith({ status: 400, body: { content: 'bad content' } })
         .aCallFailsWith(errors.ValidationError, { errorMap: { content: 'bad content' } })
         .go();
       });      
@@ -170,7 +170,7 @@ describe('api-service', function() {
       it('should throw validation error when 400', function() {
         whenIMakeAnApiCall(typicalApiCall)
         .itSendsTheRequest(typicalRequest)
-        .andIfServerRespondsWith({ status: 400, body: { errorMap: { name: 'bad name' } } })
+        .andIfServerRespondsWith({ status: 400, body: { name: 'bad name' } })
         .aCallFailsWith(errors.ValidationError, { errorMap: { name: 'bad name' } })
         .go();
       });
@@ -214,7 +214,7 @@ describe('api-service', function() {
       it('should throw validation error when 400', function() {
         whenIMakeAnApiCall(typicalApiCall)
         .itSendsTheRequest(typicalRequest)
-        .andIfServerRespondsWith({ status: 400, body: { errorMap: { name: 'bad name' } } })
+        .andIfServerRespondsWith({ status: 400, body: { name: 'bad name' } })
         .aCallFailsWith(errors.ValidationError, { errorMap: { name: 'bad name' } })
         .go();
       });
