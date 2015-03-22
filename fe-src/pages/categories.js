@@ -16,10 +16,11 @@ angular.module("categories", [
 		}
 	});
 }])
-.controller("CategoriesController", ["$scope", "$q", "categories", "apiService", 'errors', function($scope, $q, categories, apiService, errors) {
+.controller("CategoriesController", ['$rootScope', "$scope", "$q", "categories", "apiService", 'errors', function($rootScope, $scope, $q, categories, apiService, errors) {
 	$scope.categories = categories;
 
 	$scope.createCategory = function(category) {
+		$rootScope.busy = true;
 		return apiService.createCategory(category).then(function(category) {
 			return apiService.getCategories().then(function(categories) {
 				$scope.categories = categories;
@@ -36,6 +37,8 @@ angular.module("categories", [
 			}
 			
 			throw error;
+		}).finally(function() {
+			$rootScope.busy = false;
 		});
 	};
 

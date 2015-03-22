@@ -3,19 +3,22 @@ angular.module("directives.categories.categoryEditor2", ['app.directives.utils']
   return {
     restrict: 'E',
     scope: {
-      create: '&'
+      create: '&',
+      busy: '='
     },
     template:
     '<h3>Create category</h3>' +
     '<form ng-submit="onSubmit()" validation-facade="vf">' + 
-    '  <div class="form-group" ng-class="{' + "'has-error'" + ':vf.isError(' + "'name'" + ')}">' +
-    '    <label for="name" class="control-label">Name</label>' +
-    '    <input type="text" class="form-control" id="name" name="name" ng-model="name">' +
-    '    <p class="help-block" ng-if="vf.isError(' + "'name'" + ')">{{vf.getFieldError(' + "'name'" + ')}}</p>' +
-    '  </div>' +
-    '  <div class="form-group">' +
-    '    <button type="submit" class="btn btn-default">Create</button>' +
-    '  </div>' +
+    '  <fieldset ng-disabled="busy">' +
+    '    <div class="form-group" ng-class="{' + "'has-error'" + ':vf.isError(' + "'name'" + ')}">' +
+    '      <label for="name" class="control-label">Name</label>' +
+    '      <input type="text" class="form-control" id="name" name="name" ng-model="name">' +
+    '      <p class="help-block" ng-if="vf.isError(' + "'name'" + ')">{{vf.getFieldError(' + "'name'" + ')}}</p>' +
+    '    </div>' +
+    '    <div class="form-group">' +
+    '      <button type="submit" class="btn btn-default">Create</button>' +
+    '    </div>' +
+    '  </fieldset>' +
     '</form>',
     link: function(scope) {
       scope.name = "";
