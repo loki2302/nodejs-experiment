@@ -8,7 +8,7 @@ module.exports = function(grunt) {
     ngtemplates: {
       app: {
         // do I need index.html here?
-        src: 'fe-src/**/*.html',
+        src: ['fe-src/**/*.html', '!**/index.html'],
         dest: '<%= tmpdir %>/templates.js',
         options: {
           url: function(url) {
