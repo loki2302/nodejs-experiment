@@ -13,4 +13,22 @@ describe('CategoriesController', function() {
   it('should publish categories on the scope', inject(function($rootScope) {
     expect($rootScope.categories).toBeDefined();
   }));
+
+  describe('createCategory()', function() {
+    var createCategoryResultDeferred;
+
+    beforeEach(inject(function($rootScope, $q, apiService) {
+      createCategoryResultDeferred = $q.defer();
+      spyOn(apiService, 'createCategory').and.returnValue(createCategoryResultDeferred.promise);
+      spyOn($rootScope, 'reloadCategories');
+
+      $rootScope.createCategory({
+        name: 'hello there'
+      });
+    }));
+
+    it('should call apiService.createCategory()', inject(function(apiService) {
+      expect(apiService.createCategory).toHaveBeenCalled();
+    }));
+  });
 });
