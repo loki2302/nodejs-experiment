@@ -1,6 +1,4 @@
-var enableDestroy = require('server-destroy');
-var makeModels = require("../be-src/models.js");
-var makeApp = require("../be-src/app.js");
+var AppRunner = require('../be-src/apprunner.js');
 
 var AppNavbar = function() {
   this.notesItem = element(by.css('.nav-notes'));
@@ -36,41 +34,16 @@ var CategoriesPage = function() {
 };
 
 describe('app', function() {
-  var server;
+  var appRunner;
   beforeEach(function(done) {
-    /*var models = makeModels();
-    models.reset(function(error) {
-      if(error) {
-        throw new Error("Failed to reset database");
-      }
-
-      var app = makeApp(models, {
-        // no synth delays for tests
-      });
-      server = app.listen(3000, function() {
-        enableDestroy(server);
-        done();
-      });
-    });*/
-    var models = makeModels();
-
-    models.reset().then(function() {
-      var app = makeApp(models, {
-        // no synth delays for tests
-      });
-      server = app.listen(3000, function() {
-        enableDestroy(server);
-        done();
-      });
-    }, function(error) {
-      throw new Error("Failed to reset database");
-    });
+    appRunner = new AppRunner();
+    appRunner.start().then(function() {
+      return appRunner.reset().finally(done);
+    });    
   });
 
   afterEach(function(done) {
-    server.destroy(function() {
-      done();
-    });
+    appRunner.stop().finally(done);
   });
 
   describe('App', function() {

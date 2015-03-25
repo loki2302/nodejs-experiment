@@ -14,7 +14,6 @@
   "author": "loki2302",
   "license": "BSD-2-Clause",
   "dependencies": {
-    "co": "^4.1.0",
     "grunt": "^0.4.5",
     "grunt-angular-templates": "^0.5.7",
     "grunt-cli": "^0.1.13",
@@ -49,6 +48,7 @@
     "request-promise": "^0.3.3",
     "sequelize": "^2.0.4",
     "server-destroy": "^1.0.0",
-    "sqlite3": "^3.0.4"
+    "sqlite3": "^3.0.4",
+    "co-mocha": "^1.1.0"
   }
 }
