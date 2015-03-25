@@ -13,10 +13,22 @@ class HelloWorlderImpl implements HelloWorlder {
   }
 }
 
+class Calculator {
+  addNumbers(a: number, b: number): number {
+    return a + b;
+  }
+}
+
 describe('Hello Worlder', () => {
   it('should work', () => {
     var helloWorlder: HelloWorlder = new HelloWorlderImpl();
     var message: string = helloWorlder.makeMessage();
     assert.equal(message, 'Hello World!');
-  });  
+  });
+});
+
+describe('Calculator', () => {
+  it('should add numbers', function() {
+    assert.equal(5, new Calculator().addNumbers(2, 3))
+  });
 });
