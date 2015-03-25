@@ -38,7 +38,7 @@ var CategoriesPage = function() {
 describe('app', function() {
   var server;
   beforeEach(function(done) {
-    var models = makeModels();
+    /*var models = makeModels();
     models.reset(function(error) {
       if(error) {
         throw new Error("Failed to reset database");
@@ -51,6 +51,19 @@ describe('app', function() {
         enableDestroy(server);
         done();
       });
+    });*/
+    var models = makeModels();
+
+    models.reset().then(function() {
+      var app = makeApp(models, {
+        // no synth delays for tests
+      });
+      server = app.listen(3000, function() {
+        enableDestroy(server);
+        done();
+      });
+    }, function(error) {
+      throw new Error("Failed to reset database");
     });
   });
 

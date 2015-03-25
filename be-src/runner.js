@@ -2,11 +2,7 @@ var makeApp = require('./app');
 var makeModels = require('./models');
 
 var models = makeModels();
-models.initialize(function(error) {
-  if(error) {
-    throw new Error('Failed to initialize models');
-  }
-
+models.initialize().then(function() {
   var app = makeApp(models, {
     delay: 1000
   });
@@ -14,4 +10,6 @@ models.initialize(function(error) {
   var server = app.listen((process.env.PORT || 3000), function() {
     console.log('Listening at %j', server.address());
   });
+}, function(error) {
+  throw new Error('Failed to initialize models');
 });

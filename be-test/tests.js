@@ -11,11 +11,8 @@ describe("app", function() {
   var server;
   beforeEach(function(done) {
     var models = makeModels();
-    models.reset(function(error) {
-      if(error) {
-        throw new Error("Failed to reset database");
-      }
 
+    models.reset().then(function() {
       client = new NotepadClient("http://localhost:3000/api");
       var app = makeApp(models, {
         // no synth delays for tests
@@ -23,6 +20,8 @@ describe("app", function() {
       server = app.listen(3000, function() {
         done();
       });
+    }, function(error) {
+      throw new Error("Failed to reset database");
     });
   });
 

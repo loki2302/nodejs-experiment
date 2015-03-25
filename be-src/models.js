@@ -32,12 +32,12 @@ module.exports = function() {
 
   return {
     sequelize: sequelize,
-    initialize: function(callback) {
-      sequelize.sync().done(callback);
+    initialize: function() {
+      return sequelize.sync();
     },
-    reset: function(callback) {
-      sequelize.drop().done(function() {
-        sequelize.sync().done(callback);
+    reset: function() {
+      return sequelize.drop().then(function() {
+        return sequelize.sync();
       });
     }
   };
