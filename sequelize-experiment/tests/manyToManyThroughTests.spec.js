@@ -4,7 +4,7 @@ var expect = require('chai').expect;
 
 var Sequelize = require('sequelize');
 
-describe('Many to many through', function() {
+describe('Sequelize many-to-many-through', function() {
   var sequelize;
   var Book;
   var Author;
@@ -30,7 +30,7 @@ describe('Many to many through', function() {
     yield sequelize.sync();
   });
 
-  describe('omg', function() {
+  describe('Connecting entities from both ends', function() {
     var anotherFineMythBook;
     var robertAsprinPerson;
     beforeEach(function* () {
