@@ -4,11 +4,11 @@ var staticMiddleware = require('./static-middleware');
 var apiMiddleware = require('./api-middleware');
 
 module.exports = function(models, config) {
-	var app = koa();
-	app.use(koaMount('/', staticMiddleware()));
-	app.use(koaMount('/api', apiMiddleware(
-		config, 
-		models.sequelize)));
+  var app = koa();
+  app.use(koaMount('/', staticMiddleware()));
+  app.use(koaMount('/api', apiMiddleware(
+    config, 
+    models.sequelize)));
 
-	return app;
+  return app;
 };

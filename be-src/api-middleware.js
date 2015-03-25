@@ -6,16 +6,16 @@ var responseMethods = require('./response-methods');
 var apiRoutes = require('./api-routes');
 
 module.exports = function(config, sequelize) {
-	var chain = [];
-	chain.push(koaBodyParser());
-	chain.push(responseMethods());
-	chain.push(transactional(sequelize));
+  var chain = [];
+  chain.push(koaBodyParser());
+  chain.push(responseMethods());
+  chain.push(transactional(sequelize));
 
-	if(config && config.delay) {
-		chain.push(koaSleep(config.delay));
-	}
+  if(config && config.delay) {
+    chain.push(koaSleep(config.delay));
+  }
 
-	chain.push(apiRoutes(sequelize.models));
+  chain.push(apiRoutes(sequelize.models));
 
-	return koaCompose(chain);
+  return koaCompose(chain);
 };
