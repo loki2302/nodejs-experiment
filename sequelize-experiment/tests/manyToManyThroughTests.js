@@ -43,27 +43,61 @@ module.exports = {
     });
   },
 
-  dummy: function(test) {
-    var Book = this.Book;
-    var Author = this.Author;
+  omg: {
+    setUp: function(done) {
+      var Book = this.Book;
+      var Author = this.Author;
 
-    co(function* () {
-      var anotherFineMythBook = yield Book.create({
-        title: 'Another Fine Myth'
+      var self = this;
+      co(function* () {
+        self.anotherFineMythBook = yield Book.create({
+          title: 'Another Fine Myth'
+        });
+
+        self.robertAsprinPerson = yield Author.create({
+          name: 'Robert Asprin'
+        });
+
+        done();
       });
+    },
 
-      var robertAsprinPerson = yield Author.create({
-        name: 'Robert Asprin'
+    'Can add author to book': function(test) {
+      var anotherFineMythBook = this.anotherFineMythBook;
+      var robertAsprinPerson = this.robertAsprinPerson;
+
+      co(function* () {
+        yield anotherFineMythBook.addAuthor(robertAsprinPerson, {
+          isCorrect: true
+        });
+
+        var authors = yield anotherFineMythBook.getAuthors();
+        test.equals(authors.length, 1);
+
+        var books = yield robertAsprinPerson.getBooks();
+        test.equals(books.length, 1);
+
+        test.done();
       });
+    },
 
-      yield anotherFineMythBook.addAuthor(robertAsprinPerson, {
-        isCorrect: true
+    'Can add book to author': function(test) {
+      var anotherFineMythBook = this.anotherFineMythBook;
+      var robertAsprinPerson = this.robertAsprinPerson;
+
+      co(function* () {
+        yield robertAsprinPerson.addBook(anotherFineMythBook, {
+          isCorrect: true
+        });
+
+        var authors = yield anotherFineMythBook.getAuthors();
+        test.equals(authors.length, 1);
+
+        var books = yield robertAsprinPerson.getBooks();
+        test.equals(books.length, 1);
+
+        test.done();
       });
-
-      var authors = yield anotherFineMythBook.getAuthors();
-      console.log('Authors', authors.length);
-
-      test.done();
-    });
+    }
   }
 };
