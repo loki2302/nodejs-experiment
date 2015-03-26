@@ -1,67 +1,7 @@
-angular.module('URIjs', [])
-.factory('URI', function() {
-  if(!URI) {
-    throw new Error('URI is not defined. Did you add URI.js?');
-  }
-
-  return URI;
-})
-.factory('URITemplate', function() {
-  if(!URITemplate) {
-    throw new Error('URITemplate is not defined. Did you add URITemplate.js?');
-  }
-
-  return URITemplate;
-});
-
-angular.module('api.rh', [])
-.service('responseHandler', [function() {
-  this.make = function() {
-    return new ResponseHandler();
-  };
-
-  function ResponseHandler() {
-    var self = this;
-    self.handlers = {};
-    self.otherwiseHandlerFunc = null;
-
-    self.when = function(statusCode, handlerFunc) {
-      self.handlers[statusCode] = handlerFunc;
-      return self;
-    };
-
-    self.otherwise = function(handlerFunc) {
-      self.otherwiseHandlerFunc = handlerFunc;
-      return self;
-    };
-
-    self.handle = function(httpResponse) {
-      var statusCode = httpResponse.status;        
-      var handlerFunc = self.handlers[statusCode];
-      if(!handlerFunc) {
-        handlerFunc = self.otherwiseHandlerFunc;
-      }
-
-      return handlerFunc(httpResponse);
-    };
-
-    self.wrap = function(promise) {
-      return promise.then(self.handle, self.handle);
-    };
-  };
-}]);
-
-angular.module('api', ['api.rh', 'URIjs'])
-.factory('buildUri', ['URI', 'URITemplate', function(URI, URITemplate) {
-  return function(apiRootUriString, resourceTemplateString, resourceValues) {
-    var apiRootUri = new URI(apiRootUriString);
-    var resourceTemplate = new URITemplate(resourceTemplateString);
-    var resourceUri = new URI(resourceTemplate.expand(resourceValues));
-    var uri = resourceUri.absoluteTo(apiRootUri);
-    return uri.toString();
-  };
-}])
-.service('apiService', ['$http', '$q', 'responseHandler', 'errors', 'buildUri', 
+angular.module('api', [
+  'api.responseHandler',
+  'api.buildUri'
+]).service('apiService', ['$http', '$q', 'responseHandler', 'errors', 'buildUri', 
   function($http, $q, responseHandler, errors, buildUri) {
     var apiRootUri = '/api/';
 
