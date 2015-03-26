@@ -28,6 +28,8 @@ module.exports = function(grunt) {
     concat: {
       js: {
         src: [
+          'bower_components/uri.js/src/URI.min.js',
+          'bower_components/uri.js/src/URITemplate.js',
           'bower_components/angular/angular.min.js',
           'bower_components/angular-resource/angular-resource.min.js',
           'bower_components/angular-route/angular-route.min.js',
