@@ -1,5 +1,7 @@
 describe('CategoriesController', function() {
-  beforeEach(module('categories'));
+  beforeEach(module('categories', function(apiServiceProvider) {
+    apiServiceProvider.apiRoot('/api/');
+  }));
 
   beforeEach(inject(function($controller, $rootScope, $q, apiService) {
     $controller('CategoriesController', {

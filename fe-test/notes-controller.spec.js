@@ -1,6 +1,8 @@
 describe('NotesController', function() {
   beforeEach(module('notes', function($exceptionHandlerProvider) {
     $exceptionHandlerProvider.mode('log');
+  }, function(apiServiceProvider) {
+    apiServiceProvider.apiRoot('/api/');
   }));
 
   beforeEach(inject(function($controller, $rootScope, $q, apiService) {

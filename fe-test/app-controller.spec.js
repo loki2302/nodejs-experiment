@@ -2,7 +2,9 @@ describe('AppController', function() {
   var $scope;
   var $location;
 
-  beforeEach(module('app'));
+  beforeEach(module('app', function(apiServiceProvider) {
+    apiServiceProvider.apiRoot('/api/');
+  }));
 
   beforeEach(inject(function($controller, $rootScope, _$location_) {
     $scope = $rootScope;

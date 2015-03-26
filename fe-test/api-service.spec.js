@@ -1,5 +1,7 @@
 describe('api-service', function() {
-  beforeEach(module('api'));
+  beforeEach(module('api', function(apiServiceProvider) {
+    apiServiceProvider.apiRoot('/api/');
+  }));
 
   var errors;
   beforeEach(inject(function(_errors_) {
