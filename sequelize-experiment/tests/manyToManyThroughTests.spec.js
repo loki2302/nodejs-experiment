@@ -58,9 +58,11 @@ describe('Sequelize many-to-many-through', function() {
     afterEach(function* () {
       var authors = yield anotherFineMythBook.getAuthors();
       expect(authors.length).to.equal(1);
+      expect(authors[0].BooksAuthors.isCorrect).to.equal(true);
 
       var books = yield robertAsprinPerson.getBooks();
       expect(books.length).to.equal(1);
+      expect(books[0].BooksAuthors.isCorrect).to.equal(true);
     });
   });
 
