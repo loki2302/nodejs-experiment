@@ -103,7 +103,7 @@ angular.module('api', [
     };
 
     function throwConnectivityError() {
-      return function(httpResponse) {
+      return function() {
         return $q.reject(new errors.ConnectivityError());
       };
     };
@@ -121,13 +121,13 @@ angular.module('api', [
     };
 
     function throwNotFoundError() {
-      return function(httpResponse) {
+      return function() {
         return $q.reject(new errors.NotFoundError());
       };
     };
 
     function throwUnexpectedError() {
-      return function(httpResponse) {
+      return function() {
         return $q.reject(new errors.UnexpectedError());
       };
     };
