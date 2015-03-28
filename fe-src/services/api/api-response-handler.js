@@ -1,36 +1,32 @@
 angular.module('api.responseHandler', [])
-.service('responseHandler', [function() {
-  this.make = function() {
-    return new ResponseHandler();
+.factory('handle', [function() {
+  function ResponseHandler(responsePromise) {
+    this.responsePromise = responsePromise;
   };
 
-  function ResponseHandler() {
-    var self = this;
-    self.handlers = {};
-    self.otherwiseHandlerFunc = null;
+  ResponseHandler.prototype.likeThis = function(handlerMap) {
+    return this.responsePromise.then(
+      handleHttpResponse, 
+      handleHttpResponse);
 
-    self.when = function(statusCode, handlerFunc) {
-      self.handlers[statusCode] = handlerFunc;
-      return self;
-    };
-
-    self.otherwise = function(handlerFunc) {
-      self.otherwiseHandlerFunc = handlerFunc;
-      return self;
-    };
-
-    self.handle = function(httpResponse) {
+    function handleHttpResponse(httpResponse) {
       var statusCode = httpResponse.status;        
-      var handlerFunc = self.handlers[statusCode];
+      var handlerFunc = handlerMap[statusCode];
       if(!handlerFunc) {
-        handlerFunc = self.otherwiseHandlerFunc;
+        handlerFunc = handlerMap.otherwise;
+      }
+
+      if(!handlerFunc) {
+        throw new Error(
+          "There is no handler for status code " + statusCode + 
+          " and no 'otherwise' handler is defined");
       }
 
       return handlerFunc(httpResponse);
     };
+  };
 
-    self.wrap = function(promise) {
-      return promise.then(self.handle, self.handle);
-    };
+  return function(responsePromise) {    
+    return new ResponseHandler(responsePromise);
   };
 }]);

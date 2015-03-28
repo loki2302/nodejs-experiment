@@ -9,7 +9,7 @@ angular.module('api', [
     apiRootUri = apiRoot;
   };
 
-  this.$get = ['$http', '$q', 'responseHandler', 'errors', 'buildUri', function($http, $q, responseHandler, errors, buildUri) {
+  this.$get = ['$http', '$q', 'handle', 'errors', 'buildUri', function($http, $q, handle, errors, buildUri) {
     if(!apiRootUri) {
       throw new Error('apiRoot is not set');
     }
@@ -17,112 +17,94 @@ angular.module('api', [
     // TODO: somehow extract it from here
     return new function() {
       this.createNote = function(note) {
-        var interpretResponse = responseHandler.make()
-          .when(0, throwConnectivityError())
-          .when(201, returnData())
-          .when(400, throwValidationError())
-          .otherwise(throwUnexpectedError())
-          .wrap;
-
         var uri = buildUri(apiRootUri, 'notes');
-        return interpretResponse($http.post(uri, note));
+        return handle($http.post(uri, note)).likeThis({
+          0: throwConnectivityError(),
+          201: returnData(),
+          400: throwValidationError(),
+          otherwise: throwUnexpectedError()
+        });
       };
 
       this.updateNote = function(note) {
-        var interpretResponse = responseHandler.make()
-          .when(0, throwConnectivityError())
-          .when(200, returnData())
-          .when(400, throwValidationError())
-          .when(404, throwNotFoundError())
-          .otherwise(throwUnexpectedError())
-          .wrap;
-
         var uri = buildUri(apiRootUri, 'notes/{id}', { id: note.id });
-        return interpretResponse($http.post(uri, note));
+        return handle($http.post(uri, note)).likeThis({
+          0: throwConnectivityError(),
+          200: returnData(),
+          400: throwValidationError(),
+          404: throwNotFoundError(),
+          otherwise: throwUnexpectedError()
+        });
       };
 
       this.deleteNote = function(note) {
-        var interpretResponse = responseHandler.make()
-          .when(0, throwConnectivityError())
-          .when(200, returnData())
-          .when(404, throwNotFoundError())
-          .otherwise(throwUnexpectedError())
-          .wrap;
-
         var uri = buildUri(apiRootUri, 'notes/{id}', { id: note.id });
-        return interpretResponse($http.delete(uri, note));
+        return handle($http.delete(uri, note)).likeThis({
+          0: throwConnectivityError(),
+          200: returnData(),
+          404: throwNotFoundError(),
+          otherwise: throwUnexpectedError()
+        });
       };
 
       this.getNotes = function() {
-        var interpretResponse = responseHandler.make()
-          .when(0, throwConnectivityError())
-          .when(200, returnData())
-          .otherwise(throwUnexpectedError())
-          .wrap;
-
         var uri = buildUri(apiRootUri, 'notes');
-        return interpretResponse($http.get(uri));
+        return handle($http.get(uri)).likeThis({
+          0: throwConnectivityError(),
+          200: returnData(),
+          otherwise: throwUnexpectedError()
+        });
       };
 
       this.createCategory = function(category) {
-        var interpretResponse = responseHandler.make()
-          .when(0, throwConnectivityError())
-          .when(201, returnData())
-          .when(400, throwValidationError())
-          .otherwise(throwUnexpectedError())
-          .wrap;
-
         var uri = buildUri(apiRootUri, 'categories');
-        return interpretResponse($http.post(uri, category));
+        return handle($http.post(uri, category)).likeThis({
+          0: throwConnectivityError(),
+          201: returnData(),
+          400: throwValidationError(),
+          otherwise: throwUnexpectedError()
+        });
       };
 
       this.updateCategory = function(category) {
-        var interpretResponse = responseHandler.make()
-          .when(0, throwConnectivityError())
-          .when(200, returnData())
-          .when(400, throwValidationError())
-          .when(404, throwNotFoundError())
-          .otherwise(throwUnexpectedError())
-          .wrap;
-
         var uri = buildUri(apiRootUri, 'categories/{id}', { id: category.id });
-        return interpretResponse($http.post(uri, category));
+        return handle($http.post(uri, category)).likeThis({
+          0: throwConnectivityError(),
+          200: returnData(),
+          400: throwValidationError(),
+          404: throwNotFoundError(),
+          otherwise: throwUnexpectedError()
+        });
       };
 
       this.deleteCategory = function(category) {
-        var interpretResponse = responseHandler.make()
-          .when(0, throwConnectivityError())
-          .when(200, returnData())
-          .when(404, throwNotFoundError())
-          .otherwise(throwUnexpectedError())
-          .wrap;
-
         var uri = buildUri(apiRootUri, 'categories/{id}', { id: category.id });
-        return interpretResponse($http.delete(uri, category));
+        return handle($http.delete(uri, category)).likeThis({
+          0: throwConnectivityError(),
+          200: returnData(),
+          404: throwNotFoundError(),
+          otherwise: throwUnexpectedError()
+        });
       };
 
       this.getCategories = function() {
-        var interpretResponse = responseHandler.make()
-          .when(0, throwConnectivityError())
-          .when(200, returnData())
-          .otherwise(throwUnexpectedError())
-          .wrap;
-
         var uri = buildUri(apiRootUri, 'categories');
-        return interpretResponse($http.get(uri));
+        return handle($http.get(uri)).likeThis({
+          0: throwConnectivityError(),
+          200: returnData(),
+          otherwise: throwUnexpectedError()
+        });
       };
 
       this.getCategoriesWithNameStartingWith = function(nameStartsWith) {
-        var interpretResponse = responseHandler.make()
-          .when(0, throwConnectivityError())
-          .when(200, returnData())
-          .otherwise(throwUnexpectedError())
-          .wrap;
-
         var uri = buildUri(apiRootUri, 'categories');
-        return interpretResponse($http.get(uri, { 
+        return handle($http.get(uri, { 
           params: { nameStartsWith: nameStartsWith } 
-        }));
+        })).likeThis({
+          0: throwConnectivityError(),
+          200: returnData(),
+          otherwise: throwUnexpectedError()
+        });
       };
 
       function throwConnectivityError() {
