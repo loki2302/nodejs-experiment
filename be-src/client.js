@@ -1,15 +1,22 @@
 var rp = require('request-promise');
+var URI = require('URIjs');
+var URITemplate = require('URIjs/src/URITemplate');
 
 function NotepadClient(apiUrl) {
   this.apiUrl = apiUrl;
 };
 
-NotepadClient.prototype.makeUrl = function(relativePath) {
-  return this.apiUrl + relativePath;
+NotepadClient.prototype.makeUrl = function(resourceTemplateString, resourceValues) {
+  var apiRootUri = new URI(this.apiUrl);
+  var resourceTemplate = new URITemplate(resourceTemplateString);
+  var resourceUri = new URI(resourceTemplate.expand(resourceValues));
+  var uri = resourceUri.absoluteTo(apiRootUri);
+  var uriString = uri.toString();
+  return uriString;
 };
 
-NotepadClient.prototype.get = function(relativePath) {
-  var url = this.makeUrl(relativePath);
+NotepadClient.prototype.get = function(resourceTemplateString, resourceValues) {
+  var url = this.makeUrl(resourceTemplateString, resourceValues);
   return rp({
     method: 'GET',
     url: url,
@@ -18,8 +25,8 @@ NotepadClient.prototype.get = function(relativePath) {
   });
 };
 
-NotepadClient.prototype.post = function(relativePath, body) {
-  var url = this.makeUrl(relativePath);
+NotepadClient.prototype.post = function(resourceTemplateString, resourceValues, body) {
+  var url = this.makeUrl(resourceTemplateString, resourceValues);
   return rp({
     method: 'POST',
     url: url,
@@ -29,8 +36,8 @@ NotepadClient.prototype.post = function(relativePath, body) {
   });
 };
 
-NotepadClient.prototype.delete = function(relativePath) {
-  var url = this.makeUrl(relativePath);
+NotepadClient.prototype.delete = function(resourceTemplateString, resourceValues) {
+  var url = this.makeUrl(resourceTemplateString, resourceValues);
   return rp({
     method: 'DELETE',
     url: url,
@@ -40,31 +47,31 @@ NotepadClient.prototype.delete = function(relativePath) {
 };
 
 NotepadClient.prototype.getAllNotes = function() {
-  return this.get("/notes/");
+  return this.get("notes/");
 };
 
 NotepadClient.prototype.createNote = function(note) {
-  return this.post("/notes/", note);
+  return this.post("notes/", null, note);
 };
 
 NotepadClient.prototype.getNote = function(noteId) {
-  return this.get("/notes/" + noteId);
+  return this.get("notes/{id}", { id: noteId });
 };
 
 NotepadClient.prototype.deleteNote = function(noteId) {
-  return this.delete("/notes/" + noteId);
+  return this.delete("notes/{id}", { id: noteId });
 };
 
 NotepadClient.prototype.updateNote = function(note) {
-  return this.post("/notes/" + note.id, note);
+  return this.post("notes/{id}", { id: note.id }, note);
 };
 
 NotepadClient.prototype.getAllCategories = function() {
-  return this.get("/categories/");
+  return this.get("categories/");
 };
 
 NotepadClient.prototype.getCategoriesWithNamesStartingWith = function(namePattern) {
-  var url = this.makeUrl("/categories/");
+  var url = this.makeUrl("categories/");
   return rp({
     method: 'GET',
     url: url,
@@ -77,19 +84,19 @@ NotepadClient.prototype.getCategoriesWithNamesStartingWith = function(namePatter
 };
 
 NotepadClient.prototype.createCategory = function(category) {
-  return this.post("/categories/", category);
+  return this.post("categories/", null, category);
 };
 
 NotepadClient.prototype.getCategory = function(categoryId) {
-  return this.get("/categories/" + categoryId);
+  return this.get("categories/{id}", { id: categoryId });
 };
 
 NotepadClient.prototype.deleteCategory = function(categoryId) {
-  return this.delete("/categories/" + categoryId);
+  return this.delete("categories/{id}", { id: categoryId });
 };
 
 NotepadClient.prototype.updateCategory = function(category) {
-  return this.post("/categories/" + category.id, category);
+  return this.post("categories/{id}", { id: category.id }, category);
 };
 
 module.exports = NotepadClient;

@@ -14,6 +14,7 @@
   "author": "loki2302",
   "license": "BSD-2-Clause",
   "dependencies": {
+    "URIjs": "^1.14.2",
     "co-mocha": "^1.1.0",
     "grunt": "^0.4.5",
     "grunt-angular-templates": "^0.5.7",

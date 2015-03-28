@@ -8,7 +8,7 @@ describe("app", function() {
   var appRunner;
   var client;
   beforeEach(function* () {
-    client = new NotepadClient("http://localhost:3000/api");
+    client = new NotepadClient("http://localhost:3000/api/");
     appRunner = new AppRunner();
     yield appRunner.start();
     yield appRunner.reset();
