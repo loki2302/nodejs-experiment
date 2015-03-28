@@ -26,7 +26,7 @@ angular.module('api', [
     };
 
     ApiService.prototype.updateNote = function(note) {
-      return handle($http.post(uri('notes/{id}', { id: note.id }), note)).likeThis({
+      return handle($http.put(uri('notes/{id}', { id: note.id }), note)).likeThis({
         0: throwConnectivityError(),
         200: returnData(),
         400: throwValidationError(),
@@ -62,7 +62,7 @@ angular.module('api', [
     };
 
     ApiService.prototype.updateCategory = function(category) {
-      return handle($http.post(uri('categories/{id}', { id: category.id }), category)).likeThis({
+      return handle($http.put(uri('categories/{id}', { id: category.id }), category)).likeThis({
         0: throwConnectivityError(),
         200: returnData(),
         400: throwValidationError(),

@@ -36,6 +36,17 @@ NotepadClient.prototype.post = function(resourceTemplateString, resourceValues, 
   });
 };
 
+NotepadClient.prototype.put = function(resourceTemplateString, resourceValues, body) {
+  var url = this.makeUrl(resourceTemplateString, resourceValues);
+  return rp({
+    method: 'PUT',
+    url: url,
+    json: true,
+    body: body,
+    resolveWithFullResponse: true
+  });
+};
+
 NotepadClient.prototype.delete = function(resourceTemplateString, resourceValues) {
   var url = this.makeUrl(resourceTemplateString, resourceValues);
   return rp({
@@ -63,7 +74,7 @@ NotepadClient.prototype.deleteNote = function(noteId) {
 };
 
 NotepadClient.prototype.updateNote = function(note) {
-  return this.post("notes/{id}", { id: note.id }, note);
+  return this.put("notes/{id}", { id: note.id }, note);
 };
 
 NotepadClient.prototype.getAllCategories = function() {
@@ -96,7 +107,7 @@ NotepadClient.prototype.deleteCategory = function(categoryId) {
 };
 
 NotepadClient.prototype.updateCategory = function(category) {
-  return this.post("categories/{id}", { id: category.id }, category);
+  return this.put("categories/{id}", { id: category.id }, category);
 };
 
 module.exports = NotepadClient;

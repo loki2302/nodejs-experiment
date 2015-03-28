@@ -54,7 +54,7 @@ describe('api-service', function() {
         });
       };
 
-      var typicalRequest = { method: 'POST', url: '/api/notes/123' };
+      var typicalRequest = { method: 'PUT', url: '/api/notes/123' };
 
       it('should do PUT /api/notes/{id}', function() {
         whenIMakeAnApiCall(typicalApiCall)
@@ -189,7 +189,7 @@ describe('api-service', function() {
         });
       };
 
-      var typicalRequest = { method: 'POST', url: '/api/categories/123' };
+      var typicalRequest = { method: 'PUT', url: '/api/categories/123' };
 
       it('should do PUT /api/categories/{id}', function() {
         whenIMakeAnApiCall(typicalApiCall)

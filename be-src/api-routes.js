@@ -93,7 +93,7 @@ module.exports = function(models) {
     this.createdNote(note);
   });
 
-  apiRouter.post('/notes/:note_id', function* (next) {
+  apiRouter.put('/notes/:note_id', function* (next) {
     this.note.content = this.request.body.content;
     try {
       yield this.note.save({
@@ -200,7 +200,7 @@ module.exports = function(models) {
     this.ok('Deleted');
   });
 
-  apiRouter.post('/categories/:category_id', function* (next) {
+  apiRouter.put('/categories/:category_id', function* (next) {
     this.category.name = this.request.body.name;
 
     try {
