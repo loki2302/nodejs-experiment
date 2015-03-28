@@ -152,7 +152,10 @@ describe('Sequelize many-to-many-through', function() {
       var microsoftParticipants = yield microsoft.getParticipants();
       expect(microsoftParticipants.length).to.equal(3);
 
-      // TODO: check the exact participants
+      var microsoftParticipantIds = microsoftParticipants.map(function(participant) { return participant.id; });
+      expect(microsoftParticipantIds).to.contain(employees.billGates.id);
+      expect(microsoftParticipantIds).to.contain(employees.andersHejlsberg.id);
+      expect(microsoftParticipantIds).to.contain(employees.unknownPopularGuy.id);
     });
 
     it('should be possible to get a single employee with all projects', function* () {
@@ -162,7 +165,9 @@ describe('Sequelize many-to-many-through', function() {
       var unknownPopularGuyParticipations = yield unknownPopularGuy.getParticipations();
       expect(unknownPopularGuyParticipations.length).to.equal(2);
 
-      // TODO: check the exact participations
+      var unknownPopularGuyParticipationIds = unknownPopularGuyParticipations.map(function(participation) { return participation.id; });
+      expect(unknownPopularGuyParticipationIds).to.contain(projects.microsoft.id);
+      expect(unknownPopularGuyParticipationIds).to.contain(projects.google.id);
     });
   });
 });
