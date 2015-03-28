@@ -14,8 +14,8 @@ angular.module('app', [
     redirectTo: '/notes'
   });
 }])
-.config(["$provide", function($provide) {
-  $provide.decorator("$exceptionHandler", ['$delegate', '$injector', function($delegate, $injector) {
+.config(['$provide', function($provide) {
+  $provide.decorator('$exceptionHandler', ['$delegate', '$injector', function($delegate, $injector) {
     return function(exception, cause) {
       $delegate(exception, cause);
 
@@ -41,14 +41,6 @@ angular.module('app', [
             return errorMessage;
           }
         }
-      });
-
-      modalInstance.result.then(function(result) {
-        console.log('Error modal closed with success');
-        console.log(result);
-      }, function(error) {
-        console.log('Error modal closed with error');
-        console.log(error);
       });
     };
   }]);
