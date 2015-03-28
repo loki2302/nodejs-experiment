@@ -13,16 +13,16 @@ module.exports = function(sequelize) {
 
       try {
         yield tx.commit();
-        console.log("operation succeeded, commit succeeded");
+        console.log('operation succeeded, commit succeeded');
       } catch(commitException) {
-        console.log("operation succeeded, commit failed: %s", commitException);
+        console.log('operation succeeded, commit failed: %s', commitException);
       }
     } catch(operationException) {
       try {
         yield tx.rollback();
-        console.log("operation failed, rollback succeeded: %j", operationException);
+        console.log('operation failed, rollback succeeded: %j', operationException);
       } catch(rollbackException) {
-        console.log("operation failed, rollback failed: %s", rollbackException);
+        console.log('operation failed, rollback failed: %s', rollbackException);
       }
 
       throw operationException;

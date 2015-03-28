@@ -7,7 +7,7 @@ module.exports = function(models) {
 
   var apiRouter = new Router();  
 
-  apiRouter.param("note_id", function* (noteId, next) {
+  apiRouter.param('note_id', function* (noteId, next) {
     var note = yield Note.find({
       where: { id: noteId },
       include: [ Category ]
@@ -23,7 +23,7 @@ module.exports = function(models) {
     yield next;
   });
 
-  apiRouter.get("/notes/", function* (next) {
+  apiRouter.get('/notes/', function* (next) {
     var notes = yield Note.findAll({
       include: [ Category ]
     }, { 
@@ -33,11 +33,11 @@ module.exports = function(models) {
     this.okNoteCollection(notes);
   }); 
 
-  apiRouter.get("/notes/:note_id", function* (next) {
+  apiRouter.get('/notes/:note_id', function* (next) {
     this.okNote(this.note);
   });
 
-  apiRouter.delete("/notes/:note_id", function* (next) {
+  apiRouter.delete('/notes/:note_id', function* (next) {
     yield this.note.destroy({
       transaction: this.tx
     });
@@ -139,7 +139,7 @@ module.exports = function(models) {
     this.okNote(note);
   });
 
-  apiRouter.param("category_id", function* (categoryId, next) {
+  apiRouter.param('category_id', function* (categoryId, next) {
     var category = yield Category.find({
       where: { id: categoryId }
     }, {
@@ -160,7 +160,7 @@ module.exports = function(models) {
     if(nameStartsWith) {
       var lowercaseNameStartsWith = nameStartsWith.toLowerCase();
       criteria = {
-        where: ["lower(name) like ?", lowercaseNameStartsWith + '%']
+        where: ['lower(name) like ?', lowercaseNameStartsWith + '%']
       };
     }
 

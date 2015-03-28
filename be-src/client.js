@@ -58,31 +58,31 @@ NotepadClient.prototype.delete = function(resourceTemplateString, resourceValues
 };
 
 NotepadClient.prototype.getAllNotes = function() {
-  return this.get("notes/");
+  return this.get('notes/');
 };
 
 NotepadClient.prototype.createNote = function(note) {
-  return this.post("notes/", null, note);
+  return this.post('notes/', null, note);
 };
 
 NotepadClient.prototype.getNote = function(noteId) {
-  return this.get("notes/{id}", { id: noteId });
+  return this.get('notes/{id}', { id: noteId });
 };
 
 NotepadClient.prototype.deleteNote = function(noteId) {
-  return this.delete("notes/{id}", { id: noteId });
+  return this.delete('notes/{id}', { id: noteId });
 };
 
 NotepadClient.prototype.updateNote = function(note) {
-  return this.put("notes/{id}", { id: note.id }, note);
+  return this.put('notes/{id}', { id: note.id }, note);
 };
 
 NotepadClient.prototype.getAllCategories = function() {
-  return this.get("categories/");
+  return this.get('categories/');
 };
 
 NotepadClient.prototype.getCategoriesWithNamesStartingWith = function(namePattern) {
-  var url = this.makeUrl("categories/");
+  var url = this.makeUrl('categories/');
   return rp({
     method: 'GET',
     url: url,
@@ -95,19 +95,19 @@ NotepadClient.prototype.getCategoriesWithNamesStartingWith = function(namePatter
 };
 
 NotepadClient.prototype.createCategory = function(category) {
-  return this.post("categories/", null, category);
+  return this.post('categories/', null, category);
 };
 
 NotepadClient.prototype.getCategory = function(categoryId) {
-  return this.get("categories/{id}", { id: categoryId });
+  return this.get('categories/{id}', { id: categoryId });
 };
 
 NotepadClient.prototype.deleteCategory = function(categoryId) {
-  return this.delete("categories/{id}", { id: categoryId });
+  return this.delete('categories/{id}', { id: categoryId });
 };
 
 NotepadClient.prototype.updateCategory = function(category) {
-  return this.put("categories/{id}", { id: category.id }, category);
+  return this.put('categories/{id}', { id: category.id }, category);
 };
 
 module.exports = NotepadClient;
