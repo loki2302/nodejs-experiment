@@ -75,10 +75,6 @@ module.exports = function() {
       throw new RestError(400, makeMessageDTO(message));
     };
 
-    this.conflict = function(message) {
-      throw new RestError(409, makeMessageDTO(message));
-    };
-
     this.validationErrorFromSequelizeValidationError = function(error) {
       var errorMap = {};
       error.errors.forEach(function(e) {

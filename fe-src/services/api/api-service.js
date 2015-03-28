@@ -69,7 +69,6 @@ angular.module('api', [
           .when(0, throwConnectivityError())
           .when(201, returnData())
           .when(400, throwValidationError())
-          .when(409, throwConflictError())
           .otherwise(throwUnexpectedError())
           .wrap;
 
@@ -83,7 +82,6 @@ angular.module('api', [
           .when(200, returnData())
           .when(400, throwValidationError())
           .when(404, throwNotFoundError())
-          .when(409, throwConflictError())
           .otherwise(throwUnexpectedError())
           .wrap;
 
@@ -151,12 +149,6 @@ angular.module('api', [
         };
       };
 
-      function throwConflictError() {
-        return function(httpResponse) {
-          return $q.reject(new errors.ConflictError());
-        };
-      };
-
       function throwUnexpectedError() {
         return function(httpResponse) {
           return $q.reject(new errors.UnexpectedError());
@@ -171,6 +163,5 @@ angular.module('api', [
     this.errorMap = errorMap;
   },
   NotFoundError: function NotFoundError() {},
-  ConflictError: function ConflictError() {},
   UnexpectedError: function UnexpectedError() {}
 });

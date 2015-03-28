@@ -177,14 +177,6 @@ describe('api-service', function() {
         .go();
       });
 
-      it('should throw conflict error when 409', function() {
-        whenIMakeAnApiCall(typicalApiCall)
-        .itSendsTheRequest(typicalRequest)
-        .andIfServerRespondsWith({ status: 409 })
-        .aCallFailsWith(errors.ConflictError)
-        .go();
-      });
-
       itShouldThrowAConnectivityErrorWhen0(typicalApiCall, typicalRequest);
       itShouldThrowAnUnexpectedErrorWhen500(typicalApiCall, typicalRequest);
     });
@@ -218,14 +210,6 @@ describe('api-service', function() {
         .itSendsTheRequest(typicalRequest)
         .andIfServerRespondsWith({ status: 400, body: { name: 'bad name' } })
         .aCallFailsWith(errors.ValidationError, { errorMap: { name: 'bad name' } })
-        .go();
-      });
-
-      it('should throw conflict error when 409', function() {
-        whenIMakeAnApiCall(typicalApiCall)
-        .itSendsTheRequest(typicalRequest)
-        .andIfServerRespondsWith({ status: 409 })
-        .aCallFailsWith(errors.ConflictError)
         .go();
       });
 

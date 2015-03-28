@@ -176,14 +176,6 @@ module.exports = function(models) {
   });
 
   apiRouter.post('/categories/', function* (next) {
-    var existingCategory = yield Category.find({
-      where: { name: this.request.body.name }
-    });
-    if(existingCategory) {
-      this.conflict('Category ' + this.request.body.name + ' already exists');
-      return;
-    }
-
     var category;
     try {
       category = yield Category.create({
@@ -209,14 +201,6 @@ module.exports = function(models) {
   });
 
   apiRouter.post('/categories/:category_id', function* (next) {
-    var existingCategory = yield Category.find({
-      where: { name: this.request.body.name }
-    });
-
-    if(existingCategory && existingCategory.id !== this.category.id) {
-      this.conflict('Category ' + this.request.body.name + ' already exists');
-    }
-
     this.category.name = this.request.body.name;
 
     try {

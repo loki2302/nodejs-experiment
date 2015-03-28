@@ -387,8 +387,8 @@ describe("app", function() {
       });
       assert.ok(false);
     } catch(e) {
-      assert.equal(e.response.statusCode, 409);
-      assert.ok("message" in e.response.body);
+      assert.equal(e.response.statusCode, 400);
+      assert.ok("name" in e.response.body);
     }
   });
 
@@ -470,8 +470,8 @@ describe("app", function() {
       });
       assert.ok(false);
     } catch(e) {
-      assert.equal(e.response.statusCode, 409);
-      assert.ok("message" in e.response.body);
+      assert.equal(e.response.statusCode, 400);
+      assert.ok("name" in e.response.body);
     }
   });
 

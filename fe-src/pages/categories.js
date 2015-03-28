@@ -29,10 +29,6 @@ angular.module('categories', [
       if(error instanceof errors.ValidationError) {
         return $q.reject(error.errorMap);
       }
-
-      if(error instanceof errors.ConflictError) {
-        return $q.reject({ name: 'Already exists' });
-      }
       
       throw error;
     }));
@@ -44,10 +40,6 @@ angular.module('categories', [
     }, function(error) {
       if(error instanceof errors.ValidationError) {
         return $q.reject(error.errorMap);
-      }
-
-      if(error instanceof errors.ConflictError) {
-        return $q.reject({ name: 'Already exists' });
       }
 
       throw error;
