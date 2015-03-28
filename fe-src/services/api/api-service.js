@@ -14,11 +14,14 @@ angular.module('api', [
       throw new Error('apiRoot is not set');
     }
 
+    var uri = function(resourceTemplateString, resourceValues) {
+      return buildUri(apiRootUri, resourceTemplateString, resourceValues);
+    };
+
     // TODO: somehow extract it from here
     return new function() {
       this.createNote = function(note) {
-        var uri = buildUri(apiRootUri, 'notes');
-        return handle($http.post(uri, note)).likeThis({
+        return handle($http.post(uri('notes'), note)).likeThis({
           0: throwConnectivityError(),
           201: returnData(),
           400: throwValidationError(),
@@ -27,8 +30,7 @@ angular.module('api', [
       };
 
       this.updateNote = function(note) {
-        var uri = buildUri(apiRootUri, 'notes/{id}', { id: note.id });
-        return handle($http.post(uri, note)).likeThis({
+        return handle($http.post(uri('notes/{id}', { id: note.id }), note)).likeThis({
           0: throwConnectivityError(),
           200: returnData(),
           400: throwValidationError(),
@@ -38,8 +40,7 @@ angular.module('api', [
       };
 
       this.deleteNote = function(note) {
-        var uri = buildUri(apiRootUri, 'notes/{id}', { id: note.id });
-        return handle($http.delete(uri, note)).likeThis({
+        return handle($http.delete(uri('notes/{id}', { id: note.id }), note)).likeThis({
           0: throwConnectivityError(),
           200: returnData(),
           404: throwNotFoundError(),
@@ -48,8 +49,7 @@ angular.module('api', [
       };
 
       this.getNotes = function() {
-        var uri = buildUri(apiRootUri, 'notes');
-        return handle($http.get(uri)).likeThis({
+        return handle($http.get(uri('notes'))).likeThis({
           0: throwConnectivityError(),
           200: returnData(),
           otherwise: throwUnexpectedError()
@@ -57,8 +57,7 @@ angular.module('api', [
       };
 
       this.createCategory = function(category) {
-        var uri = buildUri(apiRootUri, 'categories');
-        return handle($http.post(uri, category)).likeThis({
+        return handle($http.post(uri('categories'), category)).likeThis({
           0: throwConnectivityError(),
           201: returnData(),
           400: throwValidationError(),
@@ -67,8 +66,7 @@ angular.module('api', [
       };
 
       this.updateCategory = function(category) {
-        var uri = buildUri(apiRootUri, 'categories/{id}', { id: category.id });
-        return handle($http.post(uri, category)).likeThis({
+        return handle($http.post(uri('categories/{id}', { id: category.id }), category)).likeThis({
           0: throwConnectivityError(),
           200: returnData(),
           400: throwValidationError(),
@@ -78,8 +76,7 @@ angular.module('api', [
       };
 
       this.deleteCategory = function(category) {
-        var uri = buildUri(apiRootUri, 'categories/{id}', { id: category.id });
-        return handle($http.delete(uri, category)).likeThis({
+        return handle($http.delete(uri('categories/{id}', { id: category.id }), category)).likeThis({
           0: throwConnectivityError(),
           200: returnData(),
           404: throwNotFoundError(),
@@ -88,8 +85,7 @@ angular.module('api', [
       };
 
       this.getCategories = function() {
-        var uri = buildUri(apiRootUri, 'categories');
-        return handle($http.get(uri)).likeThis({
+        return handle($http.get(uri('categories'))).likeThis({
           0: throwConnectivityError(),
           200: returnData(),
           otherwise: throwUnexpectedError()
@@ -97,8 +93,7 @@ angular.module('api', [
       };
 
       this.getCategoriesWithNameStartingWith = function(nameStartsWith) {
-        var uri = buildUri(apiRootUri, 'categories');
-        return handle($http.get(uri, { 
+        return handle($http.get(uri('categories'), { 
           params: { nameStartsWith: nameStartsWith } 
         })).likeThis({
           0: throwConnectivityError(),
