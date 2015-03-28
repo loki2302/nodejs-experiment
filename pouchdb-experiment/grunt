@@ -1,0 +1,7 @@
+# This runs a locally installed grunt/grunt-cli with ES6 support
+node --harmony `which grunt` $1 $2 $3 $4 $5
+
+# instead of
+# grunt something
+# one should use
+# ./grunt something
