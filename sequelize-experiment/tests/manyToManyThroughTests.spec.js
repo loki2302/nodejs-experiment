@@ -20,12 +20,12 @@ describe('Sequelize many-to-many-through', function() {
       name: Sequelize.STRING
     });
 
-    ProjectEmployeeMembership = sequelize.define('ProjectEmployeeMembership', {
+    Participation = sequelize.define('Participation', {
       role: Sequelize.STRING
     });
 
-    Project.hasMany(Employee, { through: ProjectEmployeeMembership });
-    Employee.hasMany(Project, { through: ProjectEmployeeMembership });
+    Project.hasMany(Employee, { as: 'Participants', through: Participation });
+    Employee.hasMany(Project, { as: 'Participations', through: Participation });
 
     yield sequelize.sync();
   });
@@ -43,21 +43,23 @@ describe('Sequelize many-to-many-through', function() {
     });
 
     it('should let me add employee to project', function* () {
-      yield aProject.addEmployee(anEmployee, { role: 'developer' });
+      yield aProject.addParticipant(anEmployee, { role: 'developer' });
     });
 
     it('should let me add a project to employee', function* () {
-      yield anEmployee.addProject(aProject, { role: 'developer' });
+      yield anEmployee.addParticipation(aProject, { role: 'developer' });
     });
 
     afterEach(function* () {
-      var projectEmployees = yield aProject.getEmployees();
+      var projectEmployees = yield aProject.getParticipants();
       expect(projectEmployees.length).to.equal(1);
-      expect(projectEmployees[0].ProjectEmployeeMembership.role).to.equal('developer');
+      expect(projectEmployees[0].name).to.equal('employee 1');
+      expect(projectEmployees[0].Participation.role).to.equal('developer');
 
-      var employeeProjects = yield anEmployee.getProjects();
+      var employeeProjects = yield anEmployee.getParticipations();
       expect(employeeProjects.length).to.equal(1);
-      expect(employeeProjects[0].ProjectEmployeeMembership.role).to.equal('developer');
+      expect(employeeProjects[0].name).to.equal('project 1');
+      expect(employeeProjects[0].Participation.role).to.equal('developer');
     });
   });
 });
