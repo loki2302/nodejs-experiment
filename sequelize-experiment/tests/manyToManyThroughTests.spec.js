@@ -106,4 +106,63 @@ describe('Sequelize many-to-many-through', function() {
       });
     });
   });
+
+  describe('Given that there are projects and employees', function() {
+    var projects;
+    var employees;
+    beforeEach(function* () {
+      projects = {
+        microsoft: yield Project.create({ name: 'Microsoft' }),
+        google: yield Project.create({ name: 'Google' }),
+        emptyProject: yield Project.create({ name: 'Empty Project' }),
+      };
+
+      employees = {
+        billGates: yield Employee.create({ name: 'Bill Gates' }),
+        andersHejlsberg: yield Employee.create({ name: 'Herb Sutter' }),
+        larryPage: yield Employee.create({ name: 'Larry Page' }),
+        sergeyBrin: yield Employee.create({ name: 'Sergey Brin' }),
+        unknownPopularGuy: yield Employee.create({ name: 'Unknown Popular Guy' }),
+        unknownUnemployedGuy: yield Employee.create({ name: 'Unknown Unemployed Guy' }),
+      };
+
+      yield projects.microsoft.addParticipant(employees.billGates, { role: 'founder' });
+      yield projects.microsoft.addParticipant(employees.andersHejlsberg, { role: 'developer' });
+      yield projects.microsoft.addParticipant(employees.unknownPopularGuy, { role: 'developer' });
+
+      yield projects.google.addParticipant(employees.larryPage, { role: 'founder' });
+      yield projects.google.addParticipant(employees.sergeyBrin, { role: 'founder' });
+      yield projects.google.addParticipant(employees.unknownPopularGuy, { role: 'developer' });
+    });
+
+    it('should be possible to get all projects', function* () {
+      var projects = yield Project.all();
+      expect(projects.length).to.equal(3);
+    });
+
+    it('should be possible to get all employees', function* () {
+      var employees = yield Employee.all();
+      expect(employees.length).to.equal(6);
+    });
+
+    it('should be possible to get a single project with all employees', function* () {
+      var microsoft = yield Project.find(projects.microsoft.id);
+      expect(microsoft.name).to.equal('Microsoft');
+
+      var microsoftParticipants = yield microsoft.getParticipants();
+      expect(microsoftParticipants.length).to.equal(3);
+
+      // TODO: check the exact participants
+    });
+
+    it('should be possible to get a single employee with all projects', function* () {
+      var unknownPopularGuy = yield Employee.find(employees.unknownPopularGuy.id);
+      expect(unknownPopularGuy.name).to.equal('Unknown Popular Guy');
+
+      var unknownPopularGuyParticipations = yield unknownPopularGuy.getParticipations();
+      expect(unknownPopularGuyParticipations.length).to.equal(2);
+
+      // TODO: check the exact participations
+    });
+  });
 });
