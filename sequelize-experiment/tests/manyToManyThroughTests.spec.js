@@ -6,67 +6,58 @@ var Sequelize = require('sequelize');
 
 describe('Sequelize many-to-many-through', function() {
   var sequelize;
-  var Book;
-  var Author;
-  var BooksAuthors;
+  var Project;
+  var Employee;
+  var Membership;
   beforeEach(function* () {
     sequelize = new Sequelize('sqlite://my.db');
 
-    Book = sequelize.define('Book', {
-      title: Sequelize.STRING
-    });
-
-    Author = sequelize.define('Author', {
+    Project = sequelize.define('Project', {
       name: Sequelize.STRING
     });
 
-    BooksAuthors = sequelize.define('BooksAuthors', {
-      isCorrect: Sequelize.BOOLEAN
+    Employee = sequelize.define('Employee', {
+      name: Sequelize.STRING
     });
 
-    Book.hasMany(Author, { through: BooksAuthors });
-    Author.hasMany(Book, { through: BooksAuthors });
+    ProjectEmployeeMembership = sequelize.define('ProjectEmployeeMembership', {
+      role: Sequelize.STRING
+    });
+
+    Project.hasMany(Employee, { through: ProjectEmployeeMembership });
+    Employee.hasMany(Project, { through: ProjectEmployeeMembership });
 
     yield sequelize.sync();
   });
 
+  afterEach(function* () {
+    yield sequelize.drop();
+  });
+
   describe('Connecting entities from both ends', function() {
-    var anotherFineMythBook;
-    var robertAsprinPerson;
+    var aProject;
+    var anEmployee;
     beforeEach(function* () {
-      anotherFineMythBook = yield Book.create({
-        title: 'Another Fine Myth'
-      });
-
-      robertAsprinPerson = yield Author.create({
-        name: 'Robert Asprin'
-      });
+      aProject = yield Project.create({ name: 'project 1' });
+      anEmployee = yield Employee.create({ name: 'employee 1' });
     });
 
-    it('should let me add author to book', function* () {
-      yield anotherFineMythBook.addAuthor(robertAsprinPerson, {
-        isCorrect: true
-      });
+    it('should let me add employee to project', function* () {
+      yield aProject.addEmployee(anEmployee, { role: 'developer' });
     });
 
-    it('should let me add book to author', function* () {
-      yield robertAsprinPerson.addBook(anotherFineMythBook, {
-        isCorrect: true
-      });
+    it('should let me add a project to employee', function* () {
+      yield anEmployee.addProject(aProject, { role: 'developer' });
     });
 
     afterEach(function* () {
-      var authors = yield anotherFineMythBook.getAuthors();
-      expect(authors.length).to.equal(1);
-      expect(authors[0].BooksAuthors.isCorrect).to.equal(true);
+      var projectEmployees = yield aProject.getEmployees();
+      expect(projectEmployees.length).to.equal(1);
+      expect(projectEmployees[0].ProjectEmployeeMembership.role).to.equal('developer');
 
-      var books = yield robertAsprinPerson.getBooks();
-      expect(books.length).to.equal(1);
-      expect(books[0].BooksAuthors.isCorrect).to.equal(true);
+      var employeeProjects = yield anEmployee.getProjects();
+      expect(employeeProjects.length).to.equal(1);
+      expect(employeeProjects[0].ProjectEmployeeMembership.role).to.equal('developer');
     });
-  });
-
-  afterEach(function* () {
-    yield sequelize.drop();
   });
 });
