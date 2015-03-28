@@ -13,7 +13,10 @@
     "pouchdb": "^3.3.1"
   },
   "devDependencies": {
+    "chai": "^2.2.0",
+    "co-mocha": "^1.1.0",
     "grunt": "^0.4.5",
-    "grunt-contrib-nodeunit": "^0.4.1"
+    "grunt-mocha-test": "^0.12.7",
+    "mocha": "^2.2.1"
   }
 }
