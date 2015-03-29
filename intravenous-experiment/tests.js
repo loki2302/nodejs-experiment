@@ -1,111 +1,75 @@
-var intravenous = require("intravenous");
+var expect = require('chai').expect;
+var intravenous = require('intravenous');
 
-module.exports = {
-	"I can register a class and a new instance on each request": function(test) {
+describe('Intravenous', function() {
+	it('should let me register a ctor function and get a new instance on each request', function() {
 		var instanceCount = 0;
-		function Service() {
+		function MyService() {
 			++instanceCount;
 		};
 
 		var container = intravenous.create();
-		container.register("service", Service);
-		
-		var service1 = container.get("service");
-		test.ok(service1 instanceof Service);
-		test.equal(instanceCount, 1);
+		container.register('myService', MyService, 'unique');
 
-		var service2 = container.get("service");
-		test.ok(service2 instanceof Service);
-		test.equal(instanceCount, 2);
+		var instance1 = container.get('myService');
+		expect(instance1).to.be.instanceof(MyService);
+		expect(instanceCount).to.equal(1);
 
-		test.done();
-	},
+		var instance2 = container.get('myService');
+		expect(instance2).to.be.instanceof(MyService);
+		expect(instanceCount).to.equal(2);
+	});
 
-	"I can register a specific instance and get it on each request": function(test) {
+	it('should let me register a ctor function as a singleton', function() {
 		var instanceCount = 0;
-		function Service() {
-			++instanceCount;
-		};
-
-		var container = intravenous.create();		
-		container.register("service", new Service());
-
-		var service1 = container.get("service");
-		test.ok(service1 instanceof Service);
-		test.equal(instanceCount, 1);
-
-		var service2 = container.get("service");
-		test.ok(service2 instanceof Service);
-		test.equal(instanceCount, 1);
-
-		test.done();
-	},
-
-	"I can register a class as a singleton": function(test) {
-		var instanceCount = 0;
-		function Service() {
-			++instanceCount;
-		};
-
-		var container = intravenous.create();		
-		container.register("service", Service, "singleton");
-
-		var service1 = container.get("service");
-		test.ok(service1 instanceof Service);
-		test.equal(instanceCount, 1);
-
-		var service2 = container.get("service");
-		test.ok(service2 instanceof Service);
-		test.equal(instanceCount, 1);
-
-		test.done();
-	},
-
-	"I can register a class not as singleton": function(test) {
-		var instanceCount = 0;
-		function Service() {
+		function MyService() {
 			++instanceCount;
 		};
 
 		var container = intravenous.create();
-		container.register("service", Service, "unique");
-		
-		var service1 = container.get("service");
-		test.ok(service1 instanceof Service);
-		test.equal(instanceCount, 1);
+		container.register('myService', MyService, 'singleton');
 
-		var service2 = container.get("service");
-		test.ok(service2 instanceof Service);
-		test.equal(instanceCount, 2);
+		var instance1 = container.get('myService');
+		expect(instance1).to.be.instanceof(MyService);
+		expect(instanceCount).to.equal(1);
 
-		test.done();
-	},
+		var instance2 = container.get('myService');
+		expect(instance2).to.be.instanceof(MyService);
+		expect(instanceCount).to.equal(1);
+	});
 
-	"I can have stuff injected": function(test) {
-		function MyDAO() {};
-
-		MyDAO.prototype.getData = function() {
-			return "hello";
-		};
-
-		function MyService(dao) {
-			this.dao = dao;
-		};
-		MyService.$inject = ["dao"];
-
-		MyService.prototype.doSomething = function() {
-			return {
-				data: this.dao.getData()
-			};
+	it('should let me register a single object and get the same instance on each request', function() {
+		var instanceCount = 0;
+		function MyService() {
+			++instanceCount;
 		};
 
 		var container = intravenous.create();
-		container.register("dao", MyDAO);
-		container.register("service", MyService);
+		var theOnlyInstance = new MyService()
+		container.register('myService', theOnlyInstance);
 
-		var service = container.get("service");
-		var result = service.doSomething();
-		test.equal(result.data, "hello");
-		test.done();
-	}
-};
+		var instance2 = container.get('myService');
+		expect(instance2).to.equal(theOnlyInstance);
+		expect(instanceCount).to.equal(1);
+	});
+
+	it('should let me inject things', function() {
+		function DAL(dbFilename) {
+			this.dbFilename = dbFilename;
+		};
+		DAL.$inject = ['dbFilename'];
+
+		function SL(dal) {
+			this.dal = dal;
+		};
+		SL.$inject = ['dal'];
+
+		var container = intravenous.create();
+		container.register('dbFilename', 'my.db', 'singleton');
+		container.register('dal', DAL, 'singleton');
+		container.register('sl', SL, 'singleton');
+
+		var sl = container.get('sl');
+		expect(sl.dal.dbFilename).to.equal('my.db');
+	});
+});
