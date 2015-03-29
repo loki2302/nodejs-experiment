@@ -16,12 +16,11 @@ module.exports = function(config) {
       'fe-src/**/*.html': ['ng-html2js']
     },
     autowatch: true,
-    frameworks: ['mocha', 'chai'],
+    frameworks: ['jasmine'], // TODO: should I use Mocha/Chai here?
     plugins: [
       'karma-chrome-launcher',
       'karma-firefox-launcher',
-      'karma-mocha',
-      'karma-chai',
+      'karma-jasmine',
       'karma-ng-html2js-preprocessor'
     ],
     ngHtml2JsPreprocessor: {

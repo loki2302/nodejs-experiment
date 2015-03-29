@@ -17,10 +17,6 @@
   },
   "homepage": "https://github.com/loki2302/nodejs-angular-app",
   "devDependencies": {
-    "URIjs": "^1.14.2",
-    "chai": "^2.2.0",
-    "chai-as-promised": "^4.3.0",
-    "co-mocha": "^1.1.0",
     "grunt": "^0.4.5",
     "grunt-angular-templates": "^0.5.7",
     "grunt-contrib-clean": "^0.6.0",
@@ -35,16 +31,17 @@
     "grunt-shell": "^1.1.2",
     "jasmine-core": "^2.2.0",
     "karma": "^0.12.31",
-    "karma-chai": "^0.1.0",
     "karma-chrome-launcher": "^0.1.7",
     "karma-firefox-launcher": "^0.1.4",
-    "karma-mocha": "^0.1.10",
+    "karma-jasmine": "^0.3.5",
     "karma-ng-html2js-preprocessor": "^0.1.2",
     "mocha": "^2.2.1",
-    "protractor": "^2.0.0",
-    "request-promise": "^0.4.1"
+    "protractor": "^2.0.0"
   },
   "dependencies": {
+    "URIjs": "^1.14.2",
+    "chai": "^2.2.0",
+    "co-mocha": "^1.1.0",
     "koa": "^0.18.1",
     "koa-body-parser": "^1.1.1",
     "koa-compose": "^2.3.0",
@@ -54,6 +51,7 @@
     "koa-sleep": "^0.1.0",
     "koa-static": "^1.4.9",
     "q": "^1.2.0",
+    "request-promise": "^0.4.1",
     "sequelize": "^2.0.5",
     "server-destroy": "^1.0.0",
     "sqlite3": "^3.0.5"
