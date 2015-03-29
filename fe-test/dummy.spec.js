@@ -10,7 +10,7 @@ describe('Dummy', function() {
   }));
 
   it('should publish a message on the scope', function() {
-    expect(scope.message).toBeDefined();
-    expect(scope.message).toBe('hello AppController');
+    expect(scope.message).to.exist;
+    expect(scope.message).to.equal('hello AppController');
   });
 });
