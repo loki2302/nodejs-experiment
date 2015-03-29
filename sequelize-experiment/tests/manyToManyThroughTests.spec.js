@@ -8,7 +8,7 @@ describe('Sequelize many-to-many-through', function() {
   var sequelize;
   var Project;
   var Employee;
-  var Membership;
+  var Participation;
   beforeEach(function* () {
     sequelize = new Sequelize('sqlite://my.db');
 
