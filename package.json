@@ -36,12 +36,13 @@
     "karma-jasmine": "^0.3.5",
     "karma-ng-html2js-preprocessor": "^0.1.2",
     "mocha": "^2.2.1",
-    "protractor": "^2.0.0"
-  },
-  "dependencies": {
+    "protractor": "^2.0.0",
     "URIjs": "^1.14.2",
     "chai": "^2.2.0",
     "co-mocha": "^1.1.0",
+    "request-promise": "^0.4.1"
+  },
+  "dependencies": {
     "koa": "^0.18.1",
     "koa-body-parser": "^1.1.1",
     "koa-compose": "^2.3.0",
@@ -51,7 +52,6 @@
     "koa-sleep": "^0.1.0",
     "koa-static": "^1.4.9",
     "q": "^1.2.0",
-    "request-promise": "^0.4.1",
     "sequelize": "^2.0.5",
     "server-destroy": "^1.0.0",
     "sqlite3": "^3.0.5"
