@@ -1,7 +1,7 @@
 var expect = require('chai').expect;
 var intravenous = require('intravenous');
 
-describe('Intravenous', function() {
+describe('intravenous', function() {
 	it('should let me register a ctor function and get a new instance on each request', function() {
 		var instanceCount = 0;
 		function MyService() {

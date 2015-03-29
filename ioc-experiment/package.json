@@ -9,6 +9,7 @@
   "author": "loki2302",
   "license": "BSD-2-Clause",
   "dependencies": {
+    "amend": "^0.3.0-beta-5",
     "intravenous": "~0.1.4-beta",
     "simple-ioc": "^3.0.13"
   },
