@@ -72,4 +72,37 @@ describe('simple-ioc', function() {
         done();
       });
   });
+
+  /*
+  // behave the same way the next one does
+  it('should let me use settings', function(done) {
+    ioc
+      .setSettings({
+        something: 'hello there'
+      })
+      .getContainer()
+      .inject(function(something) {
+        expect(something).to.equal('hello there');
+      });
+  });
+  */
+
+  /*
+  // https://github.com/viaplay/simple-ioc/issues/9
+  it('should fail when there is no dependency', function(done) {
+    ioc
+      .getContainer()
+      .inject(function(a) {
+        done();
+      });
+  });
+  */
+
+  // TODO: how do I distinguish between singletons and per-request?
+  // TODO: how do I use logging?
+  // TODO: how do I register factory?
+  // TODO: how do I register provider?
+  // TODO: how does it work with real Node modules?
+  // TODO: is there an extension to use promises?
+  // TODO: how do I use 'setup'?
 });
