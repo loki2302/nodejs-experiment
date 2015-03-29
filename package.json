@@ -2,15 +2,16 @@
   "name": "teambuildr",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./be-src/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "./grunt start",
+    "test": "./grunt test"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/loki2302/nodejs-angular-app.git"
   },
-  "author": "",
+  "author": "Andrey Agibalov",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/loki2302/nodejs-angular-app/issues"
