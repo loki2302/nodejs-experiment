@@ -75,7 +75,20 @@ module.exports = function(grunt) {
       }
     },
 
-    // E2E tests,
+    // FE tests
+    karma: {
+      options: {
+        configFile: 'karma.conf.js'
+      },
+      runOnce: {
+        singleRun: true
+      },
+      watch: {
+        singleRun: false
+      }
+    },
+
+    // E2E tests
     shell: {
       webDriver: {
         options: {
@@ -89,10 +102,10 @@ module.exports = function(grunt) {
       options: {
         keepAlive: true
       },
-      dummyTarget: {}
+      dummyTarget: {} // TODO: check if this dummy target is even needed
     },
     protractor: {
-      dummyTarget: {
+      dummyTarget: { // TODO: check if this dummy target is even needed
         options: {
           configFile: 'protractor.conf.js'
         }
@@ -110,9 +123,11 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-shell');
   grunt.loadNpmTasks('grunt-protractor-webdriver');
   grunt.loadNpmTasks('grunt-protractor-runner');
+  grunt.loadNpmTasks('grunt-karma');
 
   grunt.registerTask('be-test', 'Run backend tests', ['mochaTest']);
-  grunt.registerTask('test', 'Run all tests', ['be-test', 'e2e-test']);
+  grunt.registerTask('test', 'Run all tests',
+    ['be-test', 'fe-test', 'e2e-test']);
 
   grunt.registerTask('fe-build', 'Build frontend',
     ['clean', 'ngtemplates', 'uglify', 'copy', 'concat', 'clean:feTmpBuildDir']);
@@ -125,4 +140,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('e2e-test', 'Run E2E tests',
     ['fe-build', 'protractor_webdriver', 'protractor']);
+
+  grunt.registerTask('fe-test', 'Run FE tests once', ['karma:runOnce']);
+  grunt.registerTask('fe-watch', 'Run FE tests continuously', ['karma:watch']);
 };
