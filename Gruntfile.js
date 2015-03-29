@@ -64,9 +64,19 @@ module.exports = function(grunt) {
     clean: {
       feBuild: ['<%= feBuildDir %>'],
       feTmpBuildDir: ['<%= feTmpBuildDir %>']
+    },
+
+    // Launch
+    beSrcDir: 'be-src',
+    serverJs: '<%= beSrcDir %>/server.js',
+    run: {
+      teambuildr: {
+        args: ['--harmony', '<%= serverJs %>']
+      }
     }
   });
 
+  grunt.loadNpmTasks('grunt-run');
   grunt.loadNpmTasks('grunt-mocha-test');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-copy');
@@ -79,4 +89,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('fe-build', 'Build frontend',
     ['clean', 'ngtemplates', 'uglify', 'copy', 'concat', 'clean:feTmpBuildDir']);
+
+  grunt.registerTask('start', 'Build frontend and launch everything',
+    ['fe-build', 'run']);
 };
