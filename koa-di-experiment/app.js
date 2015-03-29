@@ -1,6 +1,8 @@
 var container = {
   values: {
     koa: require('koa'),
+    koaCompose: require('koa-compose'),
+    koaBodyParser: require('koa-body-parser'),
     koaMount: require('koa-mount'),
     koaSend: require('koa-send'),
     KoaRouter: require('koa-router'),
@@ -17,11 +19,15 @@ var container = {
     indexHtmlRoute: require('./indexHtmlRoute.js'),
 
     // API STUFF
-    apiMiddleware: function(KoaRouter, routeA, routeB) {
+    apiMiddleware: function(koaCompose, KoaRouter, koaBodyParser, routeA, routeB) {
       var router = new KoaRouter();
       routeA(router);
       routeB(router);
-      return router.middleware();
+
+      return koaCompose([
+        koaBodyParser(),
+        router.middleware()
+      ]);
     },
     routeA: require('./routeA.js'),
     routeB: require('./routeB.js'),
