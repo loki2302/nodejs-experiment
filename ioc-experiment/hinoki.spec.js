@@ -83,4 +83,40 @@ describe('hinoki', function() {
       done();
     });
   });
+
+  it('should let me inject the dependencies', function(done) {
+    var container = {
+      factories: {
+        a: function() {
+          var deferred = Q.defer();
+          setTimeout(function() {
+            deferred.resolve(2);
+          }, 10);
+          return deferred.promise;
+        },
+        b: function() {
+          var deferred = Q.defer();
+          setTimeout(function() {
+            deferred.resolve(3);
+          }, 10);
+          return deferred.promise;
+        },
+        sum: function(a, b) {
+          var deferred = Q.defer();
+          setTimeout(function() {
+            deferred.resolve(a + b);
+          }, 10);
+          return deferred.promise;
+        }
+      }
+    };
+
+    hinoki.get(container, 'sum').then(function(sum) {
+      expect(sum).to.equal(5);
+      expect(container.values.a).to.equal(2);
+      expect(container.values.b).to.equal(3);
+      expect(container.values.sum).to.equal(5);
+      done();
+    });
+  });
 });
