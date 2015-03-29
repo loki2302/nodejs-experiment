@@ -84,6 +84,28 @@ describe('hinoki', function() {
     });
   });
 
+  it('should fail when async factory rejects', function(done) {
+    var container = {
+      factories: {
+        a: function() {
+          var deferred = Q.defer();
+          setTimeout(function() {
+            deferred.reject(new Error('everything is bad'));
+          }, 10);
+          return deferred.promise;
+        }
+      }
+    };
+
+    hinoki.get(container, 'a').then(null, function(error) {
+      expect(error).to.be.instanceof(hinoki.PromiseRejectedError);
+      expect(error.path[0]).to.equal('a');
+      expect(error.error).to.be.instanceof(Error);
+      expect(error.error.message).to.equal('everything is bad');
+      done();
+    });
+  });
+
   it('should let me inject the dependencies', function(done) {
     var container = {
       factories: {
