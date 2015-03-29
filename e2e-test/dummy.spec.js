@@ -1,3 +1,8 @@
+var chai = require('chai');
+var chaiAsPromised = require('chai-as-promised');
+chai.use(chaiAsPromised);
+var expect = chai.expect;
+
 var AppRunner = require('../be-src/appRunner');
 
 describe('Dummy', function() {
@@ -15,7 +20,7 @@ describe('Dummy', function() {
   it('should work', function() {
     browser.get('/');
     var h1Element = element(by.css('h1'));
-    expect(h1Element.isPresent()).toBe(true);
-    expect(h1Element.getText()).toBe('hello AppController');
+    expect(h1Element.isPresent()).to.eventually.equal(true);
+    expect(h1Element.getText()).to.eventually.equal('hello AppController');
   });
 });

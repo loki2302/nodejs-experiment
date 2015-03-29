@@ -19,6 +19,7 @@
   "devDependencies": {
     "URIjs": "^1.14.2",
     "chai": "^2.2.0",
+    "chai-as-promised": "^4.3.0",
     "co-mocha": "^1.1.0",
     "grunt": "^0.4.5",
     "grunt-angular-templates": "^0.5.7",

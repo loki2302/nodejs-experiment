@@ -8,6 +8,7 @@ module.exports = {
       browserName: 'firefox'
     }],
     maxSessions: 1,
-    baseUrl: 'http://localhost:3000/'
+    baseUrl: 'http://localhost:3000/',
+    framework: 'mocha'
   }
 };
