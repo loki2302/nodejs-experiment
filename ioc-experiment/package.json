@@ -1,10 +1,10 @@
 {
-  "name": "intravenous-experiment",
+  "name": "ioc-experiment",
   "version": "0.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "nodeunit ."
+    "test": "grunt"
   },
   "author": "loki2302",
   "license": "BSD-2-Clause",
