@@ -2,7 +2,7 @@ module.exports = function(grunt) {
   grunt.initConfig({
     mochaTest: {
       all: {
-        src: ['tests.js']
+        src: ['./**/*.spec.js']
       }
     }
   });

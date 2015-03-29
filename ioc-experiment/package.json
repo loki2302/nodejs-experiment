@@ -9,7 +9,8 @@
   "author": "loki2302",
   "license": "BSD-2-Clause",
   "dependencies": {
-    "intravenous": "~0.1.4-beta"
+    "intravenous": "~0.1.4-beta",
+    "simple-ioc": "^3.0.13"
   },
   "devDependencies": {
     "chai": "^2.2.0",
