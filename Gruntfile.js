@@ -73,6 +73,30 @@ module.exports = function(grunt) {
       teambuildr: {
         args: ['--harmony', '<%= serverJs %>']
       }
+    },
+
+    // E2E tests,
+    shell: {
+      webDriver: {
+        options: {
+          stdout: true
+        },
+        command: require('path')
+          .resolve('node_modules/protractor/bin/webdriver-manager') + ' update'
+      }
+    },
+    protractor_webdriver: {
+      options: {
+        keepAlive: true
+      },
+      dummyTarget: {}
+    },
+    protractor: {
+      dummyTarget: {
+        options: {
+          configFile: 'protractor.conf.js'
+        }
+      }
     }
   });
 
@@ -83,13 +107,22 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-angular-templates');
+  grunt.loadNpmTasks('grunt-shell');
+  grunt.loadNpmTasks('grunt-protractor-webdriver');
+  grunt.loadNpmTasks('grunt-protractor-runner');
 
   grunt.registerTask('be-test', 'Run backend tests', ['mochaTest']);
-  grunt.registerTask('test', 'Run all tests', ['be-test']);
+  grunt.registerTask('test', 'Run all tests', ['be-test', 'e2e-test']);
 
   grunt.registerTask('fe-build', 'Build frontend',
     ['clean', 'ngtemplates', 'uglify', 'copy', 'concat', 'clean:feTmpBuildDir']);
 
   grunt.registerTask('start', 'Build frontend and launch everything',
     ['fe-build', 'run']);
+
+  grunt.registerTask('webdriver-update', 'Install/update WebDriver',
+    ['shell:webDriver']);
+
+  grunt.registerTask('e2e-test', 'Run E2E tests',
+    ['fe-build', 'protractor_webdriver', 'protractor']);
 };
