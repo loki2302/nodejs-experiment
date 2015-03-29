@@ -3,9 +3,9 @@ module.exports = function(grunt) {
 
     // Backend tests
     beTestSrcDir: 'be-test',
-    mochaTest: {
+    jasmine_nodejs: {
       all: {
-        src: ['<%= beTestSrcDir %>/**/*.spec.js']
+        specs: ['<%= beTestSrcDir %>/**/*.spec.js']
       }
     },
 
@@ -114,7 +114,7 @@ module.exports = function(grunt) {
   });
 
   grunt.loadNpmTasks('grunt-run');
-  grunt.loadNpmTasks('grunt-mocha-test');
+  grunt.loadNpmTasks('grunt-jasmine-nodejs');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-clean');
@@ -125,7 +125,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-protractor-runner');
   grunt.loadNpmTasks('grunt-karma');
 
-  grunt.registerTask('be-test', 'Run backend tests', ['mochaTest']);
+  grunt.registerTask('be-test', 'Run backend tests', ['jasmine_nodejs']);
   grunt.registerTask('test', 'Run all tests',
     ['be-test', 'fe-test', 'e2e-test']);
 
