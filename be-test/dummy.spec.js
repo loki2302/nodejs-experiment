@@ -1,27 +1,30 @@
-var async = require('./convertES6GeneratorFuncToFuncWithCallback');
+require('co-mocha');
+
+var expect = require('chai').expect;
 var AppRunner = require('../be-src/appRunner');
 var TeambuildrClient = require('./teambuildrClient');
 
-describe('Teambuildr API', function() {
+describe('Teambuild API', function() {
   var appRunner;
   var client;
-  beforeEach(async(function* () {
+  beforeEach(function* () {
     appRunner = new AppRunner();
     yield appRunner.start();
+    yield appRunner.reset();
 
     client = new TeambuildrClient('http://localhost:3000/api/');
-  }));
+  });
 
-  afterEach(async(function* () {
+  afterEach(function* () {
     yield appRunner.stop();
     appRunner = undefined;
-  }));
+  });
 
-  it('should work', async(function* () {
+  it('should work', function* () {
     var helloResponse = yield client.hello();
-    expect(helloResponse.body).toEqual({
+    expect(helloResponse.body).to.deep.equal({
       message: 'hello there'
     });
-    expect(helloResponse.statusCode).toBe(200);
-  }));
+    expect(helloResponse.statusCode).to.equal(200);
+  });
 });
