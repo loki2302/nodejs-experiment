@@ -1,5 +1,7 @@
 var container = {
   values: {
+    Q: require('q'),
+    serverDestroy: require('server-destroy'),
     Sequelize: require('sequelize'),
     koa: require('koa'),
     koaCompose: require('koa-compose'),
@@ -9,7 +11,7 @@ var container = {
     KoaRouter: require('koa-router'),
     path: require('path'),
     connectionString: 'sqlite://my.db',
-    something: 'hello there',
+    something: 'hello there'
   },
   factories: {
     // DAL STUFF
@@ -49,13 +51,15 @@ var container = {
       app.use(koaMount('/', staticMiddleware));
       app.use(koaMount('/api', apiMiddleware));
       return app;
-    }
+    },
+
+    appRunner: require('./appRunner.js')
   }
 };
 
 var hinoki = require('hinoki');
-hinoki.get(container, 'app').then(function(app) {
-  app.listen(3000);
+hinoki.get(container, 'appRunner').then(function(appRunner) {
+  appRunner.start();
 }, function(error) {
   console.log(error);
 });
