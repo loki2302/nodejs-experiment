@@ -141,4 +141,50 @@ describe('hinoki', function() {
       done();
     });
   });
+
+  it('should let me emulate multibindings', function(done) {
+    var appBuilder = new AppBuilder();
+    appBuilder.registerRoute(function() { return 11; });
+    appBuilder.registerRoute(function() { return 22; });
+    appBuilder.registerRoute(function() { return 33; });
+
+    var container = appBuilder.buildContainer();
+    hinoki.get(container, 'allRoutes').then(function(allRoutes) {
+      expect(allRoutes.length).to.equal(3);
+      done();
+    });
+
+    function AppBuilder() {
+      this.routes = [];
+
+      this.registerRoute = function(routeCtorFunc) {
+        this.routes.push(routeCtorFunc);
+      };
+
+      this.buildContainer = function() {
+        var factories = {};
+
+        var routeNames = [];
+        this.routes.forEach(function(routeCtorFunc, routeIndex) {
+          var routeName = 'route-' + routeIndex;
+          factories[routeName] = routeCtorFunc;
+          routeNames.push(routeName);
+        });
+
+        factories.allRoutes = (function() {
+          function RouteCollectionFactory() {
+            return arguments;
+          };
+
+          RouteCollectionFactory.$inject = routeNames;
+          return RouteCollectionFactory;
+        })();
+
+        return {
+          values: {},
+          factories: factories
+        };
+      };
+    };
+  });
 });
