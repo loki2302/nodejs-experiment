@@ -18,13 +18,14 @@ module.exports = function(settings) {
       koaSend: require('koa-send'),
       KoaRouter: require('koa-router'),
       path: require('path'),
+      pathToIndexHtml: __dirname + '/index.html',
       connectionString: 'sqlite://my.db',
       port: (settings && settings.port) || 3000,
       something: (settings && settings.something) || 'hello there'
     });
     containerBuilder.addRoutes([
-      require('./routeA.js'),
-      require('./routeB.js')
+      require('./api/routes/routeA.js'),
+      require('./api/routes/routeB.js')
     ]);
     containerBuilder.addFactories({
       // DAL STUFF
@@ -37,34 +38,14 @@ module.exports = function(settings) {
       },
 
       // STATIC STUFF
-      staticMiddleware: function(KoaRouter, indexHtmlRoute) {
-        var router = new KoaRouter();
-        indexHtmlRoute(router);
-        return router.middleware();
-      },
-      indexHtmlRoute: require('./indexHtmlRoute.js'),
+      staticMiddleware: require('./static/staticMiddleware.js'),
+      indexHtmlRoute: require('./static/indexHtmlRoute.js'),
 
       // API STUFF
-      apiMiddleware: function(koaCompose, KoaRouter, koaBodyParser, allRoutes) {
-        var router = new KoaRouter();
-        allRoutes.forEach(function(route) {
-          route(router);
-        });
-
-        return koaCompose([
-          koaBodyParser(),
-          router.middleware()
-        ]);
-      },
+      apiMiddleware: require('./api/apiMiddleware.js'),
 
       // THE WHOLE WEBAPP
-      app: function(koa, koaMount, staticMiddleware, apiMiddleware) {
-        var app = koa();
-        app.use(koaMount('/', staticMiddleware));
-        app.use(koaMount('/api', apiMiddleware));
-        return app;
-      },
-
+      app: require('./app.js'),
       appRunner: require('./appRunner.js')
     });
 
