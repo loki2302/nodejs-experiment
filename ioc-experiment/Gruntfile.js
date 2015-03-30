@@ -4,9 +4,20 @@ module.exports = function(grunt) {
       all: {
         src: ['./**/*.spec.js']
       }
+    },
+    watch: {
+      all: {
+        files: ['./*.js'],
+        tasks: ['default'],
+        options: {
+          spawn: true
+        }
+      }
     }
   });
 
   grunt.loadNpmTasks('grunt-mocha-test');
+  grunt.loadNpmTasks('grunt-contrib-watch');
+
   grunt.registerTask('default', ['mochaTest']);
 };
