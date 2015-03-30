@@ -1,4 +1,4 @@
-module.exports = function(app, sequelize, Q, serverDestroy) {
+module.exports = function(app, sequelize, Q, serverDestroy, port) {
   var isRunning = false;
   var server = null;
 
@@ -10,7 +10,7 @@ module.exports = function(app, sequelize, Q, serverDestroy) {
 
       return sequelize.sync().then(function() {
         return Q.Promise(function(resolve) {
-          server = app.listen(3000, function() {
+          server = app.listen(port, function() {
             serverDestroy(server);
             console.log('Listening at %j', server.address());
             isRunning = true;

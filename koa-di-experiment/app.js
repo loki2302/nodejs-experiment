@@ -11,6 +11,7 @@ var container = {
     KoaRouter: require('koa-router'),
     path: require('path'),
     connectionString: 'sqlite://my.db',
+    port: 3000,
     something: 'hello there'
   },
   factories: {
