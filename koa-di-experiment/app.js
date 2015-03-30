@@ -1,5 +1,6 @@
 var container = {
   values: {
+    Sequelize: require('sequelize'),
     koa: require('koa'),
     koaCompose: require('koa-compose'),
     koaBodyParser: require('koa-body-parser'),
@@ -10,6 +11,15 @@ var container = {
     something: 'hello there',
   },
   factories: {
+    // DAL STUFF
+    sequelize: require('./dao.js'),
+    Note: function(sequelize) {
+      return sequelize.models.Note;
+    },
+    Category: function(sequelize) {
+      return sequelize.models.Category;
+    },
+
     // STATIC STUFF
     staticMiddleware: function(KoaRouter, indexHtmlRoute) {
       var router = new KoaRouter();
