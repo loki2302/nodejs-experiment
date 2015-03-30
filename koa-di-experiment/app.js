@@ -8,6 +8,7 @@ var container = {
     koaSend: require('koa-send'),
     KoaRouter: require('koa-router'),
     path: require('path'),
+    connectionString: 'sqlite://my.db',
     something: 'hello there',
   },
   factories: {

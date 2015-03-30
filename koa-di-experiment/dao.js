@@ -1,5 +1,5 @@
-module.exports = function(Sequelize) {
-  var sequelize = new Sequelize('sqlite://my.db');
+module.exports = function(Sequelize, connectionString) {
+  var sequelize = new Sequelize(connectionString);
 
   var Note = sequelize.define('Note', {
     content: Sequelize.STRING
