@@ -41,6 +41,7 @@
     "request-promise": "^0.4.1"
   },
   "dependencies": {
+    "hinoki": "^0.3.0-beta.16",
     "koa": "^0.18.1",
     "koa-body-parser": "^1.1.1",
     "koa-compose": "^2.3.0",
