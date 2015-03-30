@@ -18,7 +18,6 @@ module.exports = function(settings) {
       koaSend: require('koa-send'),
       KoaRouter: require('koa-router'),
       path: require('path'),
-      pathToIndexHtml: __dirname + '/index.html',
       connectionString: 'sqlite://my.db',
       port: (settings && settings.port) || 3000,
       something: (settings && settings.something) || 'hello there'
@@ -39,7 +38,7 @@ module.exports = function(settings) {
 
       // STATIC STUFF
       staticMiddleware: require('./static/staticMiddleware.js'),
-      indexHtmlRoute: require('./static/indexHtmlRoute.js'),
+      indexHtmlRoute: require('./static/staticFile.js')('/', __dirname + '/index.html'),
 
       // API STUFF
       apiMiddleware: require('./api/apiMiddleware.js'),
