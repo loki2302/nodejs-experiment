@@ -50,25 +50,8 @@ module.exports = function(settings) {
       },
 
       // API STUFF
-      apiMiddleware: function(koaBodyParser, koaCompose, KoaRouter, helloRoute) {
-        var apiRouter = new KoaRouter();
-        helloRoute(apiRouter);
-
-        return koaCompose([
-          koaBodyParser(),
-          apiRouter.middleware()
-        ]);
-      },
-      helloRoute: function(dummyMessage, Team, Person, Membership) {
-        return function(router) {
-          router.get('/hello', function* () {
-            this.status = 200;
-            this.body = {
-              message: dummyMessage
-            };
-          });
-        };
-      },
+      apiMiddleware: require('./api/middleware'),
+      helloRoute: require('./api/routes/hello'),
 
       // APP STUFF
       app: function(koa, koaMount, staticMiddleware, apiMiddleware) {
