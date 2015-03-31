@@ -1,14 +1,14 @@
 require('co-mocha');
 
 var expect = require('chai').expect;
-var AppRunner = require('../be-src/appRunner');
+var appRunnerFactory = require('../be-src/appRunnerFactory');
 var TeambuildrClient = require('./teambuildrClient');
 
 describe('Teambuild API', function() {
   var appRunner;
   var client;
   beforeEach(function* () {
-    appRunner = new AppRunner();
+    appRunner = yield appRunnerFactory();
     yield appRunner.start();
     yield appRunner.reset();
 
@@ -17,7 +17,7 @@ describe('Teambuild API', function() {
 
   afterEach(function* () {
     yield appRunner.stop();
-    appRunner = undefined;
+    appRunner = null;
   });
 
   it('should work', function* () {

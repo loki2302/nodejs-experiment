@@ -1,15 +1,19 @@
-var AppRunner = require('../be-src/appRunner');
+var appRunnerFactory = require('../be-src/appRunnerFactory');
 
 describe('Dummy', function() {
   var appRunner;
   beforeEach(function(done) {
-    appRunner = new AppRunner();
-    appRunner.start().finally(done);
+    appRunnerFactory().then(function(runner) {
+      appRunner = runner;
+      return runner.start().then(function() {
+        return runner.reset();
+      });
+    }).finally(done);
   });
 
   afterEach(function(done) {
     appRunner.stop().finally(done);
-    appRunner = undefined;
+    appRunner = null;
   });
 
   it('should work', function() {

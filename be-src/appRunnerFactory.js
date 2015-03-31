@@ -1,9 +1,12 @@
 module.exports = function(settings) {
   var container = {
     values: {
+      Q: require('q'),
+      enableDestroy: require('server-destroy'),
       path: require('path'),
       Sequelize: require('sequelize'),
       koa: require('koa'),
+      koaStatic: require('koa-static'),
       KoaRouter: require('koa-router'),
       koaBodyParser: require('koa-body-parser'),
       koaCompose: require('koa-compose'),
@@ -13,7 +16,7 @@ module.exports = function(settings) {
       dummyMessage: (settings && settings.dummyMessage) || 'hello there'
     },
     factories: {
-      // DATA ACESS LAYER STUFF
+      // DATA ACCESS LAYER STUFF
       sequelize: function(connectionString, Sequelize, registerTeam, registerPerson, registerMembership) {
         var sequelize = new Sequelize(connectionString);
         var Team = registerTeam(sequelize);
@@ -25,21 +28,21 @@ module.exports = function(settings) {
 
         return sequelize;
       },
-      registerTeam: function() {
+      registerTeam: function(Sequelize) {
         return function(sequelize) {
           return sequelize.define('Team', {
             name: Sequelize.STRING
           });
         };
       },
-      registerPerson: function() {
+      registerPerson: function(Sequelize) {
         return function(sequelize) {
           return sequelize.define('Person', {
             name: Sequelize.STRING
           });
         };
       },
-      registerMembership: function() {
+      registerMembership: function(Sequelize) {
         return function(sequelize) {
           return sequelize.define('Membership', {
             role: Sequelize.STRING
@@ -86,7 +89,7 @@ module.exports = function(settings) {
       },
       helloRoute: function(dummyMessage, Team, Person, Membership) {
         return function(router) {
-          apiRouter.get('/hello', function* () {
+          router.get('/hello', function* () {
             this.status = 200;
             this.body = {
               message: dummyMessage
@@ -96,20 +99,60 @@ module.exports = function(settings) {
       },
 
       // APP STUFF
-      // this should also expose sequelize.[sync, drop] somehow
       app: function(koa, koaMount, staticMiddleware, apiMiddleware) {
         var app = koa();
-        app.use(koaMount('/', staticMiddleware()));
-        app.use(koaMount('/api', apiMiddleware()));
+        app.use(koaMount('/', staticMiddleware));
+        app.use(koaMount('/api', apiMiddleware));
         return app;
       },
 
-      appRunner: function(app, sequelize) {
+      appRunner: function(Q, enableDestroy, app, sequelize) {
+        var isRunning = false;
+        var server;
+
         return {
-          start: function() {}, // sync, listen
-          stop: function() {}, // destroy
-          reset: function() {} // drop, sync
-        };
+          start: function() {
+            if(isRunning) {
+              return Q.reject(new Error('The application is already running'));
+            }
+
+            return sequelize.sync().then(function() {
+              return Q.Promise(function(resolve, reject) {
+                server = app.listen(3000, function() {
+                  enableDestroy(server);
+                  console.log('The application is listening at %j', server.address());
+                  isRunning = true;
+
+                  resolve();
+                });
+              });
+            }, function(error) {
+              return Q.reject(new Error('Failed to initialize models'));
+            });
+          },
+          stop: function() {
+            if(!isRunning) {
+              return Q.reject(new Error('The application is not running'));
+            }
+
+            return Q.Promise(function(resolve, reject) {
+              server.destroy(function() {
+                server = undefined;
+                isRunning = false;
+                resolve();
+              });
+            });
+          },
+          reset: function() {
+            if(!isRunning) {
+              return Q.reject(new Error('The application is not running'));
+            }
+
+            return sequelize.drop().then(function() {
+              return sequelize.sync();
+            });
+          }
+        }
       }
     }
   };
