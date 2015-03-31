@@ -20,6 +20,7 @@ module.exports = function(settings) {
       staticRootLocation: '/',
       apiRootLocation: '/api',
 
+      serverPort: (settings && settings.serverPort) || 3000,
       connectionString: (settings && settings.connectionString) || 'sqlite://my.db',
       dummyMessage: (settings && settings.dummyMessage) || 'hello there'
     },

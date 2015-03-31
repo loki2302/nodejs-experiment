@@ -1,4 +1,4 @@
-module.exports = function(Q, enableDestroy, app, dataContext) {
+module.exports = function(Q, enableDestroy, app, dataContext, serverPort) {
   var isRunning = false;
   var server;
 
@@ -10,7 +10,7 @@ module.exports = function(Q, enableDestroy, app, dataContext) {
 
       return dataContext.sync().then(function() {
         return Q.Promise(function(resolve, reject) {
-          server = app.listen(3000, function() {
+          server = app.listen(serverPort, function() {
             enableDestroy(server);
             console.log('The application is listening at %j', server.address());
             isRunning = true;
