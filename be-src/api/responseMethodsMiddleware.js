@@ -16,7 +16,7 @@ module.exports = function(RESTError) {
 
     this.validationErrorFromSequelizeValidationError = function(sequelizeValidationError) {
       var errorMap = {};
-      error.errors.forEach(function(fieldError) {
+      sequelizeValidationError.errors.forEach(function(fieldError) {
         errorMap[fieldError.path] = fieldError.message;
       });
 

@@ -32,34 +32,25 @@ describe('Teambuild API', function() {
         memberships: []
       });
     });
-  });
 
-  /*it('should work /success', function* () {
-    var response = yield client.helloSuccess();
-    expect(response.body).to.deep.equal({
-      message: 'hello there'
+    it('should not create a person when name is null', function* () {
+      try {
+        yield client.createPerson({});
+        expect(true).to.equal(false);
+      } catch(e) {
+        expect(e.response.statusCode).to.equal(400);
+        expect(e.response.body).to.include.keys('name');
+      }
     });
-    expect(response.statusCode).to.equal(200);
-  });
 
-  it('should work /badRequest', function* () {
-    try {
-      yield client.helloBadRequest();
-      expect(true).to.equal(false);
-    } catch(e) {
-      expect(e.response.statusCode).to.equal(400);
-      expect(e.response.body).to.deep.equal({
-        message: 'hello there'
-      })
-    }
+    it('should not create a person when name is empty', function* () {
+      try {
+        yield client.createPerson({name: ''});
+        expect(true).to.equal(false);
+      } catch(e) {
+        expect(e.response.statusCode).to.equal(400);
+        expect(e.response.body).to.include.keys('name');
+      }
+    });
   });
-
-  it('should work /internalError', function* () {
-    try {
-      yield client.helloInternalError();
-      expect(true).to.equal(false);
-    } catch(e) {
-      expect(e.response.statusCode).to.equal(500);
-    }
-  });*/
 });

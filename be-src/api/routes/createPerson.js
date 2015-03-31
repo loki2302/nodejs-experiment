@@ -9,7 +9,7 @@ module.exports = function(Person, Team, Sequelize) {
           transaction: this.tx
         });
       } catch(e) {
-        if(e instanceof Sequelize.ValidationError) {
+        if(e instanceof Sequelize.ValidationError) {          
           this.validationErrorFromSequelizeValidationError(e);
         }
 
