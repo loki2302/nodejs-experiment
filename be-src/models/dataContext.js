@@ -1,4 +1,8 @@
-module.exports = function(connectionString, Sequelize, registerTeam, registerPerson, registerMembership) {
+module.exports = function(connectionString, Sequelize,
+  registerTeam,
+  registerPerson,
+  registerMembership) {
+
   var sequelize = new Sequelize(connectionString);
   var Team = registerTeam(sequelize);
   var Person = registerPerson(sequelize);

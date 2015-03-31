@@ -51,6 +51,7 @@ module.exports = function(settings) {
       helloSuccessRoute: require('./api/routes/helloSuccess'),
       helloBadRequestRoute: require('./api/routes/helloBadRequest'),
       helloInternalErrorRoute: require('./api/routes/helloInternalError'),
+      createPersonRoute: require('./api/routes/createPerson'),
 
       // KOA APPLICATION
       app: require('./app'),

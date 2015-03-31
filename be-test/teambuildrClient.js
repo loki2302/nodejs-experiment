@@ -29,6 +29,17 @@ TeambuildrClient.prototype.get = function(resourceTemplateString, resourceValues
   });
 };
 
+TeambuildrClient.prototype.post = function(resourceTemplateString, resourceValues, body) {
+  var url = this.makeUrl(resourceTemplateString, resourceValues);
+  return rp({
+    method: 'POST',
+    url: url,
+    json: true,
+    body: body,
+    resolveWithFullResponse: true
+  });
+};
+
 TeambuildrClient.prototype.helloSuccess = function() {
   return this.get('hello/success');
 };
@@ -39,6 +50,10 @@ TeambuildrClient.prototype.helloBadRequest = function() {
 
 TeambuildrClient.prototype.helloInternalError = function() {
   return this.get('hello/internalError');
+};
+
+TeambuildrClient.prototype.createPerson = function(person) {
+  return this.post('people', null, person);
 };
 
 module.exports = TeambuildrClient;

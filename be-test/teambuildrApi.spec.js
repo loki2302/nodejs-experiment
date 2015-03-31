@@ -20,7 +20,21 @@ describe('Teambuild API', function() {
     appRunner = null;
   });
 
-  it('should work /success', function* () {
+  describe('POST /people', function() {
+    it('should create a person', function* () {
+      var response = yield client.createPerson({
+        name: 'john'
+      });
+      expect(response.statusCode).to.equal(201);
+      expect(response.body).to.deep.equal({
+        id: 1,
+        name: 'john',
+        memberships: []
+      });
+    });
+  });
+
+  /*it('should work /success', function* () {
     var response = yield client.helloSuccess();
     expect(response.body).to.deep.equal({
       message: 'hello there'
@@ -47,5 +61,5 @@ describe('Teambuild API', function() {
     } catch(e) {
       expect(e.response.statusCode).to.equal(500);
     }
-  });
+  });*/
 });
