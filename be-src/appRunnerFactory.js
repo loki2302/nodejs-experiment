@@ -17,46 +17,18 @@ module.exports = function(settings) {
     },
     factories: {
       // DATA ACCESS LAYER STUFF
-      sequelize: function(connectionString, Sequelize, registerTeam, registerPerson, registerMembership) {
-        var sequelize = new Sequelize(connectionString);
-        var Team = registerTeam(sequelize);
-        var Person = registerPerson(sequelize);
-        var Membership = registerMembership(sequelize);
-
-        Team.hasMany(Person, { as: 'Members', through: Membership });
-        Person.hasMany(Team, { as: 'Memberships', through: Membership });
-
-        return sequelize;
+      dataContext: require('./models/dataContext'),
+      registerTeam: require('./models/team'),
+      registerPerson: require('./models/person'),
+      registerMembership: require('./models/membership'),
+      Team: function(dataContext) {
+        return dataContext.models.Team;
       },
-      registerTeam: function(Sequelize) {
-        return function(sequelize) {
-          return sequelize.define('Team', {
-            name: Sequelize.STRING
-          });
-        };
+      Person: function(dataContext) {
+        return dataContext.models.Person;
       },
-      registerPerson: function(Sequelize) {
-        return function(sequelize) {
-          return sequelize.define('Person', {
-            name: Sequelize.STRING
-          });
-        };
-      },
-      registerMembership: function(Sequelize) {
-        return function(sequelize) {
-          return sequelize.define('Membership', {
-            role: Sequelize.STRING
-          });
-        };
-      },
-      Team: function(sequelize) {
-        return sequelize.models.Team;
-      },
-      Person: function(sequelize) {
-        return sequelize.models.Person;
-      },
-      Membership: function(sequelize) {
-        return sequelize.models.Membership;
+      Membership: function(dataContext) {
+        return dataContext.models.Membership;
       },
 
       // STATIC STUFF
@@ -106,54 +78,7 @@ module.exports = function(settings) {
         return app;
       },
 
-      appRunner: function(Q, enableDestroy, app, sequelize) {
-        var isRunning = false;
-        var server;
-
-        return {
-          start: function() {
-            if(isRunning) {
-              return Q.reject(new Error('The application is already running'));
-            }
-
-            return sequelize.sync().then(function() {
-              return Q.Promise(function(resolve, reject) {
-                server = app.listen(3000, function() {
-                  enableDestroy(server);
-                  console.log('The application is listening at %j', server.address());
-                  isRunning = true;
-
-                  resolve();
-                });
-              });
-            }, function(error) {
-              return Q.reject(new Error('Failed to initialize models'));
-            });
-          },
-          stop: function() {
-            if(!isRunning) {
-              return Q.reject(new Error('The application is not running'));
-            }
-
-            return Q.Promise(function(resolve, reject) {
-              server.destroy(function() {
-                server = undefined;
-                isRunning = false;
-                resolve();
-              });
-            });
-          },
-          reset: function() {
-            if(!isRunning) {
-              return Q.reject(new Error('The application is not running'));
-            }
-
-            return sequelize.drop().then(function() {
-              return sequelize.sync();
-            });
-          }
-        }
-      }
+      appRunner: require('./appRunner')
     }
   };
 
