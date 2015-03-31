@@ -1,9 +1,10 @@
+var path = require('path');
+
 module.exports = function(settings) {
   var container = {
     values: {
       Q: require('q'),
       enableDestroy: require('server-destroy'),
-      path: require('path'),
       Sequelize: require('sequelize'),
       koa: require('koa'),
       koaStatic: require('koa-static'),
@@ -12,11 +13,18 @@ module.exports = function(settings) {
       koaCompose: require('koa-compose'),
       koaSend: require('koa-send'),
       koaMount: require('koa-mount'),
+
+      staticRootPath: path.resolve(__dirname, '../fe-build/'),
+      indexHtmlPath: path.resolve(__dirname, '../fe-build/index.html'),
+      indexLocations: ['/', '/teams', '/people'],
+      staticRootLocation: '/',
+      apiRootLocation: '/api',
+
       connectionString: (settings && settings.connectionString) || 'sqlite://my.db',
       dummyMessage: (settings && settings.dummyMessage) || 'hello there'
     },
     factories: {
-      // DATA ACCESS LAYER STUFF
+      // DATA CONTEXT
       dataContext: require('./models/dataContext'),
       registerTeam: require('./models/team'),
       registerPerson: require('./models/person'),
@@ -31,36 +39,15 @@ module.exports = function(settings) {
         return dataContext.models.Membership;
       },
 
-      // STATIC STUFF
-      staticMiddleware: function(path, KoaRouter, koaSend, koaCompose, koaStatic) {
-        var pathToStaticRoot = path.resolve(__dirname + '/../fe-build/');
-        var pathToIndexHtml = path.resolve(pathToStaticRoot, 'index.html');
+      // STATIC RESOURCES
+      staticMiddleware: require('./static/middleware.js'),
 
-        var html5Router = new KoaRouter();
-        ['/'].forEach(function(route) {
-          html5Router.all(route, function* () {
-            yield koaSend(this, pathToIndexHtml);
-          });
-        });
-
-        return koaCompose([
-          koaStatic(pathToStaticRoot),
-          html5Router.middleware()
-        ]);
-      },
-
-      // API STUFF
+      // API RESOURCES
       apiMiddleware: require('./api/middleware'),
       helloRoute: require('./api/routes/hello'),
 
-      // APP STUFF
-      app: function(koa, koaMount, staticMiddleware, apiMiddleware) {
-        var app = koa();
-        app.use(koaMount('/', staticMiddleware));
-        app.use(koaMount('/api', apiMiddleware));
-        return app;
-      },
-
+      // KOA APPLICATION
+      app: require('./app'),
       appRunner: require('./appRunner')
     }
   };
