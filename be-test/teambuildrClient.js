@@ -29,8 +29,16 @@ TeambuildrClient.prototype.get = function(resourceTemplateString, resourceValues
   });
 };
 
-TeambuildrClient.prototype.hello = function() {
-  return this.get('hello');
+TeambuildrClient.prototype.helloSuccess = function() {
+  return this.get('hello/success');
+};
+
+TeambuildrClient.prototype.helloBadRequest = function() {
+  return this.get('hello/badRequest');
+};
+
+TeambuildrClient.prototype.helloInternalError = function() {
+  return this.get('hello/internalError');
 };
 
 module.exports = TeambuildrClient;

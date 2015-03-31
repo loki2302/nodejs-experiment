@@ -20,11 +20,32 @@ describe('Teambuild API', function() {
     appRunner = null;
   });
 
-  it('should work', function* () {
-    var helloResponse = yield client.hello();
-    expect(helloResponse.body).to.deep.equal({
+  it('should work /success', function* () {
+    var response = yield client.helloSuccess();
+    expect(response.body).to.deep.equal({
       message: 'hello there'
     });
-    expect(helloResponse.statusCode).to.equal(200);
+    expect(response.statusCode).to.equal(200);
+  });
+
+  it('should work /badRequest', function* () {
+    try {
+      yield client.helloBadRequest();
+      expect(true).to.equal(false);
+    } catch(e) {
+      expect(e.response.statusCode).to.equal(400);
+      expect(e.response.body).to.deep.equal({
+        message: 'hello there'
+      })
+    }
+  });
+
+  it('should work /internalError', function* () {
+    try {
+      yield client.helloInternalError();
+      expect(true).to.equal(false);
+    } catch(e) {
+      expect(e.response.statusCode).to.equal(500);
+    }
   });
 });

@@ -13,6 +13,7 @@ module.exports = function(settings) {
       koaCompose: require('koa-compose'),
       koaSend: require('koa-send'),
       koaMount: require('koa-mount'),
+      RESTError: require('./api/restError'),
 
       staticRootPath: path.resolve(__dirname, '../fe-build/'),
       indexHtmlPath: path.resolve(__dirname, '../fe-build/index.html'),
@@ -44,9 +45,12 @@ module.exports = function(settings) {
       staticMiddleware: require('./static/middleware.js'),
 
       // API RESOURCES
+      responseMethodsMiddleware: require('./api/responseMethodsMiddleware'),
       transactionalMiddleware: require('./api/transactionalMiddleware'),
       apiMiddleware: require('./api/middleware'),
-      helloRoute: require('./api/routes/hello'),
+      helloSuccessRoute: require('./api/routes/helloSuccess'),
+      helloBadRequestRoute: require('./api/routes/helloBadRequest'),
+      helloInternalErrorRoute: require('./api/routes/helloInternalError'),
 
       // KOA APPLICATION
       app: require('./app'),
