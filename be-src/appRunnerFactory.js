@@ -44,6 +44,7 @@ module.exports = function(settings) {
       staticMiddleware: require('./static/middleware.js'),
 
       // API RESOURCES
+      transactionalMiddleware: require('./api/transactionalMiddleware'),
       apiMiddleware: require('./api/middleware'),
       helloRoute: require('./api/routes/hello'),
 
