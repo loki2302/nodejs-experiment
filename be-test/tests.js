@@ -152,7 +152,7 @@ describe('app', function() {
     }
 
     var getAllNotesResponse = yield client.getAllNotes();
-    assert.equal(getAllNotesResponse.statusCode, 200);
+    expect(getAllNotesResponse.statusCode).to.equal(200);
     assert.equal(getAllNotesResponse.body.length, 0);
   });
 
@@ -162,7 +162,7 @@ describe('app', function() {
     })).body.id;
 
     var deleteNoteResponse = yield client.deleteNote(noteId);
-    assert.equal(deleteNoteResponse.statusCode, 200);
+    expect(deleteNoteResponse.statusCode).to.equal(200);
     assert.ok('message' in deleteNoteResponse.body);
   });
 
@@ -192,7 +192,7 @@ describe('app', function() {
     })).body.id;
 
     var getNoteResponse = yield client.getNote(noteId);
-    assert.equal(getNoteResponse.statusCode, 200);
+    expect(getNoteResponse.statusCode).to.equal(200);
     assert.equal(getNoteResponse.body.id, 1);
     assert.equal(getNoteResponse.body.content, 'hello');
   });
@@ -206,9 +206,9 @@ describe('app', function() {
       id: noteId,
       content: 'hi there'
     });
-    assert.equal(updateNoteResponse.statusCode, 200);
-    assert.equal(updateNoteResponse.body.id, 1);
-    assert.equal(updateNoteResponse.body.content, 'hi there');
+    expect(updateNoteResponse.statusCode).to.equal(200);
+    expect(updateNoteResponse.body.id).to.equal(1);
+    expect(updateNoteResponse.body.content).to.equal('hi there');
   });
 
   it('should let me add categories to the note', function* () {
@@ -231,12 +231,12 @@ describe('app', function() {
     ];
 
     var updateNoteResponse = yield client.updateNote(note);
-    assert.equal(updateNoteResponse.statusCode, 200);
-    assert.equal(updateNoteResponse.body.content, 'hi there');
-    assert.equal(updateNoteResponse.body.categories.length, 2);
+    expect(updateNoteResponse.statusCode).to.equal(200);
+    expect(updateNoteResponse.body.content).to.equal('hi there');
+    expect(updateNoteResponse.body.categories.length).to.equal(2);
 
     note = (yield client.getNote(note.id)).body;
-    assert.equal(note.categories.length, 2);
+    expect(note.categories.length).to.equal(2);
   });
 
   it('should not let me update a note when at least one category does not exist', function* () {
@@ -261,6 +261,7 @@ describe('app', function() {
 
     try {
       yield client.updateNote(note);
+      expect(true).to.equal(false);
     } catch(e) {
       expect(e.response.statusCode).to.equal(400);
       assert.ok('categories' in e.response.body);
@@ -290,9 +291,9 @@ describe('app', function() {
     note.categories = [];
 
     var updateNoteResponse = yield client.updateNote(note);
-    assert.equal(updateNoteResponse.statusCode, 200);
-    assert.equal(updateNoteResponse.body.content, 'hello there');
-    assert.equal(updateNoteResponse.body.categories.length, 0);
+    expect(updateNoteResponse.statusCode).to.equal(200);
+    expect(updateNoteResponse.body.content).to.equal('hello there');
+    expect(updateNoteResponse.body.categories.length).to.equal(0);
   });
 
   it('should let me replace note categories', function* () {
@@ -321,9 +322,9 @@ describe('app', function() {
     ];
 
     var updateNoteResponse = yield client.updateNote(note);
-    assert.equal(updateNoteResponse.statusCode, 200);
-    assert.equal(updateNoteResponse.body.content, 'hello there');
-    assert.equal(updateNoteResponse.body.categories.length, 1);
+    expect(updateNoteResponse.statusCode).to.equal(200);
+    expect(updateNoteResponse.body.content).to.equal('hello there');
+    expect(updateNoteResponse.body.categories.length).to.equal(1);
   });
 
   it('should not let me update a note if note does not exist', function* () {
@@ -360,9 +361,9 @@ describe('app', function() {
     var response = yield client.createCategory({
       name: 'js'
     });
-    assert.equal(response.statusCode, 201);
-    assert.equal(response.body.id, 1);
-    assert.equal(response.body.name, 'js');
+    expect(response.statusCode).to.equal(201);
+    expect(response.body.id).to.equal(1);
+    expect(response.body.name).to.equal('js');
   });
 
   it('should not let me create a category if fields are not valid', function* () {
@@ -370,7 +371,7 @@ describe('app', function() {
       yield client.createCategory({
         name: ''
       });
-      assert.ok(false);
+      expect(true).to.equal(false);
     } catch(e) {
       expect(e.response.statusCode).to.equal(400);
       assert.ok('name' in e.response.body);
@@ -485,13 +486,13 @@ describe('app', function() {
     yield client.createCategory({ name: 'bbb' });
 
     var aCategories = (yield client.getCategoriesWithNamesStartingWith('a')).body;
-    assert.equal(aCategories.length, 4);
+    expect(aCategories.length).to.equal(4);
 
     var abCategories = (yield client.getCategoriesWithNamesStartingWith('ab')).body;
-    assert.equal(abCategories.length, 2);
+    expect(abCategories.length).to.equal(2);
 
     var bCategories = (yield client.getCategoriesWithNamesStartingWith('b')).body;
-    assert.equal(bCategories.length, 2);
+    expect(bCategories.length).to.equal(2);
   });
 
   it('should let me delete category linked to note', function* () {
