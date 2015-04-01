@@ -1,4 +1,4 @@
-module.exports = function(Person, Team, Sequelize) {
+module.exports = function(Person, PersonMembershipsRelation, Sequelize) {
   return function(router) {
     router.post('/people', function* (next) {
       var person;
@@ -26,7 +26,7 @@ module.exports = function(Person, Team, Sequelize) {
 
       person = yield Person.find({
         where: { id: person.id },
-        include: [{ model: Team, as: 'Memberships' }]
+        include: [{ association: PersonMembershipsRelation }]
       }, {
         transaction: this.tx
       });

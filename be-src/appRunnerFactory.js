@@ -27,19 +27,13 @@ module.exports = function(settings) {
     },
     factories: {
       // DATA CONTEXT
+      sequelize: require('./models/sequelize'),
       dataContext: require('./models/dataContext'),
-      registerTeam: require('./models/team'),
-      registerPerson: require('./models/person'),
-      registerMembership: require('./models/membership'),
-      Team: function(dataContext) {
-        return dataContext.models.Team;
-      },
-      Person: function(dataContext) {
-        return dataContext.models.Person;
-      },
-      Membership: function(dataContext) {
-        return dataContext.models.Membership;
-      },
+      Team: require('./models/team'),
+      Person: require('./models/person'),
+      Membership: require('./models/membership'),
+      TeamMembersRelation: require('./models/teamMembersRelation'),
+      PersonMembershipsRelation: require('./models/personMembershipsRelation'),
 
       // STATIC RESOURCES
       staticMiddleware: require('./static/middleware.js'),

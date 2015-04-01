@@ -1,7 +1,5 @@
-module.exports = function(Sequelize) {
-  return function(sequelize) {
-    return sequelize.define('Membership', {
-      role: Sequelize.STRING
-    });
-  };
+module.exports = function(sequelize, Sequelize) {
+  return sequelize.define('Membership', {
+    role: Sequelize.STRING
+  });
 };
