@@ -9,6 +9,11 @@ module.exports = function(RESTError) {
       throw new RESTError(400, data);
     };
 
+    this.okPerson = function(person) {
+      this.status = 200;
+      this.body = makeCompletePersonDTO(person);
+    };
+
     this.createdPerson = function(person) {
       this.status = 201;
       this.body = makeCompletePersonDTO(person);
@@ -25,6 +30,14 @@ module.exports = function(RESTError) {
 
     this.validationError = function(errorMap) {
       throw new RESTError(400, errorMap);
+    };
+
+    this.notFoundError = function() {
+      throw new RESTError(404, {});
+    };
+
+    this.personNotFound = function() {
+      this.notFoundError();
     };
 
     try {

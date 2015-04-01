@@ -48,10 +48,8 @@ module.exports = function(settings) {
       responseMethodsMiddleware: require('./api/responseMethodsMiddleware'),
       transactionalMiddleware: require('./api/transactionalMiddleware'),
       apiMiddleware: require('./api/middleware'),
-      helloSuccessRoute: require('./api/routes/helloSuccess'),
-      helloBadRequestRoute: require('./api/routes/helloBadRequest'),
-      helloInternalErrorRoute: require('./api/routes/helloInternalError'),
       createPersonRoute: require('./api/routes/createPerson'),
+      getPersonRoute: require('./api/routes/getPerson'),
 
       // KOA APPLICATION
       app: require('./app'),

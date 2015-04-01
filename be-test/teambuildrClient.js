@@ -56,4 +56,8 @@ TeambuildrClient.prototype.createPerson = function(person) {
   return this.post('people', null, person);
 };
 
+TeambuildrClient.prototype.getPerson = function(personId) {
+  return this.get('people/{id}', { id: personId });
+};
+
 module.exports = TeambuildrClient;

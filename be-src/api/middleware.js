@@ -1,14 +1,10 @@
 module.exports = function(koaBodyParser, koaCompose, KoaRouter, responseMethodsMiddleware, transactionalMiddleware,
-  helloSuccessRoute,
-  helloBadRequestRoute,
-  helloInternalErrorRoute,
-  createPersonRoute) {
+  createPersonRoute,
+  getPersonRoute) {
 
   var apiRouter = new KoaRouter();
-  helloSuccessRoute(apiRouter);
-  helloBadRequestRoute(apiRouter);
-  helloInternalErrorRoute(apiRouter);
   createPersonRoute(apiRouter);
+  getPersonRoute(apiRouter);
 
   return koaCompose([
     koaBodyParser(),
