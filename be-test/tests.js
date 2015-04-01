@@ -1,5 +1,6 @@
 require('co-mocha');
 var assert = require('assert');
+var expect = require('chai').expect;
 
 var AppRunner = require('../be-src/apprunner.js');
 var NotepadClient = require('../be-src/client.js');
@@ -20,23 +21,23 @@ describe('app', function() {
 
   it('should have no notes by default', function* () {
     var response = yield client.getAllNotes();
-    assert.equal(response.statusCode, 200);
-    assert.equal(response.body.length, 0);
+    expect(response.statusCode).to.equal(200);
+    expect(response.body.length).to.equal(0);
   });
 
   it('should have no categories by default', function* () {
     var response = yield client.getAllCategories();
-    assert.equal(response.statusCode, 200);
-    assert.equal(response.body.length, 0);
+    expect(response.statusCode).to.equal(200);
+    expect(response.body.length).to.equal(0);
   });
 
   it('should let me create a note', function* () {
     var response = yield client.createNote({
       content: 'hello'
     });
-    assert.equal(response.statusCode, 201);
-    assert.equal(response.body.id, 1);
-    assert.equal(response.body.content, 'hello');
+    expect(response.statusCode).to.equal(201);
+    expect(response.body.id).to.equal(1);
+    expect(response.body.content).to.equal('hello');
   });
 
   it('should not let me create a note if content is empty string', function* () {
@@ -44,10 +45,10 @@ describe('app', function() {
       yield client.createNote({
         content: ''
       });
-      assert.ok(false);
+      expect(true).to.equal(false);
     } catch(e) {
-      assert.equal(e.response.statusCode, 400);
-      assert.ok('content' in e.response.body);
+      expect(e.response.statusCode).to.equal(400);
+      expect(e.response.body).to.include.keys('content');
     }
   });
 
@@ -56,20 +57,20 @@ describe('app', function() {
       yield client.createNote({
         content: null
       });
-      assert.ok(false);
+      expect(true).to.equal(false);
     } catch(e) {
-      assert.equal(e.response.statusCode, 400);
-      assert.ok('content' in e.response.body);
+      expect(e.response.statusCode).to.equal(400);
+      expect(e.response.body).to.include.keys('content');
     }
   });
 
   it('should not let me create a note if content is not defined', function* () {
     try {
       yield client.createNote({});
-      assert.ok(false);
+      expect(true).to.equal(false);
     } catch(e) {
-      assert.equal(e.response.statusCode, 400);
-      assert.ok('content' in e.response.body);
+      expect(e.response.statusCode).to.equal(400);
+      expect(e.response.body).to.include.keys('content');
     }
   });
 
@@ -77,7 +78,7 @@ describe('app', function() {
     var createCategoryResponse = yield client.createCategory({
       name: 'js'
     });
-    assert.equal(createCategoryResponse.statusCode, 201);
+    expect(createCategoryResponse.statusCode).to.equal(201);
 
     var categoryId = createCategoryResponse.body.id;
     var createNoteResponse = yield client.createNote({
@@ -86,17 +87,17 @@ describe('app', function() {
         { id: categoryId }
       ]
     });
-    assert.equal(createNoteResponse.statusCode, 201);
-    assert.equal(createNoteResponse.body.id, 1);
-    assert.equal(createNoteResponse.body.content, 'hello there');
-    assert.ok(createNoteResponse.body.categories);
-    assert.equal(createNoteResponse.body.categories.length, 1);
-    assert.equal(createNoteResponse.body.categories[0].id, categoryId);
-    assert.equal(createNoteResponse.body.categories[0].name, 'js');
+    expect(createNoteResponse.statusCode).to.equal(201);
+    expect(createNoteResponse.body.id).to.equal(1);
+    expect(createNoteResponse.body.content).to.equal('hello there');
+    expect(createNoteResponse.body.categories).to.exist;
+    expect(createNoteResponse.body.categories.length).to.equal(1);
+    expect(createNoteResponse.body.categories[0].id).to.equal(categoryId);
+    expect(createNoteResponse.body.categories[0].name).to.equal('js');
 
     var noteId = createNoteResponse.body.id;
     var getNoteResponse = yield client.getNote(noteId);
-    assert.equal(getNoteResponse.body.categories.length, 1);
+    expect(getNoteResponse.body.categories.length).to.equal(1);
   });
 
   it('should let me create a note with multiple categories', function* () {
@@ -115,19 +116,19 @@ describe('app', function() {
         { id: javaCategoryId }
       ]
     });
-    assert.equal(createNoteResponse.statusCode, 201);
-    assert.equal(createNoteResponse.body.id, 1);
-    assert.equal(createNoteResponse.body.content, 'hello there');
-    assert.ok(createNoteResponse.body.categories);
-    assert.equal(createNoteResponse.body.categories.length, 2);
-    assert.equal(createNoteResponse.body.categories[0].id, jsCategoryId);
-    assert.equal(createNoteResponse.body.categories[0].name, 'js');
-    assert.equal(createNoteResponse.body.categories[1].id, javaCategoryId);
-    assert.equal(createNoteResponse.body.categories[1].name, 'java');
+    expect(createNoteResponse.statusCode).to.equal(201);
+    expect(createNoteResponse.body.id).to.equal(1);
+    expect(createNoteResponse.body.content).to.equal('hello there');
+    expect(createNoteResponse.body.categories).to.exist;
+    expect(createNoteResponse.body.categories.length).to.equal(2);
+    expect(createNoteResponse.body.categories[0].id).to.equal(jsCategoryId);
+    expect(createNoteResponse.body.categories[0].name).to.equal('js');
+    expect(createNoteResponse.body.categories[1].id).to.equal(javaCategoryId);
+    expect(createNoteResponse.body.categories[1].name).to.equal('java');
 
     var noteId = createNoteResponse.body.id;
     var getNoteResponse = yield client.getNote(noteId);
-    assert.equal(getNoteResponse.body.categories.length, 2);
+    expect(getNoteResponse.body.categories.length).to.equal(2);
   });
 
   it('should not let me create a note if at least one category does not exist', function* () {
@@ -146,7 +147,7 @@ describe('app', function() {
       });
       assert.ok(false);
     } catch(e) {
-      assert.equal(e.response.statusCode, 400);
+      expect(e.response.statusCode).to.equal(400);
       assert.ok('categories' in e.response.body);
     }
 
@@ -170,17 +171,17 @@ describe('app', function() {
       yield client.deleteNote(123);
       assert.ok(false);
     } catch(e) {
-      assert.equal(e.response.statusCode, 404);
+      expect(e.response.statusCode).to.equal(404);
       assert.ok('message' in e.response.body);
     }
-  }); 
+  });
 
   it('should respond with 404 if note does not exist', function* () {
     try {
       yield client.getNote(123);
       assert.ok(false);
     } catch(e) {
-      assert.equal(e.response.statusCode, 404);
+      expect(e.response.statusCode).to.equal(404);
       assert.ok('message' in e.response.body);
     }
   });
@@ -261,7 +262,7 @@ describe('app', function() {
     try {
       yield client.updateNote(note);
     } catch(e) {
-      assert.equal(e.response.statusCode, 400);
+      expect(e.response.statusCode).to.equal(400);
       assert.ok('categories' in e.response.body);
     }
 
@@ -315,8 +316,8 @@ describe('app', function() {
       ]
     })).body;
 
-    note.categories = [ 
-      { id: dotnetCategoryId } 
+    note.categories = [
+      { id: dotnetCategoryId }
     ];
 
     var updateNoteResponse = yield client.updateNote(note);
@@ -333,7 +334,7 @@ describe('app', function() {
       });
       assert.ok(false);
     } catch(e) {
-      assert.equal(e.response.statusCode, 404);
+      expect(e.response.statusCode).to.equal(404);
       assert.ok('message' in e.response.body);
     }
   });
@@ -350,7 +351,7 @@ describe('app', function() {
       });
       assert.ok(false);
     } catch(e) {
-      assert.equal(e.response.statusCode, 400);
+      expect(e.response.statusCode).to.equal(400);
       assert.ok('content' in e.response.body);
     }
   });
@@ -371,7 +372,7 @@ describe('app', function() {
       });
       assert.ok(false);
     } catch(e) {
-      assert.equal(e.response.statusCode, 400);
+      expect(e.response.statusCode).to.equal(400);
       assert.ok('name' in e.response.body);
     }
   });
@@ -387,7 +388,7 @@ describe('app', function() {
       });
       assert.ok(false);
     } catch(e) {
-      assert.equal(e.response.statusCode, 400);
+      expect(e.response.statusCode).to.equal(400);
       assert.ok('name' in e.response.body);
     }
   });
@@ -406,7 +407,7 @@ describe('app', function() {
     try {
       yield client.deleteCategory(123);
     } catch(e) {
-      assert.equal(e.response.statusCode, 404);
+      expect(e.response.statusCode).to.equal(404);
       assert.ok('message' in e.response.body);
     }
   });
@@ -432,7 +433,7 @@ describe('app', function() {
         name: 'java'
       });
     } catch(e) {
-      assert.equal(e.response.statusCode, 404);
+      expect(e.response.statusCode).to.equal(404);
       assert.ok('message' in e.response.body);
     }
   });
@@ -449,7 +450,7 @@ describe('app', function() {
       });
       assert.ok(false);
     } catch(e) {
-      assert.equal(e.response.statusCode, 400);
+      expect(e.response.statusCode).to.equal(400);
       assert.ok('name' in e.response.body);
     }
   });
@@ -470,7 +471,7 @@ describe('app', function() {
       });
       assert.ok(false);
     } catch(e) {
-      assert.equal(e.response.statusCode, 400);
+      expect(e.response.statusCode).to.equal(400);
       assert.ok('name' in e.response.body);
     }
   });
