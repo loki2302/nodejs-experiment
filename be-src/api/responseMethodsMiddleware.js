@@ -14,6 +14,11 @@ module.exports = function(RESTError) {
       this.body = makeCompletePersonDTO(person);
     };
 
+    this.okPersonCollection = function(people) {
+      this.status = 200;
+      this.body = makeBriefPersonDTOs(people);
+    };
+
     this.createdPerson = function(person) {
       this.status = 201;
       this.body = makeCompletePersonDTO(person);
@@ -52,6 +57,17 @@ module.exports = function(RESTError) {
       }
     }
   };
+
+  function makeBriefPersonDTOs(people) {
+    return people.map(makeBriefPersonDTO);
+  }
+
+  function makeBriefPersonDTO(person) {
+    return {
+      id: person.id,
+      name: person.name
+    };
+  }
 
   function makeCompletePersonDTO(person) {
     return {

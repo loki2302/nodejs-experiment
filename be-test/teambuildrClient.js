@@ -40,24 +40,16 @@ TeambuildrClient.prototype.post = function(resourceTemplateString, resourceValue
   });
 };
 
-TeambuildrClient.prototype.helloSuccess = function() {
-  return this.get('hello/success');
-};
-
-TeambuildrClient.prototype.helloBadRequest = function() {
-  return this.get('hello/badRequest');
-};
-
-TeambuildrClient.prototype.helloInternalError = function() {
-  return this.get('hello/internalError');
-};
-
 TeambuildrClient.prototype.createPerson = function(person) {
   return this.post('people', null, person);
 };
 
 TeambuildrClient.prototype.getPerson = function(personId) {
   return this.get('people/{id}', { id: personId });
+};
+
+TeambuildrClient.prototype.getPeople = function() {
+  return this.get('people', null);
 };
 
 module.exports = TeambuildrClient;

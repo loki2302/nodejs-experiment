@@ -74,4 +74,24 @@ describe('Teambuild API', function() {
       }
     });
   });
+
+  describe('GET /people', function() {
+    it('should have no people by default', function* () {
+      var response = yield client.getPeople();
+      expect(response.statusCode).to.equal(200);
+      expect(response.body.length).to.equal(0);
+    });
+
+    it('should respond with a list of people when at least one person exists', function* () {
+      yield client.createPerson({
+        name: 'john'
+      });
+
+      var people = (yield client.getPeople()).body;
+      expect(people).to.deep.equal([{
+        id: 1,
+        name: 'john'
+      }]);
+    });
+  });
 });
