@@ -42,6 +42,7 @@ module.exports = function(settings) {
       responseMethodsMiddleware: require('./api/responseMethodsMiddleware'),
       transactionalMiddleware: require('./api/transactionalMiddleware'),
       apiMiddleware: require('./api/middleware'),
+      personIdParam: require('./api/routes/personIdParam'),
       createPersonRoute: require('./api/routes/createPerson'),
       getPersonRoute: require('./api/routes/getPerson'),
 
