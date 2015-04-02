@@ -18,7 +18,8 @@ module.exports = function(grunt) {
         src: ['<%= feSrcDir %>/**/*.html', '!**/index.html'],
         dest: '<%= feTemplatesJsFile %>',
         options: {
-          module: 'tbApp',
+          module: 'tbTemplates',
+          standalone: true,
           url: function(url) {
             // TODO: can I access feTemplatesSrcDir here?
             return url.replace('fe-src/', '');

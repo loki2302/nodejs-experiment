@@ -1,4 +1,5 @@
 angular.module('tbApp', [
+  'tbTemplates', // only for AppController
   'ngRoute',
   'tbPeople'
 ])

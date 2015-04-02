@@ -1,5 +1,6 @@
 angular.module('tbPersonList', [
-  'ngRoute'
+  'ngRoute',
+  'tbTemplates'
 ])
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/people', {

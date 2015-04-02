@@ -25,6 +25,8 @@ module.exports = function(config) {
     ],
     ngHtml2JsPreprocessor: {
       // TODO: do I need to put anything here?
+      stripPrefix: 'fe-src/',
+      moduleName: 'tbTemplates' // TODO
     },
     browsers: ['Chrome', 'Firefox']
   });
