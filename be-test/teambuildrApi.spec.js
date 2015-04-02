@@ -139,4 +139,26 @@ describe('Teambuild API', function() {
       expect(response.body.name).to.equal('updated john');
     });
   });
+
+  describe('DELETE /people/{id}', function() {
+    it('should respond with 404 if person does not exist', function* () {
+      try {
+        yield client.deletePerson(123);
+        expect(true).to.equal(false);
+      } catch(e) {
+        expect(e.response.statusCode).to.equal(404);
+      }
+    });
+
+    it('should delete the person if person exists', function* () {
+      var personId = (yield client.createPerson({
+        name: 'john'
+      })).body.id;
+
+      yield client.deletePerson(personId);
+
+      var people = (yield client.getPeople()).body;
+      expect(people.length).to.equal(0);
+    });
+  });
 });

@@ -51,6 +51,16 @@ TeambuildrClient.prototype.put = function(resourceTemplateString, resourceValues
   });
 };
 
+TeambuildrClient.prototype.delete = function(resourceTemplateString, resourceValues) {
+  var url = this.makeUrl(resourceTemplateString, resourceValues);
+  return rp({
+    method: 'DELETE',
+    url: url,
+    json: true,
+    resolveWithFullResponse: true
+  });
+};
+
 TeambuildrClient.prototype.createPerson = function(person) {
   return this.post('people', null, person);
 };
@@ -65,6 +75,10 @@ TeambuildrClient.prototype.getPeople = function() {
 
 TeambuildrClient.prototype.updatePerson = function(person) {
   return this.put('people/{id}', { id: person.id }, person);
+};
+
+TeambuildrClient.prototype.deletePerson = function(personId) {
+  return this.delete('people/{id}', { id: personId });
 };
 
 module.exports = TeambuildrClient;

@@ -1,8 +1,10 @@
 module.exports = function(RESTError) {
   return function* (next) {
-    this.ok = function(data) {
+    this.ok = function(message) {
       this.status = 200;
-      this.body = data;
+      this.body = {
+        message: message
+      };
     };
 
     this.badRequest = function(data) {

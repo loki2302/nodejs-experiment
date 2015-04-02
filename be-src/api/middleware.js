@@ -3,7 +3,8 @@ module.exports = function(koaBodyParser, koaCompose, KoaRouter, responseMethodsM
   createPersonRoute,
   getPersonRoute,
   getPeopleRoute,
-  updatePersonRoute) {
+  updatePersonRoute,
+  deletePersonRoute) {
 
   var apiRouter = new KoaRouter();
   personIdParam(apiRouter);
@@ -11,6 +12,7 @@ module.exports = function(koaBodyParser, koaCompose, KoaRouter, responseMethodsM
   getPersonRoute(apiRouter);
   getPeopleRoute(apiRouter);
   updatePersonRoute(apiRouter);
+  deletePersonRoute(apiRouter);
 
   return koaCompose([
     koaBodyParser(),
