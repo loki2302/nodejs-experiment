@@ -1,12 +1,13 @@
-angular.module('tb.app', [
-  'ngRoute'
+angular.module('tbApp', [
+  'ngRoute',
+  'tbPeople'
 ])
 .config(['$locationProvider', function($locationProvider) {
   $locationProvider.html5Mode(true);
 }])
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.otherwise({
-    redirectTo: '/'
+    redirectTo: '/people'
   });
 }])
 .controller('AppController', ['$scope', function($scope) {

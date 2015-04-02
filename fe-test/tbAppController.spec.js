@@ -1,5 +1,5 @@
-describe('Dummy', function() {
-  beforeEach(module('tb.app'));
+describe('tbAppController', function() {
+  beforeEach(module('tbApp'));
 
   var scope;
   beforeEach(inject(function($controller, $rootScope) {
