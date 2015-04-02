@@ -46,6 +46,7 @@ module.exports = function(settings) {
       createPersonRoute: require('./api/routes/createPerson'),
       getPersonRoute: require('./api/routes/getPerson'),
       getPeopleRoute: require('./api/routes/getPeople'),
+      updatePersonRoute: require('./api/routes/updatePerson'),
 
       // KOA APPLICATION
       app: require('./app'),

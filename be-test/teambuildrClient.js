@@ -40,6 +40,17 @@ TeambuildrClient.prototype.post = function(resourceTemplateString, resourceValue
   });
 };
 
+TeambuildrClient.prototype.put = function(resourceTemplateString, resourceValues, body) {
+  var url = this.makeUrl(resourceTemplateString, resourceValues);
+  return rp({
+    method: 'PUT',
+    url: url,
+    json: true,
+    body: body,
+    resolveWithFullResponse: true
+  });
+};
+
 TeambuildrClient.prototype.createPerson = function(person) {
   return this.post('people', null, person);
 };
@@ -50,6 +61,10 @@ TeambuildrClient.prototype.getPerson = function(personId) {
 
 TeambuildrClient.prototype.getPeople = function() {
   return this.get('people', null);
+};
+
+TeambuildrClient.prototype.updatePerson = function(person) {
+  return this.put('people/{id}', { id: person.id }, person);
 };
 
 module.exports = TeambuildrClient;

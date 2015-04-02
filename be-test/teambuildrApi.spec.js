@@ -94,4 +94,49 @@ describe('Teambuild API', function() {
       }]);
     });
   });
+
+  describe('PUT /people/{id}', function() {
+    it('should respond with 404 if person does not exist', function* () {
+      try {
+        yield client.updatePerson({
+          id: 123,
+          name: 'updated john'
+        });
+        expect(true).to.equal(false);
+      } catch(e) {
+        expect(e.response.statusCode).to.equal(404);
+      }
+    });
+
+    it('should respond with 400 when new field values are not valid', function* () {
+      var personId = (yield client.createPerson({
+        name: 'john'
+      })).body.id;
+
+      try {
+        yield client.updatePerson({
+          id: personId,
+          name: ''
+        });
+        expect(true).to.equal(false);
+      } catch(e) {
+        expect(e.response.statusCode).to.equal(400);
+        expect(e.response.body).to.include.keys('name');
+      }
+    });
+
+    it('should update the person if everything is OK', function* () {
+      var personId = (yield client.createPerson({
+        name: 'john'
+      })).body.id;
+
+      var response = yield client.updatePerson({
+        id: personId,
+        name: 'updated john'
+      });
+      expect(response.statusCode).to.equal(200);
+      expect(response.body.id).to.equal(personId);
+      expect(response.body.name).to.equal('updated john');
+    });
+  });
 });
