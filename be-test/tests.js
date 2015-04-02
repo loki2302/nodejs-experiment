@@ -1,5 +1,4 @@
 require('co-mocha');
-var assert = require('assert');
 var expect = require('chai').expect;
 
 var AppRunner = require('../be-src/apprunner.js');
@@ -145,15 +144,15 @@ describe('app', function() {
           { id: 222 }
         ]
       });
-      assert.ok(false);
+      expect(true).to.equal(false);
     } catch(e) {
       expect(e.response.statusCode).to.equal(400);
-      assert.ok('categories' in e.response.body);
+      expect(e.response.body).to.include.keys('categories');
     }
 
     var getAllNotesResponse = yield client.getAllNotes();
     expect(getAllNotesResponse.statusCode).to.equal(200);
-    assert.equal(getAllNotesResponse.body.length, 0);
+    expect(getAllNotesResponse.body.length).to.equal(0);
   });
 
   it('should let me delete a note', function* () {
@@ -163,26 +162,26 @@ describe('app', function() {
 
     var deleteNoteResponse = yield client.deleteNote(noteId);
     expect(deleteNoteResponse.statusCode).to.equal(200);
-    assert.ok('message' in deleteNoteResponse.body);
+    expect(deleteNoteResponse.body).to.include.keys('message');
   });
 
   it('should not let me delete a note if note does not exist', function* () {
     try {
       yield client.deleteNote(123);
-      assert.ok(false);
+      expect(true).to.equal(false);
     } catch(e) {
       expect(e.response.statusCode).to.equal(404);
-      assert.ok('message' in e.response.body);
+      expect(e.response.body).to.include.keys('message');
     }
   });
 
   it('should respond with 404 if note does not exist', function* () {
     try {
       yield client.getNote(123);
-      assert.ok(false);
+      expect(true).to.equal(false);
     } catch(e) {
       expect(e.response.statusCode).to.equal(404);
-      assert.ok('message' in e.response.body);
+      expect(e.response.body).to.include.keys('message');
     }
   });
 
@@ -193,8 +192,8 @@ describe('app', function() {
 
     var getNoteResponse = yield client.getNote(noteId);
     expect(getNoteResponse.statusCode).to.equal(200);
-    assert.equal(getNoteResponse.body.id, 1);
-    assert.equal(getNoteResponse.body.content, 'hello');
+    expect(getNoteResponse.body.id).to.equal(1);
+    expect(getNoteResponse.body.content).to.equal('hello');
   });
 
   it('should let me update a note', function* () {
@@ -264,11 +263,11 @@ describe('app', function() {
       expect(true).to.equal(false);
     } catch(e) {
       expect(e.response.statusCode).to.equal(400);
-      assert.ok('categories' in e.response.body);
+      expect(e.response.body).to.include.keys('categories');
     }
 
     note = (yield client.getNote(note.id)).body;
-    assert.equal(note.content, 'hello there');
+    expect(note.content).to.equal('hello there');
   });
 
   it('should let me remove note categories', function* () {
@@ -333,10 +332,10 @@ describe('app', function() {
         id: 123,
         content: 'hi there'
       });
-      assert.ok(false);
+      expect(true).to.equal(false);
     } catch(e) {
       expect(e.response.statusCode).to.equal(404);
-      assert.ok('message' in e.response.body);
+      expect(e.response.body).to.include.keys('message');
     }
   });
 
@@ -350,10 +349,10 @@ describe('app', function() {
         id: noteId,
         content: ''
       });
-      assert.ok(false);
+      expect(true).to.equal(false);
     } catch(e) {
       expect(e.response.statusCode).to.equal(400);
-      assert.ok('content' in e.response.body);
+      expect(e.response.body).to.include.keys('content');
     }
   });
 
@@ -374,7 +373,7 @@ describe('app', function() {
       expect(true).to.equal(false);
     } catch(e) {
       expect(e.response.statusCode).to.equal(400);
-      assert.ok('name' in e.response.body);
+      expect(e.response.body).to.include.keys('name');
     }
   });
 
@@ -387,10 +386,10 @@ describe('app', function() {
       yield client.createCategory({
         name: 'js'
       });
-      assert.ok(false);
+      expect(true).to.equal(false);
     } catch(e) {
       expect(e.response.statusCode).to.equal(400);
-      assert.ok('name' in e.response.body);
+      expect(e.response.body).to.include.keys('name');
     }
   });
 
@@ -400,16 +399,17 @@ describe('app', function() {
     })).body.id;
 
     var deleteCategoryResponse = yield client.deleteCategory(categoryId);
-    assert.equal(deleteCategoryResponse.statusCode, 200);
-    assert.ok('message' in deleteCategoryResponse.body);
+    expect(deleteCategoryResponse.statusCode).to.equal(200);
+    expect(deleteCategoryResponse.body).to.include.keys('message');
   });
 
   it('should not let me delete a category if category does not exist', function* () {
     try {
       yield client.deleteCategory(123);
+      expect(true).to.equal(false);
     } catch(e) {
       expect(e.response.statusCode).to.equal(404);
-      assert.ok('message' in e.response.body);
+      expect(e.response.body).to.include.keys('message');
     }
   });
 
@@ -422,9 +422,9 @@ describe('app', function() {
       id: categoryId,
       name: 'java'
     });
-    assert.equal(updateCategoryResponse.statusCode, 200);
-    assert.equal(updateCategoryResponse.body.id, categoryId);
-    assert.equal(updateCategoryResponse.body.name, 'java');
+    expect(updateCategoryResponse.statusCode).to.equal(200);
+    expect(updateCategoryResponse.body.id).to.equal(categoryId);
+    expect(updateCategoryResponse.body.name).to.equal('java');
   });
 
   it('should not let me update category if category does not exist', function* () {
@@ -435,7 +435,7 @@ describe('app', function() {
       });
     } catch(e) {
       expect(e.response.statusCode).to.equal(404);
-      assert.ok('message' in e.response.body);
+      expect(e.response.body).to.include.keys('message');
     }
   });
 
@@ -449,10 +449,10 @@ describe('app', function() {
         id: categoryId,
         name: ''
       });
-      assert.ok(false);
+      expect(true).to.equal(false);
     } catch(e) {
       expect(e.response.statusCode).to.equal(400);
-      assert.ok('name' in e.response.body);
+      expect(e.response.body).to.include.keys('name');
     }
   });
 
@@ -470,10 +470,10 @@ describe('app', function() {
         id: jsCategoryId,
         name: 'java'
       });
-      assert.ok(false);
+      expect(true).to.equal(false);
     } catch(e) {
       expect(e.response.statusCode).to.equal(400);
-      assert.ok('name' in e.response.body);
+      expect(e.response.body).to.include.keys('name');
     }
   });
 
@@ -510,7 +510,7 @@ describe('app', function() {
     yield client.deleteCategory(categoryId);
 
     var note = (yield client.getNote(noteId)).body;
-    assert.equal(note.categories.length, 0);
+    expect(note.categories.length).to.equal(0);
   });
 
   it('should let me delete note linked to category', function* () {
@@ -528,6 +528,6 @@ describe('app', function() {
     yield client.deleteNote(noteId);
 
     var getCategoryResponse = (yield client.getCategory(categoryId));
-    assert.equal(getCategoryResponse.statusCode, 200);
+    expect(getCategoryResponse.statusCode).to.equal(200);
   });
 });
