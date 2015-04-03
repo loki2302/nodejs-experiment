@@ -1,6 +1,6 @@
 angular.module('tbApp', [
-  'tbTemplates', // only for AppController
   'ngRoute',
+  'tbAppController',
   'tbPeople'
 ])
 .config(['$locationProvider', function($locationProvider) {
@@ -10,7 +10,4 @@ angular.module('tbApp', [
   $routeProvider.otherwise({
     redirectTo: '/people'
   });
-}])
-.controller('AppController', ['$scope', function($scope) {
-  $scope.message = 'hello AppController';
 }]);
