@@ -13,7 +13,9 @@ angular.module('tbNewPersonEditor', [
     link: function(scope) {
       scope.person = makeEmptyPerson();
 
-      scope.createPerson = function() {
+      scope.createPerson = function(e) {
+        e.preventDefault();
+
         scope.vf.setAllFieldsValid();
         scope.onCreate({
           person: scope.person
