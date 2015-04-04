@@ -19,8 +19,14 @@
         </div>
       </div>
     </div>
-    <div class="container" ng-view>
-    </div>    
+
+    <div class="container" ng-if="!error" ng-view>
+    </div>
+    <div class="container" ng-if="error">
+      <!-- TODO: extract this to a separate directive to reuse for "otherwise" and route change errors -->
+      <h1>error: {{error}}</h1>
+    </div>
+
     <div class="container">
       <hr>
       <p class="text-muted">Built by <a href="http://loki2302.me" target="_blank">Andrey Agibalov</a> in 2015.</p>

@@ -1,20 +1,17 @@
 angular.module('tbViewPerson', [
   'ngRoute',
   'tbTemplates',
-  'tbApiService'
+  'tbApiService',
+  'tbOperationExecutor'
 ])
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/people/:id', {
     templateUrl: 'people/view/viewPerson.html',
     controller: 'ViewPersonController',
     resolve: {
-      person: ['$route', 'apiService', 'ApiErrors', function($route, apiService, ApiErrors) {
+      person: ['$route', 'execute', 'apiService', function($route, execute, apiService) {
         var id = $route.current.params.id;
-        return apiService.getPerson(id).then(function(person) {
-          return person;
-        }, function(error) {
-          return null;
-        });
+        return execute(apiService.getPerson(id));
       }]
     }
   });

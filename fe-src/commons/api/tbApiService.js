@@ -93,9 +93,8 @@ angular.module('tbApiService', [
   })(),
 
   NotFoundError: (function() {
-    function NotFoundError(errorMap) {
+    function NotFoundError() {
       this.stack = (new Error()).stack;
-      this.errorMap = errorMap;
     }
     NotFoundError.prototype = new Error();
     NotFoundError.prototype.constructor = NotFoundError;
