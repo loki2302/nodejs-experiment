@@ -25,6 +25,15 @@ angular.module('tbApiService', [
       });
     };
 
+    ApiService.prototype.getPerson = function(id) {
+      return handle($http.get(url('people/{id}', { id: id }))).likeThis({
+        0: throwConnectivityError(),
+        200: returnData(),
+        404: throwNotFoundError(),
+        otherwise: throwUnexpectedError()
+      });
+    };
+
     return new ApiService();
 
     function url(resourceTemplateString, resourceValues) {
@@ -46,6 +55,12 @@ angular.module('tbApiService', [
     function throwValidationError() {
       return function(httpResponse) {
         return $q.reject(new ApiErrors.ValidationError(httpResponse.data));
+      };
+    };
+
+    function throwNotFoundError() {
+      return function() {
+        return $q.reject(new ApiErrors.NotFoundError());
       };
     };
 
@@ -75,6 +90,17 @@ angular.module('tbApiService', [
     ValidationError.prototype.constructor = ValidationError;
     ValidationError.name = 'ValidationError';
     return ValidationError;
+  })(),
+
+  NotFoundError: (function() {
+    function NotFoundError(errorMap) {
+      this.stack = (new Error()).stack;
+      this.errorMap = errorMap;
+    }
+    NotFoundError.prototype = new Error();
+    NotFoundError.prototype.constructor = NotFoundError;
+    NotFoundError.name = 'NotFoundError';
+    return NotFoundError;
   })(),
 
   UnexpectedError: (function() {
