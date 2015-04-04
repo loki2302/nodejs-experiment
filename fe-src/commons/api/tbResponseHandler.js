@@ -7,7 +7,7 @@ angular.module('tbResponseHandler', [
   ResponseHandler.prototype.likeThis = function(handlerMap) {
     return this.responsePromise.then(handleHttpResponse, handleHttpResponse);
 
-    function handleHttpResponse(httpResponse) {      
+    function handleHttpResponse(httpResponse) {
       var statusCode = httpResponse.status;
       var handlerFunc = handlerMap[statusCode];
       if(!handlerFunc) {

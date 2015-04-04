@@ -18,7 +18,7 @@ angular.module('tbApiService', [
 
     ApiService.prototype.createPerson = function(person) {
       return handle($http.post(url('people'), person)).likeThis({
-        //0: throwConnectivityError(), // why does the test pass even without this?
+        0: throwConnectivityError(),
         201: returnData(),
         400: throwValidationError(),
         otherwise: throwUnexpectedError()
@@ -27,7 +27,7 @@ angular.module('tbApiService', [
 
     ApiService.prototype.getPerson = function(id) {
       return handle($http.get(url('people/{id}', { id: id }))).likeThis({
-        //0: throwConnectivityError(), // why does the test pass even without this?
+        0: throwConnectivityError(),
         200: returnData(),
         404: throwNotFoundError(),
         otherwise: throwUnexpectedError()
@@ -36,8 +36,9 @@ angular.module('tbApiService', [
 
     ApiService.prototype.updatePerson = function(person) {
       return handle($http.put(url('people/{id}', { id: person.id }), person)).likeThis({
-        //0: throwConnectivityError(), // why does the test pass even without this?
+        0: throwConnectivityError(),
         200: returnData(),
+        400: throwValidationError(),
         404: throwNotFoundError(),
         otherwise: throwUnexpectedError()
       });
@@ -45,7 +46,7 @@ angular.module('tbApiService', [
 
     ApiService.prototype.deletePerson = function(id) {
       return handle($http.delete(url('people/{id}', { id: id }))).likeThis({
-        //0: throwConnectivityError(), // why does the test pass even without this?
+        0: throwConnectivityError(),
         200: returnData(),
         404: throwNotFoundError(),
         otherwise: throwUnexpectedError()
@@ -54,7 +55,7 @@ angular.module('tbApiService', [
 
     ApiService.prototype.getPeople = function() {
       return handle($http.get(url('people'))).likeThis({
-        //0: throwConnectivityError(), // why does the test pass even without this?
+        0: throwConnectivityError(),
         200: returnData(),
         otherwise: throwUnexpectedError()
       });

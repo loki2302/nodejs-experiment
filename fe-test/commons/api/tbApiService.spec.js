@@ -65,8 +65,10 @@ describe('tbApiService', function() {
        $httpBackend.flush();
 
        $httpBackend.verifyNoOutstandingRequest();
-       expect(onError).toHaveBeenCalledWith(new ApiErrors.ValidationError({
-         name: 'bad'
+
+       expect(onError).toHaveBeenCalledWith(jasmine.any(ApiErrors.ValidationError));
+       expect(onError).toHaveBeenCalledWith(jasmine.objectContaining({
+         errorMap: { name: 'bad' }
        }));
      });
 
@@ -77,7 +79,7 @@ describe('tbApiService', function() {
        $httpBackend.flush();
 
        $httpBackend.verifyNoOutstandingRequest();
-       expect(onError).toHaveBeenCalledWith(new ApiErrors.ConnectivityError());
+       expect(onError).toHaveBeenCalledWith(jasmine.any(ApiErrors.ConnectivityError));
      });
 
      it('should throw the UnexpectedError when 418', function() {
@@ -87,7 +89,7 @@ describe('tbApiService', function() {
        $httpBackend.flush();
 
        $httpBackend.verifyNoOutstandingRequest();
-       expect(onError).toHaveBeenCalledWith(new ApiErrors.UnexpectedError());
+       expect(onError).toHaveBeenCalledWith(jasmine.any(ApiErrors.UnexpectedError));
      });
    });
 
@@ -131,8 +133,10 @@ describe('tbApiService', function() {
        $httpBackend.flush();
 
        $httpBackend.verifyNoOutstandingRequest();
-       expect(onError).toHaveBeenCalledWith(new ApiErrors.ValidationError({
-         name: 'bad'
+
+       expect(onError).toHaveBeenCalledWith(jasmine.any(ApiErrors.ValidationError));
+       expect(onError).toHaveBeenCalledWith(jasmine.objectContaining({
+         errorMap: { name: 'bad' }
        }));
      });
 
@@ -143,7 +147,7 @@ describe('tbApiService', function() {
        $httpBackend.flush();
 
        $httpBackend.verifyNoOutstandingRequest();
-       expect(onError).toHaveBeenCalledWith(new ApiErrors.ConnectivityError());
+       expect(onError).toHaveBeenCalledWith(jasmine.any(ApiErrors.ConnectivityError));
      });
 
      it('should throw the UnexpectedError when 418', function() {
@@ -153,7 +157,7 @@ describe('tbApiService', function() {
        $httpBackend.flush();
 
        $httpBackend.verifyNoOutstandingRequest();
-       expect(onError).toHaveBeenCalledWith(new ApiErrors.UnexpectedError());
+       expect(onError).toHaveBeenCalledWith(jasmine.any(ApiErrors.UnexpectedError));
      });
    });
 
@@ -185,7 +189,7 @@ describe('tbApiService', function() {
        $httpBackend.flush();
 
        $httpBackend.verifyNoOutstandingRequest();
-       expect(onError).toHaveBeenCalledWith(new ApiErrors.NotFoundError());
+       expect(onError).toHaveBeenCalledWith(jasmine.any(ApiErrors.NotFoundError));
      });
 
      it('should throw the ConnectivityError when 0', function() {
@@ -195,7 +199,7 @@ describe('tbApiService', function() {
        $httpBackend.flush();
 
        $httpBackend.verifyNoOutstandingRequest();
-       expect(onError).toHaveBeenCalledWith(new ApiErrors.ConnectivityError());
+       expect(onError).toHaveBeenCalledWith(jasmine.any(ApiErrors.ConnectivityError));
      });
 
      it('should throw the UnexpectedError when 418', function() {
@@ -205,7 +209,7 @@ describe('tbApiService', function() {
        $httpBackend.flush();
 
        $httpBackend.verifyNoOutstandingRequest();
-       expect(onError).toHaveBeenCalledWith(new ApiErrors.UnexpectedError());
+       expect(onError).toHaveBeenCalledWith(jasmine.any(ApiErrors.UnexpectedError));
      });
    });
 
@@ -243,7 +247,7 @@ describe('tbApiService', function() {
        $httpBackend.flush();
 
        $httpBackend.verifyNoOutstandingRequest();
-       expect(onError).toHaveBeenCalledWith(new ApiErrors.NotFoundError());
+       expect(onError).toHaveBeenCalledWith(jasmine.any(ApiErrors.NotFoundError));
      });
 
      it('should throw the ConnectivityError when 0', function() {
@@ -253,7 +257,7 @@ describe('tbApiService', function() {
        $httpBackend.flush();
 
        $httpBackend.verifyNoOutstandingRequest();
-       expect(onError).toHaveBeenCalledWith(new ApiErrors.ConnectivityError());
+       expect(onError).toHaveBeenCalledWith(jasmine.any(ApiErrors.ConnectivityError));
      });
 
      it('should throw the UnexpectedError when 418', function() {
@@ -263,7 +267,7 @@ describe('tbApiService', function() {
        $httpBackend.flush();
 
        $httpBackend.verifyNoOutstandingRequest();
-       expect(onError).toHaveBeenCalledWith(new ApiErrors.UnexpectedError());
+       expect(onError).toHaveBeenCalledWith(jasmine.any(ApiErrors.UnexpectedError));
      });
    });
 
@@ -295,7 +299,7 @@ describe('tbApiService', function() {
        $httpBackend.flush();
 
        $httpBackend.verifyNoOutstandingRequest();
-       expect(onError).toHaveBeenCalledWith(new ApiErrors.ConnectivityError());
+       expect(onError).toHaveBeenCalledWith(jasmine.any(ApiErrors.ConnectivityError));
      });
 
      it('should throw the UnexpectedError when 418', function() {
@@ -305,7 +309,7 @@ describe('tbApiService', function() {
        $httpBackend.flush();
 
        $httpBackend.verifyNoOutstandingRequest();
-       expect(onError).toHaveBeenCalledWith(new ApiErrors.UnexpectedError());
+       expect(onError).toHaveBeenCalledWith(jasmine.any(ApiErrors.UnexpectedError));
      });
    });
 });
