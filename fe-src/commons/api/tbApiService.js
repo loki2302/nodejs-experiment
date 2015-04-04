@@ -18,7 +18,7 @@ angular.module('tbApiService', [
 
     ApiService.prototype.createPerson = function(person) {
       return handle($http.post(url('people'), person)).likeThis({
-        0: throwConnectivityError(),
+        //0: throwConnectivityError(), // why does the test pass even without this?
         201: returnData(),
         400: throwValidationError(),
         otherwise: throwUnexpectedError()
@@ -27,9 +27,17 @@ angular.module('tbApiService', [
 
     ApiService.prototype.getPerson = function(id) {
       return handle($http.get(url('people/{id}', { id: id }))).likeThis({
-        0: throwConnectivityError(),
+        //0: throwConnectivityError(), // why does the test pass even without this?
         200: returnData(),
         404: throwNotFoundError(),
+        otherwise: throwUnexpectedError()
+      });
+    };
+
+    ApiService.prototype.getPeople = function() {
+      return handle($http.get(url('people'))).likeThis({
+        //0: throwConnectivityError(), // why does the test pass even without this?
+        200: returnData(),
         otherwise: throwUnexpectedError()
       });
     };

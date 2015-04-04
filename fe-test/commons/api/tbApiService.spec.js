@@ -148,4 +148,46 @@ describe('tbApiService', function() {
        expect(onError).toHaveBeenCalledWith(new ApiErrors.UnexpectedError());
      });
    });
+
+   describe('getPeople()', function() {
+     function makeApiCall() {
+       apiService.getPeople().then(onSuccess, onError);
+     };
+
+     it('should do the GET /api/people', function() {
+       $httpBackend.expect('GET', '/api/people').respond(0);
+       makeApiCall();
+       $httpBackend.verifyNoOutstandingExpectation();
+     });
+
+     it('should return the response body when 200', function() {
+       $httpBackend.expect('GET', '/api/people').respond(200, [{},{}]);
+
+       makeApiCall();
+       $httpBackend.flush();
+
+       $httpBackend.verifyNoOutstandingRequest();
+       expect(onSuccess).toHaveBeenCalledWith([{},{}]);
+     });
+
+     it('should throw the ConnectivityError when 0', function() {
+       $httpBackend.when('GET', '/api/people').respond(0);
+
+       makeApiCall();
+       $httpBackend.flush();
+
+       $httpBackend.verifyNoOutstandingRequest();
+       expect(onError).toHaveBeenCalledWith(new ApiErrors.ConnectivityError());
+     });
+
+     it('should throw the UnexpectedError when 418', function() {
+       $httpBackend.when('GET', '/api/people').respond(418);
+
+       makeApiCall();
+       $httpBackend.flush();
+
+       $httpBackend.verifyNoOutstandingRequest();
+       expect(onError).toHaveBeenCalledWith(new ApiErrors.UnexpectedError());
+     });
+   });
 });
