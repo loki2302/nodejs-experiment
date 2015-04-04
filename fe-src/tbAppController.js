@@ -20,6 +20,11 @@ angular.module('tbAppController', [
     // TODO: extract this to a separate directive to reuse for "otherwise" and route change errors
     $rootScope.$on('$routeChangeSuccess', function(event, current, previous) {
       console.log('$routeChangeSuccess', event, current, previous);
+      if(current.controller === 'OtherwiseController') {
+        console.log('current controller is otherwisecontroller', $rootScope.error);
+        return;
+      }
+
       $rootScope.error = null;
     });
 

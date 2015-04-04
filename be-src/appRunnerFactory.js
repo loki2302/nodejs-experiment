@@ -18,7 +18,9 @@ module.exports = function(settings) {
       staticRootPath: path.resolve(__dirname, '../fe-build/'),
       indexHtmlPath: path.resolve(__dirname, '../fe-build/index.html'),
       indexLocations: [
-        '/',
+        // should I distinguish between the valid and invalid routes?
+        // when the route is not whitelisted, should I return index.html with 404?
+        /*'/',
         '/people',
         '/people/:id',
         '/people/:id/edit',
@@ -26,7 +28,8 @@ module.exports = function(settings) {
         '/teams',
         '/teams/:id',
         '/teams/:id/edit',
-        '/teams/create',
+        '/teams/create',*/
+        /^\/.*$/i
       ],
       staticRootLocation: '/',
       apiRootLocation: '/api',

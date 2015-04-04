@@ -16,10 +16,11 @@ describe('Dummy', function() {
     appRunner = null;
   });
 
-  describe('/', function() {
-    it('should redirect me to /people when I go to /', function() {
-      browser.get('/');
-      expect(browser.getLocationAbsUrl()).toBe('/people');
+  describe('A random route', function() {
+    it('should result in 404', function() {
+      browser.get('/a-random-route');
+      expect(browser.getLocationAbsUrl()).toBe('/a-random-route');
+      expect(element(by.css('body')).getText()).toContain('404');
     });
   });
 
