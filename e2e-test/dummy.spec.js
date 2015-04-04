@@ -33,10 +33,8 @@ describe('Dummy', function() {
       expect(element(by.css('.nav-teams')).getAttribute('class')).not.toContain('active');
     });
 
-    it('should display a dummy message', function() {
-      var pElement = element(by.css('p'));
-      expect(pElement.isPresent()).toBe(true);
-      expect(pElement.getText()).toBe('personListControllerMessage: hello there resolved data');
+    it('should have a person list', function() {
+      expect(element(by.css('#person-list')).isPresent()).toBe(true);
     });
   });
 

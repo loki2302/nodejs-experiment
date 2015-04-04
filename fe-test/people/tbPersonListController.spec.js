@@ -10,8 +10,7 @@ describe('tbPersonListController', function() {
     });
   }));
 
-  it('should publish a message on the scope', function() {
-    expect(scope.personListControllerMessage).toBeDefined();
-    expect(scope.personListControllerMessage).toBe('hello there test data');
+  it('should publish a collection of people', function() {
+    expect(scope.people).toBeDefined();
   });
 });

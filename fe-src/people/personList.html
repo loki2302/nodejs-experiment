@@ -1,2 +1,9 @@
-<h3>it's person list html</h3>
-<p>personListControllerMessage: {{personListControllerMessage}}</p>
+<h3 class="page-header">People</h3>
+<div id="no-people-alert" class="alert alert-info" ng-if="people.length === 0">
+  There are no people so far. <a href="/people/create" class="btn btn-default">Add a person</a>
+</div>
+<div id="person-list" class="list-unstyled" ng-if="people.length > 0">
+  <li ng-class="'person-' + {{$index}}" ng-repeat="person in people">
+    <a ng-href="/people/{{person.id}}">{{person.name}}</a>
+  </li>
+</div>

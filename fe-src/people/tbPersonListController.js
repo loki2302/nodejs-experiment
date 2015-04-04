@@ -8,11 +8,17 @@ angular.module('tbPersonList', [
     controller: 'PersonListController',
     resolve: {
       people: [function() {
-        return 'resolved data';
+        return [
+          { id: 1, name: 'John Smith' },
+          { id: 2, name: 'Bill Gates' },
+          { id: 3, name: 'Steve Jobs' },
+          { id: 4, name: 'Sergey Brin' },
+          { id: 5, name: 'Elon Musk' }
+        ];
       }]
     }
   });
 }])
 .controller('PersonListController', ['$scope', 'people', function($scope, people) {
-  $scope.personListControllerMessage = 'hello there ' + people;
+  $scope.people = people;
 }]);
