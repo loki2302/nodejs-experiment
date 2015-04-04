@@ -34,10 +34,19 @@ angular.module('tbApiService', [
       });
     };
 
+    ApiService.prototype.updatePerson = function(person) {
+      return handle($http.put(url('people/{id}', { id: person.id }), person)).likeThis({
+        //0: throwConnectivityError(), // why does the test pass even without this?
+        200: returnData(),
+        404: throwNotFoundError(),
+        otherwise: throwUnexpectedError()
+      });
+    };
+
     ApiService.prototype.deletePerson = function(id) {
       return handle($http.delete(url('people/{id}', { id: id }))).likeThis({
         //0: throwConnectivityError(), // why does the test pass even without this?
-        200: returnData(),        
+        200: returnData(),
         404: throwNotFoundError(),
         otherwise: throwUnexpectedError()
       });

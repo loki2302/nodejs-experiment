@@ -43,7 +43,7 @@ describe('tbApiService', function() {
      };
 
      it('should do the POST /api/people', function() {
-       $httpBackend.expect('POST', '/api/people').respond(0);
+       $httpBackend.expect('POST', '/api/people', { name: 'john' }).respond(0);
        makeApiCall();
        $httpBackend.verifyNoOutstandingExpectation();
      });
@@ -91,7 +91,73 @@ describe('tbApiService', function() {
      });
    });
 
-   describe('deletePerson', function() {
+   describe('updatePerson', function() {
+     function makeApiCall() {
+       apiService.updatePerson({
+         id: 123,
+         name: 'john'
+       }).then(onSuccess, onError);
+     };
+
+     it('should do the PUT /api/people/123', function() {
+       $httpBackend.expect('PUT', '/api/people/123', {
+         id: 123,
+         name: 'john'
+       }).respond(0);
+       makeApiCall();
+       $httpBackend.verifyNoOutstandingExpectation();
+     });
+
+     it('should return the response body when 200', function() {
+       $httpBackend.when('PUT', '/api/people/123').respond(200, {
+         id: 123,
+         name: 'john'
+       });
+
+       makeApiCall();
+       $httpBackend.flush();
+
+       $httpBackend.verifyNoOutstandingRequest();
+       expect(onSuccess).toHaveBeenCalledWith({
+         id: 123,
+         name: 'john'
+       });
+     });
+
+     it('should throw the ValidationError when 400', function() {
+       $httpBackend.when('PUT', '/api/people/123').respond(400, { name: 'bad' });
+
+       makeApiCall();
+       $httpBackend.flush();
+
+       $httpBackend.verifyNoOutstandingRequest();
+       expect(onError).toHaveBeenCalledWith(new ApiErrors.ValidationError({
+         name: 'bad'
+       }));
+     });
+
+     it('should throw the ConnectivityError when 0', function() {
+       $httpBackend.when('PUT', '/api/people/123').respond(0);
+
+       makeApiCall();
+       $httpBackend.flush();
+
+       $httpBackend.verifyNoOutstandingRequest();
+       expect(onError).toHaveBeenCalledWith(new ApiErrors.ConnectivityError());
+     });
+
+     it('should throw the UnexpectedError when 418', function() {
+       $httpBackend.when('PUT', '/api/people/123').respond(418);
+
+       makeApiCall();
+       $httpBackend.flush();
+
+       $httpBackend.verifyNoOutstandingRequest();
+       expect(onError).toHaveBeenCalledWith(new ApiErrors.UnexpectedError());
+     });
+   });
+
+   describe('deletePerson()', function() {
      function makeApiCall() {
        apiService.deletePerson(123).then(onSuccess, onError);
      };
@@ -103,7 +169,7 @@ describe('tbApiService', function() {
      });
 
      it('should return the response body when 200', function() {
-       $httpBackend.expect('DELETE', '/api/people/123').respond(200);
+       $httpBackend.when('DELETE', '/api/people/123').respond(200);
 
        makeApiCall();
        $httpBackend.flush();
@@ -113,7 +179,7 @@ describe('tbApiService', function() {
      });
 
      it('should throw the NotFoundError when 404', function() {
-       $httpBackend.expect('DELETE', '/api/people/123').respond(404);
+       $httpBackend.when('DELETE', '/api/people/123').respond(404);
 
        makeApiCall();
        $httpBackend.flush();
@@ -155,7 +221,7 @@ describe('tbApiService', function() {
      });
 
      it('should return the response body when 200', function() {
-       $httpBackend.expect('GET', '/api/people/123').respond(200, {
+       $httpBackend.when('GET', '/api/people/123').respond(200, {
          id: 123,
          name: 'john'
        });
@@ -171,7 +237,7 @@ describe('tbApiService', function() {
      });
 
      it('should throw the NotFoundError when 404', function() {
-       $httpBackend.expect('GET', '/api/people/123').respond(404);
+       $httpBackend.when('GET', '/api/people/123').respond(404);
 
        makeApiCall();
        $httpBackend.flush();
@@ -213,7 +279,7 @@ describe('tbApiService', function() {
      });
 
      it('should return the response body when 200', function() {
-       $httpBackend.expect('GET', '/api/people').respond(200, [{},{}]);
+       $httpBackend.when('GET', '/api/people').respond(200, [{},{}]);
 
        makeApiCall();
        $httpBackend.flush();
