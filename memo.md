@@ -1,15 +1,9 @@
 # todo
 
-+it should publish createPerson() on the scope
-
-+it should call api.createPerson(), then execute()
-
-if api.createPerson() succeeds
-  it should change $location.path
-  it should resolve a promise without an error
-
-if api.createPerson() fails
-  if ValidationError
-    it should return the rejection with error map
-  if non-ValidationError
-    it should throw ($exceptionHandler)
+* Check if `CreatePersonController` uses `execute()`.
+* Check if `ViewPersonController` uses `execute()`.
+* ViewPersonController spec
+* ViewPersonController implementation
+* ViewPersonController/routing 404 handling (???)
+* 404 for bad URLs (otherwise(controller, templateurl))
+* 404 for resource which failed to resolve

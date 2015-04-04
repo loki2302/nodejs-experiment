@@ -5,18 +5,23 @@ angular.module('tbViewPerson', [
 ])
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/people/:id', {
-    template: '<h1>person: {{id}}</h1>',
+    templateUrl: 'people/view/viewPerson.html',
     controller: 'ViewPersonController',
     resolve: {
-      id: ['$route', function($route) {
-        return $route.current.params.id;
+      person: ['$route', 'apiService', 'ApiErrors', function($route, apiService, ApiErrors) {
+        var id = $route.current.params.id;
+        return apiService.getPerson(id).then(function(person) {
+          return person;
+        }, function(error) {
+          return null;
+        });
       }]
     }
   });
 }])
 .controller('ViewPersonController', [
-  '$scope', 'id',
-  function($scope, id) {
-    $scope.id = id;
+  '$scope', 'person',
+  function($scope, person) {
+    $scope.person = person;
   }]
 );

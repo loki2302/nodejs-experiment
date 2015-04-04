@@ -6,12 +6,16 @@ describe('tbViewPersonController', function() {
     scope = $rootScope.$new();
     $controller('ViewPersonController', {
       $scope: scope,
-      id: 123
+      person: {
+        id: 123,
+        name: 'john'
+      }
     });
   }));
 
   it('should publish a person id', function() {
-    expect(scope.id).toBeDefined();
-    expect(scope.id).toBe(123);
+    expect(scope.person).toBeDefined();
+    expect(scope.person.id).toBe(123);
+    expect(scope.person.name).toBe('john');
   });
 });
