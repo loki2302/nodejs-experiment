@@ -1,7 +1,8 @@
 angular.module('tbApp', [
   'ngRoute',
   'tbAppController',
-  'tbPeople'
+  'tbPeople',
+  'tbTeams'
 ])
 .config(['$locationProvider', function($locationProvider) {
   $locationProvider.html5Mode(true);

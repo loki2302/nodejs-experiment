@@ -16,15 +16,44 @@ describe('Dummy', function() {
     appRunner = null;
   });
 
-  it('should work', function() {
-    browser.get('/');
+  describe('/', function() {
+    it('should redirect me to /people when I go to /', function() {
+      browser.get('/');
+      expect(browser.getLocationAbsUrl()).toBe('/people');
+    });
+  });
 
-    var h1Element = element(by.css('h1'));
-    expect(h1Element.isPresent()).toBe(true);
-    expect(h1Element.getText()).toBe('hello AppController');
+  describe('/people', function() {
+    beforeEach(function() {
+      browser.get('/people');
+    });
 
-    var pElement = element(by.css('p'));
-    expect(pElement.isPresent()).toBe(true);
-    expect(pElement.getText()).toBe('personListControllerMessage: hello there resolved data');
+    it('should highlight the "people" navbar', function() {
+      expect(element(by.css('.nav-people')).getAttribute('class')).toContain('active');
+      expect(element(by.css('.nav-teams')).getAttribute('class')).not.toContain('active');
+    });
+
+    it('should display a dummy message', function() {
+      var pElement = element(by.css('p'));
+      expect(pElement.isPresent()).toBe(true);
+      expect(pElement.getText()).toBe('personListControllerMessage: hello there resolved data');
+    });
+  });
+
+  describe('/teams', function() {
+    beforeEach(function() {
+      browser.get('/teams');
+    });
+
+    it('should highlight the "teams" navbar', function() {
+      expect(element(by.css('.nav-people')).getAttribute('class')).not.toContain('active');
+      expect(element(by.css('.nav-teams')).getAttribute('class')).toContain('active');
+    });
+
+    it('should display a dummy message', function() {
+      var pElement = element(by.css('p'));
+      expect(pElement.isPresent()).toBe(true);
+      expect(pElement.getText()).toBe('teamListControllerMessage: hello there resolved data');
+    });
   });
 });
