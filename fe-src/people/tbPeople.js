@@ -1,3 +1,5 @@
 angular.module('tbPeople', [
-  'tbPersonList'
+  'tbPersonList',
+  'tbCreatePerson',
+  'tbViewPerson'
 ]);

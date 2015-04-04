@@ -17,7 +17,17 @@ module.exports = function(settings) {
 
       staticRootPath: path.resolve(__dirname, '../fe-build/'),
       indexHtmlPath: path.resolve(__dirname, '../fe-build/index.html'),
-      indexLocations: ['/', '/teams', '/people'],
+      indexLocations: [
+        '/',
+        '/people',
+        '/people/:id',
+        '/people/:id/edit',
+        '/people/create',
+        '/teams',
+        '/teams/:id',
+        '/teams/:id/edit',
+        '/teams/create',
+      ],
       staticRootLocation: '/',
       apiRootLocation: '/api',
 
