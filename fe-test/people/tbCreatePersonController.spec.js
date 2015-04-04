@@ -1,15 +1,21 @@
 describe('tbCreatePerson', function() {
   beforeEach(module('tbCreatePerson', function(apiServiceProvider) {
     apiServiceProvider.apiRoot('/api/');
-  }, function($exceptionHandlerProvider) {
-    // how do I only apply this to a single test?
-    $exceptionHandlerProvider.mode('log');
   }));
 
-  // should I mock all the implicit things?
   var $scope;
-  beforeEach(inject(function($controller, $rootScope, $q, $location, execute, apiService, ApiErrors) {
+  var $q;
+  var $location;
+  var apiService;
+  var ApiErrors;
+  beforeEach(inject(function($controller, $rootScope, _$q_, _$location_, execute, _apiService_, _ApiErrors_) {
     $scope = $rootScope.$new();
+    $q = _$q_;
+    $location = _$location_;
+
+    apiService = _apiService_;
+    ApiErrors = _ApiErrors_;
+
     $controller('CreatePersonController', {
       $scope: $scope,
       $q: $q,
@@ -20,61 +26,76 @@ describe('tbCreatePerson', function() {
     });
   }));
 
-  it('should publish a createPerson() function on the scope', function() {
+  it('should publish a createPerson() on the scope', function() {
     expect($scope.createPerson).toBeDefined();
   });
 
-  it('should redirect user to the person page, if the person has been created successfully', inject(function($httpBackend, $location) {
-    $httpBackend
-      .when('POST', '/api/people')
-      .respond(201, {
-        id: 123,
-        name: 'john'
+  it('should call apiService.createPerson()', function() {
+    spyOn(apiService, 'createPerson').and.callThrough();
+    $scope.createPerson({ name: 'john' });
+    expect(apiService.createPerson).toHaveBeenCalledWith({ name: 'john' });
+  });
+
+  describe('when apiService.createPerson() call finishes', function() {
+    var apiServiceCreatePersonDeferred;
+    var onSuccess;
+    var onError;
+    beforeEach(function() {
+      apiServiceCreatePersonDeferred = $q.defer();
+      spyOn(apiService, 'createPerson').and.callFake(function(person) {
+        return apiServiceCreatePersonDeferred.promise;
       });
 
-    var onSuccess = jasmine.createSpy('onSuccess');
-    $scope.createPerson({
-      name: 'john'
-    }).then(onSuccess);
-
-    $httpBackend.flush();
-
-    expect(onSuccess).toHaveBeenCalled();
-    expect($location.path()).toBe('/people/123');
-  }));
-
-  it('should return an error map if ValidationError appears', inject(function($httpBackend) {
-    $httpBackend
-      .when('POST', '/api/people')
-      .respond(400, {
-        name: 'ugly'
-      });
-
-    var onError = jasmine.createSpy('onError');
-    $scope.createPerson({
-      name: 'john'
-    }).then(null, onError);
-
-    $httpBackend.flush();
-
-    expect(onError).toHaveBeenCalledWith(jasmine.objectContaining({
-      name: 'ugly'
-    }));
-  }));
-
-  it('should throw if non-ValidationError appears', inject(function($httpBackend, $exceptionHandler, ApiErrors) {
-    $httpBackend
-      .when('POST', '/api/people')
-      .respond(418);
-
-    $scope.createPerson({
-      name: 'john'
+      onSuccess = jasmine.createSpy('onSuccess');
+      onError = jasmine.createSpy('onError');
+      $scope.createPerson({ name: 'john' }).then(onSuccess, onError);
     });
 
-    $httpBackend.flush();
+    describe('if it finishes successfully', function() {
+      beforeEach(function() {
+        $scope.$apply(function() {
+          apiServiceCreatePersonDeferred.resolve({ id: 123 });
+        });
+      });
 
-    expect($exceptionHandler.errors.length).toBe(1);
-    // TODO: how do I avoid using the .constructor?
-    expect($exceptionHandler.errors[0].constructor).toBe(ApiErrors.UnexpectedError);
-  }));
+      it('should resolve the returned promise', function() {
+        expect(onSuccess).toHaveBeenCalledWith(undefined);
+      });
+
+      it('should redirect the user to /people/:id', function() {
+        expect($location.path()).toBe('/people/123');
+      });
+    });
+
+    describe('if it finishes with an error', function() {
+      describe('and that error is ValidationError', function() {
+        beforeEach(function() {
+          $scope.$apply(function() {
+            apiServiceCreatePersonDeferred.reject(new ApiErrors.ValidationError({
+              name: 'ugly'
+            }));
+          });
+        });
+
+        it('should reject the returned promise with field error map', function() {
+          expect(onError).toHaveBeenCalledWith({
+            name: 'ugly'
+          });
+        });
+      });
+
+      describe('and that error is NOT ValidationError', function() {
+        beforeEach(function() {
+          // this call is outside the digest context by intention
+          apiServiceCreatePersonDeferred.reject(new ApiErrors.UnexpectedError());
+        });
+
+        it('should re-throw that error', function() {
+          expect(function() {
+            $scope.$digest();
+          }).toThrowError(ApiErrors.UnexpectedError);
+        });
+      });
+    });
+  });
 });

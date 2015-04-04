@@ -56,9 +56,34 @@ angular.module('tbApiService', [
     };
   }];
 }).value('ApiErrors', {
-  ConnectivityError: function ConnectivityError() {},
-  ValidationError: function ValidationError(errorMap) {
-    this.errorMap = errorMap;
-  },
-  UnexpectedError: function UnexpectedError() {}
+  ConnectivityError: (function() {
+    function ConnectivityError() {
+      this.stack = (new Error()).stack;
+    }
+    ConnectivityError.prototype = new Error();
+    ConnectivityError.prototype.constructor = ConnectivityError;
+    ConnectivityError.name = 'ConnectivityError';
+    return ConnectivityError;
+  })(),
+
+  ValidationError: (function() {
+    function ValidationError(errorMap) {
+      this.stack = (new Error()).stack;
+      this.errorMap = errorMap;
+    }
+    ValidationError.prototype = new Error();
+    ValidationError.prototype.constructor = ValidationError;
+    ValidationError.name = 'ValidationError';
+    return ValidationError;
+  })(),
+
+  UnexpectedError: (function() {
+    function UnexpectedError() {
+      this.stack = (new Error()).stack;
+    }
+    UnexpectedError.prototype = new Error();
+    UnexpectedError.prototype.constructor = UnexpectedError;
+    UnexpectedError.name = 'UnexpectedError';
+    return UnexpectedError;
+  })()
 });
