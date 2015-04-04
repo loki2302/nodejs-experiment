@@ -7,7 +7,7 @@ angular.module('tbCreatePerson', [
 ])
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/people/create', {
-    templateUrl: 'people/createPerson.html',
+    templateUrl: 'people/create/createPerson.html',
     controller: 'CreatePersonController'
   });
 }])

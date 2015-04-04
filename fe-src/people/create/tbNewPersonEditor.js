@@ -9,7 +9,7 @@ angular.module('tbNewPersonEditor', [
       onCreate: '&',
       busy: '='
     },
-    templateUrl: 'people/newPersonEditor.html',
+    templateUrl: 'people/create/newPersonEditor.html',
     link: function(scope) {
       scope.person = makeEmptyPerson();
 

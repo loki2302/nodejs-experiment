@@ -4,7 +4,7 @@ angular.module('tbPersonList', [
 ])
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/people', {
-    templateUrl: 'people/personList.html',
+    templateUrl: 'people/list/personList.html',
     controller: 'PersonListController',
     resolve: {
       people: [function() {

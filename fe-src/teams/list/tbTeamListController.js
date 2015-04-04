@@ -4,7 +4,7 @@ angular.module('tbTeamList', [
 ])
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/teams', {
-    templateUrl: 'teams/teamList.html',
+    templateUrl: 'teams/list/teamList.html',
     controller: 'TeamListController',
     resolve: {
       teams: [function() {
