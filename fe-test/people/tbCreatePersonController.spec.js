@@ -98,4 +98,11 @@ describe('tbCreatePerson', function() {
       });
     });
   });
+
+  it('should register at /people/create', inject(function($route) {
+    var route = $route.routes['/people/create'];
+    expect(route).toBeDefined();
+    expect(route.controller).toBe('CreatePersonController');
+    expect(route.templateUrl).toBe('people/create/createPerson.html');
+  }));
 });
