@@ -1,0 +1,12 @@
+<form ng-submit="updatePerson($event)" tb-validation-facade="vf">
+  <fieldset ng-disabled="busy">
+    <div class="form-group name" ng-class="{'has-error': vf.isError('name')}">
+      <label for="name" class="control-label">Name</label>
+      <input type="text" class="form-control" id="name" name="name" ng-model="person.name">
+      <p class="help-block" ng-if="vf.isError('name')">{{vf.getFieldError('name')}}</p>
+    </div>
+    <div class="form-group">
+      <button type="submit" class="btn btn-default">Update</button>
+    </div>
+  </fieldset>
+</form>

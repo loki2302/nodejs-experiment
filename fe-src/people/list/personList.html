@@ -7,6 +7,7 @@
   <ul id="person-list" class="list-unstyled">
     <li ng-class="'person-' + {{$index}}" ng-repeat="person in people | orderBy:'id'">
       <a ng-href="/people/{{person.id}}">{{person.name}}</a>
+      <a ng-href="/people/{{person.id}}/edit" class="btn btn-default btn-xs">Edit</a>
       <button type="button" class="btn btn-danger btn-xs" ng-click="deletePerson(person)">Delete</button>
     </li>
   </ul>
