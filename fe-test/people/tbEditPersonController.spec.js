@@ -109,4 +109,12 @@ describe('tbEditPerson', function() {
       });
     });
   });
+
+  it('should register at /people/{id}/edit', inject(function($route) {
+    var route = $route.routes['/people/:id/edit'];
+    expect(route).toBeDefined();
+    expect(route.controller).toBe('EditPersonController');
+    expect(route.templateUrl).toBe('people/edit/editPerson.html');
+    expect(route.resolve.person).toBeDefined();
+  }));
 });
