@@ -34,23 +34,15 @@ describe('Teambuild API', function() {
     });
 
     it('should not create a person when name is null', function* () {
-      try {
-        yield client.createPerson({});
-        expect(true).to.equal(false);
-      } catch(e) {
-        expect(e.response.statusCode).to.equal(400);
-        expect(e.response.body).to.include.keys('name');
-      }
+      var response = yield client.createPerson({});
+      expect(response.statusCode).to.equal(400);
+      expect(response.body).to.include.keys('name');
     });
 
     it('should not create a person when name is empty', function* () {
-      try {
-        yield client.createPerson({name: ''});
-        expect(true).to.equal(false);
-      } catch(e) {
-        expect(e.response.statusCode).to.equal(400);
-        expect(e.response.body).to.include.keys('name');
-      }
+      var response = yield client.createPerson({name: ''});
+      expect(response.statusCode).to.equal(400);
+      expect(response.body).to.include.keys('name');
     });
   });
 
@@ -66,12 +58,8 @@ describe('Teambuild API', function() {
     });
 
     it('should respond with 404 if person does not exist', function* () {
-      try {
-        yield client.getPerson(123);
-        expect(true).to.equal(false);
-      } catch(e) {
-        expect(e.response.statusCode).to.equal(404);
-      }
+      var response = yield client.getPerson(123);
+      expect(response.statusCode).to.equal(404);
     });
   });
 
@@ -97,15 +85,11 @@ describe('Teambuild API', function() {
 
   describe('PUT /people/{id}', function() {
     it('should respond with 404 if person does not exist', function* () {
-      try {
-        yield client.updatePerson({
-          id: 123,
-          name: 'updated john'
-        });
-        expect(true).to.equal(false);
-      } catch(e) {
-        expect(e.response.statusCode).to.equal(404);
-      }
+      var response = yield client.updatePerson({
+        id: 123,
+        name: 'updated john'
+      });
+      expect(response.statusCode).to.equal(404);
     });
 
     it('should respond with 400 when new field values are not valid', function* () {
@@ -113,16 +97,12 @@ describe('Teambuild API', function() {
         name: 'john'
       })).body.id;
 
-      try {
-        yield client.updatePerson({
-          id: personId,
-          name: ''
-        });
-        expect(true).to.equal(false);
-      } catch(e) {
-        expect(e.response.statusCode).to.equal(400);
-        expect(e.response.body).to.include.keys('name');
-      }
+      var response = yield client.updatePerson({
+        id: personId,
+        name: ''
+      });
+      expect(response.statusCode).to.equal(400);
+      expect(response.body).to.include.keys('name');
     });
 
     it('should update the person if everything is OK', function* () {
@@ -142,12 +122,8 @@ describe('Teambuild API', function() {
 
   describe('DELETE /people/{id}', function() {
     it('should respond with 404 if person does not exist', function* () {
-      try {
-        yield client.deletePerson(123);
-        expect(true).to.equal(false);
-      } catch(e) {
-        expect(e.response.statusCode).to.equal(404);
-      }
+      var response = yield client.deletePerson(123);
+      expect(response.statusCode).to.equal(404);
     });
 
     it('should delete the person if person exists', function* () {
@@ -176,23 +152,15 @@ describe('Teambuild API', function() {
     });
 
     it('should not create a team when name is null', function* () {
-      try {
-        yield client.createTeam({});
-        expect(true).to.equal(false);
-      } catch(e) {
-        expect(e.response.statusCode).to.equal(400);
-        expect(e.response.body).to.include.keys('name');
-      }
+      var response = yield client.createTeam({});
+      expect(response.statusCode).to.equal(400);
+      expect(response.body).to.include.keys('name');
     });
 
     it('should not create a team when name is empty', function* () {
-      try {
-        yield client.createTeam({name: ''});
-        expect(true).to.equal(false);
-      } catch(e) {
-        expect(e.response.statusCode).to.equal(400);
-        expect(e.response.body).to.include.keys('name');
-      }
+      var response = yield client.createTeam({name: ''});
+      expect(response.statusCode).to.equal(400);
+      expect(response.body).to.include.keys('name');
     });
   });
 
@@ -208,12 +176,8 @@ describe('Teambuild API', function() {
     });
 
     it('should respond with 404 if team does not exist', function* () {
-      try {
-        yield client.getTeam(123);
-        expect(true).to.equal(false);
-      } catch(e) {
-        expect(e.response.statusCode).to.equal(404);
-      }
+      var response = yield client.getTeam(123);
+      expect(response.statusCode).to.equal(404);
     });
   });
 
@@ -239,15 +203,11 @@ describe('Teambuild API', function() {
 
   describe('PUT /teams/{id}', function() {
     it('should respond with 404 if team does not exist', function* () {
-      try {
-        yield client.updateTeam({
-          id: 123,
-          name: 'updated team'
-        });
-        expect(true).to.equal(false);
-      } catch(e) {
-        expect(e.response.statusCode).to.equal(404);
-      }
+      var response = yield client.updateTeam({
+        id: 123,
+        name: 'updated team'
+      });
+      expect(response.statusCode).to.equal(404);
     });
 
     it('should respond with 400 when new field values are not valid', function* () {
@@ -255,16 +215,12 @@ describe('Teambuild API', function() {
         name: 'the team'
       })).body.id;
 
-      try {
-        yield client.updateTeam({
-          id: teamId,
-          name: ''
-        });
-        expect(true).to.equal(false);
-      } catch(e) {
-        expect(e.response.statusCode).to.equal(400);
-        expect(e.response.body).to.include.keys('name');
-      }
+      var response = yield client.updateTeam({
+        id: teamId,
+        name: ''
+      });
+      expect(response.statusCode).to.equal(400);
+      expect(response.body).to.include.keys('name');
     });
 
     it('should update the team if everything is OK', function* () {
@@ -284,12 +240,8 @@ describe('Teambuild API', function() {
 
   describe('DELETE /teams/{id}', function() {
     it('should respond with 404 if team does not exist', function* () {
-      try {
-        yield client.deleteTeam(123);
-        expect(true).to.equal(false);
-      } catch(e) {
-        expect(e.response.statusCode).to.equal(404);
-      }
+      var response = yield client.deleteTeam(123);
+      expect(response.statusCode).to.equal(404);
     });
 
     it('should delete the team if team exists', function* () {

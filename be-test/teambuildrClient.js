@@ -22,6 +22,7 @@ TeambuildrClient.prototype.makeUrl = function(resourceTemplateString, resourceVa
 TeambuildrClient.prototype.get = function(resourceTemplateString, resourceValues) {
   var url = this.makeUrl(resourceTemplateString, resourceValues);
   return rp({
+    simple: false,
     method: 'GET',
     url: url,
     json: true,
@@ -32,6 +33,7 @@ TeambuildrClient.prototype.get = function(resourceTemplateString, resourceValues
 TeambuildrClient.prototype.post = function(resourceTemplateString, resourceValues, body) {
   var url = this.makeUrl(resourceTemplateString, resourceValues);
   return rp({
+    simple: false,
     method: 'POST',
     url: url,
     json: true,
@@ -43,6 +45,7 @@ TeambuildrClient.prototype.post = function(resourceTemplateString, resourceValue
 TeambuildrClient.prototype.put = function(resourceTemplateString, resourceValues, body) {
   var url = this.makeUrl(resourceTemplateString, resourceValues);
   return rp({
+    simple: false,
     method: 'PUT',
     url: url,
     json: true,
@@ -54,6 +57,7 @@ TeambuildrClient.prototype.put = function(resourceTemplateString, resourceValues
 TeambuildrClient.prototype.delete = function(resourceTemplateString, resourceValues) {
   var url = this.makeUrl(resourceTemplateString, resourceValues);
   return rp({
+    simple: false,
     method: 'DELETE',
     url: url,
     json: true,
