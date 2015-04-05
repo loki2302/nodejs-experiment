@@ -17,6 +17,8 @@ module.exports = function(Sequelize, dataContext) {
         console.log('operation succeeded, commit failed', commitException);
       }
     } catch(operationException) {
+      console.log('OperationException', operationException);
+      
       try {
         yield transaction.rollback();
         console.log('operation failed, rollback succeeded');

@@ -1,10 +1,15 @@
 module.exports = function(Person, Team, PersonMembershipsRelation, Sequelize) {
   return function(router) {
     router.post('/people', function* (next) {
-      var teamIds = (this.request.body.memberships || []).map(function(membership) {
+      // pairs of {teamId: , role:}
+      var memberships = this.request.body.memberships || [];
+
+      // team IDs
+      var teamIds = memberships.map(function(membership) {
         return membership.teamId;
       });
 
+      // teams
       var teams = yield Team.findAll({
         where: {
           id: { in: teamIds }
@@ -34,14 +39,20 @@ module.exports = function(Person, Team, PersonMembershipsRelation, Sequelize) {
         throw e;
       }
 
+      // map of x[teamId] = role
+      var rolesByTeamIds = memberships.reduce(function(acc, membership) {
+        acc[membership.teamId] = membership.role;
+        return acc;
+      }, {});
+
+      // for each team, set the Membership/role based on team.id
       teams.forEach(function(team, index) {
-        team.Membership = { // this overrides the role specified below
-          role: 'idiot #' + (index + 1)
+        team.Membership = {
+          role: rolesByTeamIds[team.id]
         };
       });
 
       yield person.setMemberships(teams, {
-        role: 'idiot', //
         transaction: this.tx
       });
 
