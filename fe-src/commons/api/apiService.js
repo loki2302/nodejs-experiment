@@ -61,6 +61,52 @@ angular.module('tbApiService', [
       });
     };
 
+
+    ApiService.prototype.createTeam = function(team) {
+      return handle($http.post(url('teams'), team)).likeThis({
+        0: throwConnectivityError(),
+        201: returnData(),
+        400: throwValidationError(),
+        otherwise: throwUnexpectedError()
+      });
+    };
+
+    ApiService.prototype.getTeam = function(id) {
+      return handle($http.get(url('teams/{id}', { id: id }))).likeThis({
+        0: throwConnectivityError(),
+        200: returnData(),
+        404: throwNotFoundError(),
+        otherwise: throwUnexpectedError()
+      });
+    };
+
+    ApiService.prototype.updateTeam = function(team) {
+      return handle($http.put(url('teams/{id}', { id: team.id }), team)).likeThis({
+        0: throwConnectivityError(),
+        200: returnData(),
+        400: throwValidationError(),
+        404: throwNotFoundError(),
+        otherwise: throwUnexpectedError()
+      });
+    };
+
+    ApiService.prototype.deleteTeam = function(id) {
+      return handle($http.delete(url('teams/{id}', { id: id }))).likeThis({
+        0: throwConnectivityError(),
+        200: returnData(),
+        404: throwNotFoundError(),
+        otherwise: throwUnexpectedError()
+      });
+    };
+
+    ApiService.prototype.getTeams = function() {
+      return handle($http.get(url('teams'))).likeThis({
+        0: throwConnectivityError(),
+        200: returnData(),
+        otherwise: throwUnexpectedError()
+      });
+    };
+
     return new ApiService();
 
     function url(resourceTemplateString, resourceValues) {
