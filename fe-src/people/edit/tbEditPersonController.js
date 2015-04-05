@@ -23,8 +23,6 @@ angular.module('tbEditPerson', [
     $scope.person = person;
 
     $scope.updatePerson = function(person) {
-      console.log('ORIGINAL PERSON', $scope.person);
-      console.log('UPDATED PERSON', person);
       return execute(apiService.updatePerson(person).then(function(person) {
         // TODO: what would be the better option? Can I use a $route template?
         $location.path('/people/' + person.id);
