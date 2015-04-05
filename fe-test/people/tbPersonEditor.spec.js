@@ -1,5 +1,5 @@
-describe('tbNewPersonEditor', function() {
-  beforeEach(module('tbNewPersonEditor', 'tbTemplates'));
+describe('tbPersonEditor', function() {
+  beforeEach(module('tbPersonEditor', 'tbTemplates'));
 
   var $q;
   var $scope;
@@ -9,8 +9,12 @@ describe('tbNewPersonEditor', function() {
     $scope = $rootScope.$new();
 
     var element = $compile(
-      '<tb-new-person-editor on-create="createPerson(person)" busy="busy">' +
-      '</tb-new-person-editor>')($scope);
+      '<tb-person-editor ' +
+      '  busy="busy"' +
+      '  submit-title="Submit"' +
+      '  person-template="{}"' +
+      '  on-submit="createPerson(person)">' +
+      '</tb-person-editor>')($scope);
     uiMap = new UIMap(element);
 
     createPersonDeferred = $q.defer();

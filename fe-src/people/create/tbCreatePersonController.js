@@ -1,7 +1,7 @@
 angular.module('tbCreatePerson', [
   'ngRoute',
   'tbTemplates',
-  'tbNewPersonEditor',
+  'tbPersonEditor',
   'tbOperationExecutor',
   'tbApiService'
 ])

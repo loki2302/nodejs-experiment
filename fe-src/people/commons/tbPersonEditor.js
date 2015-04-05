@@ -6,24 +6,25 @@ angular.module('tbPersonEditor', [
   return {
     restrict: 'E',
     scope: {
-      onUpdate: '&',
-      original: '=',
+      onSubmit: '&',
+      submitTitle: '@',
+      personTemplate: '=',
       busy: '='
     },
-    templateUrl: 'people/edit/personEditor.html',
+    templateUrl: 'people/commons/personEditor.html',
     link: function(scope) {
-      this.originalPerson = angular.copy(scope.original);
+      this.personTemplate = angular.copy(scope.personTemplate);
       this.getPerson = function() {
-        return angular.copy(this.originalPerson);
+        return angular.copy(this.personTemplate);
       };
 
       scope.person = this.getPerson();
 
-      scope.updatePerson = function(e) {
+      scope.submitPerson = function(e) {
         e.preventDefault();
 
         scope.vf.setAllFieldsValid();
-        scope.onUpdate({
+        scope.onSubmit({
           person: scope.person
         }).then(function() {
           scope.person = this.getPerson();

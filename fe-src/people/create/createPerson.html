@@ -1,3 +1,6 @@
 <h3 class="page-header">Create person</h3>
-<tb-new-person-editor busy="busy" on-create="createPerson(person)">
-</tb-new-person-editor>
+<tb-person-editor
+  busy="busy"
+  submit-title="Create"
+  person-template="{}"
+  on-submit="createPerson(person)"></tb-person-editor>
