@@ -7,7 +7,8 @@ module.exports = function(koaBodyParser, koaCompose, KoaRouter, responseMethodsM
   deletePersonRoute,
   teamIdParam,
   createTeamRoute,
-  getTeamRoute) {
+  getTeamRoute,
+  getTeamsRoute) {
 
   var apiRouter = new KoaRouter();
   personIdParam(apiRouter);
@@ -19,6 +20,7 @@ module.exports = function(koaBodyParser, koaCompose, KoaRouter, responseMethodsM
   teamIdParam(apiRouter);
   createTeamRoute(apiRouter);
   getTeamRoute(apiRouter);
+  getTeamsRoute(apiRouter);
 
   return koaCompose([
     koaBodyParser(),

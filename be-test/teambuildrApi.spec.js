@@ -216,4 +216,24 @@ describe('Teambuild API', function() {
       }
     });
   });
+
+  describe('GET /teams', function() {
+    it('should have no teams by default', function* () {
+      var response = yield client.getTeams();
+      expect(response.statusCode).to.equal(200);
+      expect(response.body.length).to.equal(0);
+    });
+
+    it('should respond with a list of teams when at least one team exists', function* () {
+      yield client.createTeam({
+        name: 'the team'
+      });
+
+      var teams = (yield client.getTeams()).body;
+      expect(teams).to.deep.equal([{
+        id: 1,
+        name: 'the team'
+      }]);
+    });
+  });
 });
