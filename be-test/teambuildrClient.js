@@ -81,4 +81,24 @@ TeambuildrClient.prototype.deletePerson = function(personId) {
   return this.delete('people/{id}', { id: personId });
 };
 
+TeambuildrClient.prototype.createTeam = function(team) {
+  return this.post('teams', null, team);
+};
+
+TeambuildrClient.prototype.getTeam = function(teamId) {
+  return this.get('teams/{id}', { id: teamId });
+};
+
+TeambuildrClient.prototype.getTeams = function() {
+  return this.get('teams', null);
+};
+
+TeambuildrClient.prototype.updateTeam = function(team) {
+  return this.put('teams/{id}', { id: team.id }, team);
+};
+
+TeambuildrClient.prototype.deleteTeam = function(teamId) {
+  return this.delete('teams/{id}', { id: teamId });
+};
+
 module.exports = TeambuildrClient;

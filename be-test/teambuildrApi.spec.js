@@ -161,4 +161,38 @@ describe('Teambuild API', function() {
       expect(people.length).to.equal(0);
     });
   });
+
+  describe('POST /teams', function() {
+    it('should create a team', function* () {
+      var response = yield client.createTeam({
+        name: 'the team'
+      });
+      expect(response.statusCode).to.equal(201);
+      expect(response.body).to.deep.equal({
+        id: 1,
+        name: 'the team',
+        members: []
+      });
+    });
+
+    it('should not create a person when name is null', function* () {
+      try {
+        yield client.createTeam({});
+        expect(true).to.equal(false);
+      } catch(e) {
+        expect(e.response.statusCode).to.equal(400);
+        expect(e.response.body).to.include.keys('name');
+      }
+    });
+
+    it('should not create a person when name is empty', function* () {
+      try {
+        yield client.createPerson({name: ''});
+        expect(true).to.equal(false);
+      } catch(e) {
+        expect(e.response.statusCode).to.equal(400);
+        expect(e.response.body).to.include.keys('name');
+      }
+    });
+  });
 });

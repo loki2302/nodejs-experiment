@@ -26,6 +26,21 @@ module.exports = function(RESTError) {
       this.body = makeCompletePersonDTO(person);
     };
 
+    this.okTeam = function(team) {
+      this.status = 200;
+      this.body = makeCompleteTeamDTO(team);
+    };
+
+    this.okTeamCollection = function(teams) {
+      this.status = 200;
+      this.body = makeBriefTeamDTOs(teams);
+    };
+
+    this.createdTeam = function(team) {
+      this.status = 201;
+      this.body = makeCompleteTeamDTO(team);
+    };
+
     this.validationErrorFromSequelizeValidationError = function(sequelizeValidationError) {
       var errorMap = {};
       sequelizeValidationError.errors.forEach(function(fieldError) {
@@ -44,6 +59,10 @@ module.exports = function(RESTError) {
     };
 
     this.personNotFound = function() {
+      this.notFoundError();
+    };
+
+    this.teamNotFound = function() {
       this.notFoundError();
     };
 
@@ -84,6 +103,36 @@ module.exports = function(RESTError) {
   }
 
   function makeBriefMembershipDTO(membership) {
+    return {
+      /* TODO: what do I put here? */
+    };
+  }
+
+
+  function makeBriefTeamDTOs(teams) {
+    return teams.map(makeBriefTeamDTO);
+  }
+
+  function makeBriefTeamDTO(team) {
+    return {
+      id: team.id,
+      name: team.name
+    };
+  }
+
+  function makeCompleteTeamDTO(team) {
+    return {
+      id: team.id,
+      name: team.name,
+      members: makeBriefMemberDTOs(team.Members)
+    };
+  }
+
+  function makeBriefMemberDTOs(members) {
+    return members.map(makeBriefMemberDTO);
+  }
+
+  function makeBriefMemberDTO(member) {
     return {
       /* TODO: what do I put here? */
     };
