@@ -11,7 +11,12 @@ angular.module('tbPersonEditor', [
       personTemplate: '=',
       busy: '='
     },
-    templateUrl: 'people/commons/personEditor.html',
+    // templateUrl: 'people/commons/personEditor.html',
+    templateUrl: function(element, attrs) {
+      // TODO: make it throw if templateUrl is not specified
+      var templateUrl = attrs.templateUrl || 'people/commons/personEditor.html';
+      return templateUrl;      
+    },
     link: function(scope) {
       if(!scope.submitTitle) {
         throw new Error('submitTitle is required');
