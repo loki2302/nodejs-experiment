@@ -34,8 +34,8 @@ describe('Dummy', function() {
       expect(element(by.css('.nav-teams')).getAttribute('class')).not.toContain('active');
     });
 
-    it('should have a person list', function() {
-      expect(element(by.css('#person-list')).isPresent()).toBe(true);
+    it('should have a no-people-alert', function() {
+      expect(element(by.css('#no-people-alert')).isPresent()).toBe(true);
     });
   });
 
