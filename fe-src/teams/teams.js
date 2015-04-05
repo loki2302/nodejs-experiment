@@ -1,3 +1,6 @@
 angular.module('tbTeams', [
-  'tbTeamList'
+  'tbTeamList',
+  'tbCreateTeam',
+  'tbViewTeam',
+  'tbEditTeam'
 ]);
