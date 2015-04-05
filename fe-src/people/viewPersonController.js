@@ -6,7 +6,7 @@ angular.module('tbViewPerson', [
 ])
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/people/:id', {
-    templateUrl: 'people/view/viewPerson.html',
+    templateUrl: 'people/viewPerson.html',
     controller: 'ViewPersonController',
     resolve: {
       person: ['$route', 'execute', 'apiService', function($route, execute, apiService) {

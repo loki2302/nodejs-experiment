@@ -7,7 +7,7 @@ angular.module('tbEditPerson', [
 ])
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/people/:id/edit', {
-    templateUrl: 'people/edit/editPerson.html',
+    templateUrl: 'people/editPerson.html',
     controller: 'EditPersonController',
     resolve: {
       person: ['$route', 'execute', 'apiService', function($route, execute, apiService) {

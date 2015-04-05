@@ -103,6 +103,6 @@ describe('tbCreatePerson', function() {
     var route = $route.routes['/people/create'];
     expect(route).toBeDefined();
     expect(route.controller).toBe('CreatePersonController');
-    expect(route.templateUrl).toBe('people/create/createPerson.html');
+    expect(route.templateUrl).toBe('people/createPerson.html');
   }));
 });

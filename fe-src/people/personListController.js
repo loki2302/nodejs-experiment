@@ -5,7 +5,7 @@ angular.module('tbPersonList', [
 ])
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/people', {
-    templateUrl: 'people/list/personList.html',
+    templateUrl: 'people/personList.html',
     controller: 'PersonListController',
     resolve: {
       people: ['apiService', 'execute', function(apiService, execute) {

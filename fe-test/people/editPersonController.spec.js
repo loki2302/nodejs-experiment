@@ -114,7 +114,7 @@ describe('tbEditPerson', function() {
     var route = $route.routes['/people/:id/edit'];
     expect(route).toBeDefined();
     expect(route.controller).toBe('EditPersonController');
-    expect(route.templateUrl).toBe('people/edit/editPerson.html');
+    expect(route.templateUrl).toBe('people/editPerson.html');
     expect(route.resolve.person).toBeDefined();
   }));
 });

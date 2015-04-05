@@ -23,7 +23,7 @@ describe('tbViewPersonController', function() {
     var route = $route.routes['/people/:id'];
     expect(route).toBeDefined();
     expect(route.controller).toBe('ViewPersonController');
-    expect(route.templateUrl).toBe('people/view/viewPerson.html');
+    expect(route.templateUrl).toBe('people/viewPerson.html');
     expect(route.resolve.person).toBeDefined();
   }));
 });
