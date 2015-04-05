@@ -236,4 +236,49 @@ describe('Teambuild API', function() {
       }]);
     });
   });
+
+  describe('PUT /teams/{id}', function() {
+    it('should respond with 404 if team does not exist', function* () {
+      try {
+        yield client.updateTeam({
+          id: 123,
+          name: 'updated team'
+        });
+        expect(true).to.equal(false);
+      } catch(e) {
+        expect(e.response.statusCode).to.equal(404);
+      }
+    });
+
+    it('should respond with 400 when new field values are not valid', function* () {
+      var teamId = (yield client.createTeam({
+        name: 'the team'
+      })).body.id;
+
+      try {
+        yield client.updateTeam({
+          id: teamId,
+          name: ''
+        });
+        expect(true).to.equal(false);
+      } catch(e) {
+        expect(e.response.statusCode).to.equal(400);
+        expect(e.response.body).to.include.keys('name');
+      }
+    });
+
+    it('should update the team if everything is OK', function* () {
+      var teamId = (yield client.createTeam({
+        name: 'the team'
+      })).body.id;
+
+      var response = yield client.updateTeam({
+        id: teamId,
+        name: 'updated team'
+      });
+      expect(response.statusCode).to.equal(200);
+      expect(response.body.id).to.equal(teamId);
+      expect(response.body.name).to.equal('updated team');
+    });
+  });
 });
