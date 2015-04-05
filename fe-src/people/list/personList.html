@@ -2,8 +2,12 @@
 <div id="no-people-alert" class="alert alert-info" ng-if="people.length === 0">
   There are no people so far. <a href="/people/create" class="btn btn-default">Add a person</a>
 </div>
-<div id="person-list" class="list-unstyled" ng-if="people.length > 0">
-  <li ng-class="'person-' + {{$index}}" ng-repeat="person in people">
-    <a ng-href="/people/{{person.id}}">{{person.name}}</a>
-  </li>
+<div id="got-people-container" ng-if="people.length > 0">
+  <a href="/people/create" class="btn btn-default">Add a person</a>
+  <ul id="person-list" class="list-unstyled">
+    <li ng-class="'person-' + {{$index}}" ng-repeat="person in people | orderBy:'id'">
+      <a ng-href="/people/{{person.id}}">{{person.name}}</a>
+      <button type="button" class="btn btn-danger btn-xs" ng-click="deletePerson(person)">Delete</button>
+    </li>
+  </ul>
 </div>

@@ -14,6 +14,22 @@ angular.module('tbPersonList', [
     }
   });
 }])
-.controller('PersonListController', ['$scope', 'people', function($scope, people) {
-  $scope.people = people;
-}]);
+.controller('PersonListController', [
+  '$scope', 'people', 'execute', 'apiService',
+  function($scope, people, execute, apiService) {
+    $scope.people = people;
+
+    $scope.deletePerson = function(person) {
+      execute(apiService.deletePerson(person.id)).then(function() {
+        var personIndex = $scope.people.indexOf(person);
+        if(personIndex < 0) {
+          throw new Error('Did not find the person in people');
+        }
+
+        $scope.people.splice(personIndex, 1);
+      }, function(error) {
+        throw error;
+      });
+    };
+  }
+]);
