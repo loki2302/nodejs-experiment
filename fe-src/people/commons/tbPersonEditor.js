@@ -13,6 +13,14 @@ angular.module('tbPersonEditor', [
     },
     templateUrl: 'people/commons/personEditor.html',
     link: function(scope) {
+      if(!scope.submitTitle) {
+        throw new Error('submitTitle is required');
+      }
+
+      if(!scope.personTemplate) {
+        throw new Error('personTemplate is required');
+      }
+
       this.personTemplate = angular.copy(scope.personTemplate);
       this.getPerson = function() {
         return angular.copy(this.personTemplate);

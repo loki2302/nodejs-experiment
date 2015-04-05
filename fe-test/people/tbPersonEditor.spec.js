@@ -1,78 +1,181 @@
 describe('tbPersonEditor', function() {
   beforeEach(module('tbPersonEditor', 'tbTemplates'));
 
-  var $q;
   var $scope;
-  var uiMap;
-  beforeEach(inject(function(_$q_, $rootScope, $compile) {
-    $q = _$q_;
+  var $compile;
+  var $q;
+  beforeEach(inject(function($rootScope, _$compile_, _$q_) {
     $scope = $rootScope.$new();
+    $compile = _$compile_;
+    $q = _$q_;
+  }));
 
-    var element = $compile(
+  it('should throw if submitTitle is not set', function() {
+    $compile(
+      '<tb-person-editor ' +
+      '  busy="busy"' +
+      '  person-template="{}">' +
+      '</tb-person-editor>')($scope);
+    expect(function() {
+      $scope.$digest();
+    }).toThrow();
+  });
+
+  it('should throw if personTemplate is not set', function() {
+    $compile(
+      '<tb-person-editor ' +
+      '  busy="busy"' +
+      '  submit-title="Submit">' +
+      '</tb-person-editor>')($scope);
+    expect(function() {
+      $scope.$digest();
+    }).toThrow();
+  });
+
+  it('should not throw if everything is set', function() {
+    $compile(
       '<tb-person-editor ' +
       '  busy="busy"' +
       '  submit-title="Submit"' +
-      '  person-template="{}"' +
-      '  on-submit="createPerson(person)">' +
+      '  person-template="{}">' +
       '</tb-person-editor>')($scope);
-    uiMap = new UIMap(element);
+    expect(function() {
+      $scope.$digest();
+    }).not.toThrow();
+  });
 
-    createPersonDeferred = $q.defer();
-    $scope.createPerson = jasmine.createSpy('createPerson')
-      .and.returnValue(createPersonDeferred.promise);
-    $scope.busy = false;
+  it('should set up the submit button text based on submitTitle', function() {
+    var element = $compile(
+      '<tb-person-editor ' +
+      '  busy="busy"' +
+      '  submit-title="Hello World"' +
+      '  person-template="{}">' +
+      '</tb-person-editor>')($scope);
+
     $scope.$digest();
 
-    uiMap.nameInputElement().val('john');
-    uiMap.nameInputElement().change();
-    uiMap.formElement().submit();
-  }));
-
-  it('should call on-create when the form is submitted', function() {
-    expect($scope.createPerson).toHaveBeenCalledWith({
-      name: 'john'
-    });
+    var ui = new UiMap(element);
+    expect(ui.submitButtonElement().text()).toBe('Hello World');
   });
 
-  it('should display validation errors if on-create returns an error', function() {
-    $scope.$apply(function() {
-      createPersonDeferred.reject({
-        name: 'too ugly'
+  it('should prepopulate the fields based on personTemplate', function() {
+    $scope.person = { name: 'john smith' };
+    var element = $compile(
+      '<tb-person-editor ' +
+      '  busy="busy"' +
+      '  submit-title="Hello World"' +
+      '  person-template="person">' +
+      '</tb-person-editor>')($scope);
+
+    $scope.$digest();
+
+    var ui = new UiMap(element);
+    expect(ui.nameInputElement().val()).toBe('john smith');
+  });
+
+  describe('busy handling', function() {
+    var ui;
+    beforeEach(inject(function() {
+      var element = $compile(
+        '<tb-person-editor ' +
+        '  busy="busy"' +
+        '  submit-title="Hello World"' +
+        '  person-template="{}"' +
+        '</tb-person-editor>')($scope);
+      $scope.$digest();
+
+      ui = new UiMap(element);
+    }));
+
+    it('should enable the form contents as long as "busy" is false', function() {
+      $scope.$apply(function() {
+        $scope.busy = false;
       });
+
+      expect(ui.fieldsetElement().attr('disabled')).toBeUndefined();
     });
 
-    expect(uiMap.nameFormGroupElement().hasClass('has-error')).toBe(true);
-    expect(uiMap.nameInputElement().val()).toBe('john');
-    expect(uiMap.nameHelpBlockElement().text()).toBe('too ugly');
+    it('should disable the form contents as long as "busy" is true', function() {
+      $scope.$apply(function() {
+        $scope.busy = true;
+      });
+
+      expect(ui.fieldsetElement().attr('disabled')).toBe('disabled');
+    });
   });
 
-  it('should empty the fields if on-create returns success', function() {
-    $scope.$apply(function() {
-      createPersonDeferred.resolve();
+  describe('submission', function() {
+    var handlePersonDeferred;
+    var ui;
+    beforeEach(inject(function() {
+      handlePersonDeferred = $q.defer();
+      $scope.person = { name: 'john' };
+      $scope.handlePerson = jasmine.createSpy('handlePerson').and.callFake(function() {
+        return handlePersonDeferred.promise;
+      });
+      var element = $compile(
+        '<tb-person-editor ' +
+        '  submit-title="Hello World"' +
+        '  person-template="person"' +
+        '  on-submit="handlePerson(person)">' +
+        '</tb-person-editor>')($scope);
+      $scope.$digest();
+
+      ui = new UiMap(element);
+      ui.formElement().submit();
+    }));
+
+    it('should call onSubmit when the form is submitted', function() {
+      expect($scope.handlePerson).toHaveBeenCalledWith({ name: 'john' });
     });
 
-    expect(uiMap.nameFormGroupElement().hasClass('has-error')).toBe(false);
-    expect(uiMap.nameInputElement().val()).toBe('');
-    expect(uiMap.nameHelpBlockElement().length).toBe(0);
-  });
+    it('should display validation errors when onSubmit returns a rejection', function() {
+      $scope.$apply(function() {
+        handlePersonDeferred.reject({ name: 'ugly' });
+      });
 
-  it('should enable the form contents as long as "busy" is false', function() {
-    $scope.$apply(function() {
-      $scope.busy = false;
+      expect(ui.nameFormGroupElement().hasClass('has-error')).toBe(true);
+      expect(ui.nameInputElement().val()).toBe('john');
+      expect(ui.nameHelpBlockElement().text()).toBe('ugly');
     });
 
-    expect(uiMap.fieldsetElement().attr('disabled')).toBeUndefined();
-  });
+    it('should do nothing when onSubmit succeeds', function() {
+      $scope.$apply(function() {
+        handlePersonDeferred.resolve();
+      });
 
-  it('should disable the form contents as long as "busy" is true', function() {
-    $scope.$apply(function() {
-      $scope.busy = true;
+      expect(ui.nameFormGroupElement().hasClass('has-error')).toBe(false);
+      expect(ui.nameInputElement().val()).toBe('john');
     });
 
-    expect(uiMap.fieldsetElement().attr('disabled')).toBe('disabled');
+    it('should eliminate the validation errors once the form is touched', function() {
+      $scope.$apply(function() {
+        handlePersonDeferred.reject({ name: 'ugly' });
+      });
+
+      ui.nameInputElement().val('john1');
+      ui.nameInputElement().change();
+
+      expect(ui.nameFormGroupElement().hasClass('has-error')).toBe(false);
+    });
+
+    it('should eliminate the validation errors when the form is submitted again after the previous rejection', function() {
+      $scope.$apply(function() {
+        handlePersonDeferred.reject({ name: 'ugly' });
+      });
+
+      handlePersonDeferred = $q.defer();
+      ui.formElement().submit();
+
+      expect(ui.nameFormGroupElement().hasClass('has-error')).toBe(false);
+      $scope.$apply(function() {
+        handlePersonDeferred.reject({ name: 'ugly' });
+      });
+      expect(ui.nameFormGroupElement().hasClass('has-error')).toBe(true);
+    });
   });
 
-  function UIMap(element) {
+  function UiMap(element) {
     this.formElement = function() {
       return element.find('form');
     };
@@ -91,6 +194,10 @@ describe('tbPersonEditor', function() {
 
     this.nameHelpBlockElement = function() {
       return element.find('.form-group.name .help-block');
+    };
+
+    this.submitButtonElement = function() {
+      return element.find('button[type="submit"]');
     };
   };
 });
