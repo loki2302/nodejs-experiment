@@ -63,6 +63,8 @@ describe('PersonList', function() {
     var route = $route.routes['/people'];
     expect(route).toBeDefined();
     expect(route.controller).toBe('PersonListController');
+    expect(route.templateUrl).toBe('people/list/personList.html');
+    expect(route.resolve.people).toBeDefined();
   }));
 
   describe('routing', function() {

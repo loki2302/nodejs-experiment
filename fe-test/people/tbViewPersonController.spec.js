@@ -18,4 +18,12 @@ describe('tbViewPersonController', function() {
     expect(scope.person.id).toBe(123);
     expect(scope.person.name).toBe('john');
   });
+
+  it('should register at /people/{id}', inject(function($route) {
+    var route = $route.routes['/people/:id'];
+    expect(route).toBeDefined();
+    expect(route.controller).toBe('ViewPersonController');
+    expect(route.templateUrl).toBe('people/view/viewPerson.html');
+    expect(route.resolve.person).toBeDefined();
+  }));
 });
