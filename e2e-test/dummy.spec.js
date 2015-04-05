@@ -49,10 +49,8 @@ describe('Dummy', function() {
       expect(element(by.css('.nav-teams')).getAttribute('class')).toContain('active');
     });
 
-    it('should display a dummy message', function() {
-      var pElement = element(by.css('p'));
-      expect(pElement.isPresent()).toBe(true);
-      expect(pElement.getText()).toBe('teamListControllerMessage: hello there resolved data');
+    it('should have a no-teams-alert', function() {
+      expect(element(by.css('#no-teams-alert')).isPresent()).toBe(true);
     });
   });
 });
