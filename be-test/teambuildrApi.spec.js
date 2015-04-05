@@ -281,4 +281,26 @@ describe('Teambuild API', function() {
       expect(response.body.name).to.equal('updated team');
     });
   });
+
+  describe('DELETE /teams/{id}', function() {
+    it('should respond with 404 if team does not exist', function* () {
+      try {
+        yield client.deleteTeam(123);
+        expect(true).to.equal(false);
+      } catch(e) {
+        expect(e.response.statusCode).to.equal(404);
+      }
+    });
+
+    it('should delete the team if team exists', function* () {
+      var teamId = (yield client.createTeam({
+        name: 'the team'
+      })).body.id;
+
+      yield client.deleteTeam(teamId);
+
+      var teams = (yield client.getTeams()).body;
+      expect(teams.length).to.equal(0);
+    });
+  });
 });
