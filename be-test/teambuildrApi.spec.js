@@ -175,7 +175,7 @@ describe('Teambuild API', function() {
       });
     });
 
-    it('should not create a person when name is null', function* () {
+    it('should not create a team when name is null', function* () {
       try {
         yield client.createTeam({});
         expect(true).to.equal(false);
@@ -185,13 +185,34 @@ describe('Teambuild API', function() {
       }
     });
 
-    it('should not create a person when name is empty', function* () {
+    it('should not create a team when name is empty', function* () {
       try {
-        yield client.createPerson({name: ''});
+        yield client.createTeam({name: ''});
         expect(true).to.equal(false);
       } catch(e) {
         expect(e.response.statusCode).to.equal(400);
         expect(e.response.body).to.include.keys('name');
+      }
+    });
+  });
+
+  describe('GET /teams/{id}', function() {
+    it('should respond with team details if team exists', function* () {
+      var createdTeam = (yield client.createTeam({
+        name: 'the team'
+      })).body;
+
+      var response = yield client.getTeam(createdTeam.id);
+      expect(response.statusCode).to.equal(200);
+      expect(response.body).to.deep.equal(createdTeam);
+    });
+
+    it('should respond with 404 if team does not exist', function* () {
+      try {
+        yield client.getTeam(123);
+        expect(true).to.equal(false);
+      } catch(e) {
+        expect(e.response.statusCode).to.equal(404);
       }
     });
   });
