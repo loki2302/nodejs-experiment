@@ -1,9 +1,12 @@
-module.exports = function(Sequelize, Team, TeamMembersRelation) {
+var utils = require('./utils');
+
+module.exports = function(Team, teamUtils, Sequelize) {
   return function(router) {
     router.put('/teams/:team_id', function* (next) {
-      this.team.name = this.request.body.name;
+      var team = this.team;
+      team.name = this.request.body.name;
       try {
-        yield this.team.save({
+        yield team.save({
           transaction: this.tx
         });
       } catch(e) {
@@ -14,13 +17,10 @@ module.exports = function(Sequelize, Team, TeamMembersRelation) {
         throw e;
       }
 
-      var team = yield Team.find({
-        where: { id: this.team.id },
-        include: [{ association: TeamMembersRelation }]
-      }, {
-        transaction: this.tx
-      });
+      var members = this.request.body.members || [];
+      yield teamUtils.setTeamMembersOrThrow(this, team, members);
 
+      team = yield teamUtils.findTeam(this, team.id);
       this.okTeam(team);
     });
   };

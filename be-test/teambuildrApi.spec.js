@@ -467,5 +467,80 @@ describe('Teambuild API', function() {
         expect(response.body.members).to.exist;
       });
     });
+
+    describe('PUT /teams', function() {
+      var personAId;
+      var personBId;
+      var teamId;
+      beforeEach(function* () {
+        personAId = (yield client.createPerson({
+          name: 'person A'
+        })).body.id;
+
+        personBId = (yield client.createPerson({
+          name: 'person B'
+        })).body.id;
+
+        teamId = (yield client.createTeam({
+          name: 'the team'
+        })).body.id;
+      });
+
+      it('should update team members', function* () {
+        var response = yield client.updateTeam({
+          id: teamId,
+          name: 'the team',
+          members: [
+            { personId: personAId, role: 'developer' },
+            { personId: personBId, role: 'manager' }
+          ]
+        });
+
+        expect(response.statusCode).to.equal(200);
+        expect(response.body.members.length).to.equal(2);
+        expect(response.body).to.deep.equal({
+          id: 1,
+          name: 'the team',
+          members: [
+            {
+              person: { id: personAId, name: 'person A' },
+              role: 'developer'
+            },
+            {
+              person: { id: personBId, name: 'person B' },
+              role: 'manager'
+            }
+          ]
+        });
+      });
+
+      it('should return a validation error if at least one person does not exist', function* () {
+        var response = yield client.updateTeam({
+          id: teamId,
+          name: 'the team',
+          members: [
+            { personId: personAId, role: 'developer' },
+            { personId: 123, role: 'manager' }
+          ]
+        });
+
+        expect(response.statusCode).to.equal(400);
+        expect(response.body.members).to.exist;
+      });
+
+      it('should return a validation error if person are not unique', function* () {
+        var response = yield client.updateTeam({
+          id: teamId,
+          name: 'the team',
+          members: [
+            { personId: personAId, role: 'developer' },
+            { personId: personAId, role: 'manager' }
+          ]
+        });
+
+        expect(response.statusCode).to.equal(400);
+        expect(response.body.members).to.exist;
+      });
+    });
   });
 });
