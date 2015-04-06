@@ -258,17 +258,21 @@ describe('Teambuild API', function() {
     });
   });
 
-  describe.only('CRUD with relations', function() {
+  describe('CRUD with relations', function() {
     describe('POST /people', function() {
-      it('should create a person with memberships', function* () {
-        var teamAId = (yield client.createTeam({
+      var teamAId;
+      var teamBId;
+      beforeEach(function* () {
+        teamAId = (yield client.createTeam({
           name: 'team A'
         })).body.id;
 
-        var teamBId = (yield client.createTeam({
+        teamBId = (yield client.createTeam({
           name: 'team B'
         })).body.id;
+      });
 
+      it('should create a person with memberships', function* () {
         var response = yield client.createPerson({
           name: 'john',
           memberships: [
@@ -284,11 +288,11 @@ describe('Teambuild API', function() {
           name: 'john',
           memberships: [
             {
-              team: { id: 1, name: 'team A' },
+              team: { id: teamAId, name: 'team A' },
               role: 'developer'
             },
             {
-              team: { id: 2, name: 'team B' },
+              team: { id: teamBId, name: 'team B' },
               role: 'manager'
             }
           ]
@@ -296,10 +300,6 @@ describe('Teambuild API', function() {
       });
 
       it('should return a validation error if at least one team does not exist', function* () {
-        var teamAId = (yield client.createTeam({
-          name: 'team A'
-        })).body.id;
-
         var response = yield client.createPerson({
           name: 'john',
           memberships: [
@@ -313,11 +313,82 @@ describe('Teambuild API', function() {
       });
 
       it('should return a validation error if teams are not unique', function* () {
-        var teamAId = (yield client.createTeam({
+        var response = yield client.createPerson({
+          name: 'john',
+          memberships: [
+            { teamId: teamAId, role: 'developer' },
+            { teamId: teamAId, role: 'manager' }
+          ]
+        });
+
+        expect(response.statusCode).to.equal(400);
+        expect(response.body.memberships).to.exist;
+      });
+    });
+
+    describe('PUT /people', function() {
+      var teamAId;
+      var teamBId;
+      var personId;
+      beforeEach(function* () {
+        teamAId = (yield client.createTeam({
           name: 'team A'
         })).body.id;
 
-        var response = yield client.createPerson({
+        teamBId = (yield client.createTeam({
+          name: 'team B'
+        })).body.id;
+
+        personId = (yield client.createPerson({
+          name: 'john'
+        })).body.id;
+      });
+
+      it('should update person memberships', function* () {
+        var response = yield client.updatePerson({
+          id: personId,
+          name: 'john',
+          memberships: [
+            { teamId: teamAId, role: 'developer' },
+            { teamId: teamBId, role: 'manager' }
+          ]
+        });
+
+        expect(response.statusCode).to.equal(200);
+        expect(response.body.memberships.length).to.equal(2);
+        expect(response.body).to.deep.equal({
+          id: 1,
+          name: 'john',
+          memberships: [
+            {
+              team: { id: teamAId, name: 'team A' },
+              role: 'developer'
+            },
+            {
+              team: { id: teamBId, name: 'team B' },
+              role: 'manager'
+            }
+          ]
+        });
+      });
+
+      it('should return a validation error if at least one team does not exist', function* () {
+        var response = yield client.updatePerson({
+          id: personId,
+          name: 'john',
+          memberships: [
+            { teamId: teamAId, role: 'developer' },
+            { teamId: 123, role: 'manager' }
+          ]
+        });
+
+        expect(response.statusCode).to.equal(400);
+        expect(response.body.memberships).to.exist;
+      });
+
+      it('should return a validation error if teams are not unique', function* () {
+        var response = yield client.updatePerson({
+          id: personId,
           name: 'john',
           memberships: [
             { teamId: teamAId, role: 'developer' },

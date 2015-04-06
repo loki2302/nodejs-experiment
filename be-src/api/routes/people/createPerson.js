@@ -1,10 +1,11 @@
-var _ = require('lodash');
+var utils = require('./utils');
 
 module.exports = function(Person, Team, PersonMembershipsRelation, Sequelize) {
   return function(router) {
     router.post('/people', function* (next) {
+      // REUSABLE
       var memberships = this.request.body.memberships || [];
-      var teamIds = extractUniqueTeamIds(memberships);
+      var teamIds = utils.extractUniqueTeamIds(memberships);
 
       if(teamIds.length !== memberships.length) {
         this.validationError({
@@ -26,6 +27,7 @@ module.exports = function(Person, Team, PersonMembershipsRelation, Sequelize) {
           memberships: 'At least one team does not exist'
         });
       };
+      // /REUSABLE
 
       var person;
       try {
@@ -42,7 +44,8 @@ module.exports = function(Person, Team, PersonMembershipsRelation, Sequelize) {
         throw e;
       }
 
-      var membershipsByTeamIdsIndex = indexMembershipsByTeamIds(memberships);
+      // REUSABLE
+      var membershipsByTeamIdsIndex = utils.indexMembershipsByTeamIds(memberships);
       teams.forEach(function(team, index) {
         team.Membership = {
           role: membershipsByTeamIdsIndex[team.id].role
@@ -52,25 +55,18 @@ module.exports = function(Person, Team, PersonMembershipsRelation, Sequelize) {
       yield person.setMemberships(teams, {
         transaction: this.tx
       });
+      // /REUSABLE
 
+      // REUSABLE
       person = yield Person.find({
         where: { id: person.id },
         include: [{ association: PersonMembershipsRelation }]
       }, {
         transaction: this.tx
       });
+      // /REUSABLE
 
       this.createdPerson(person);
     });
   };
-
-  function extractUniqueTeamIds(memberships) {
-    var teamIds = _.map(memberships, 'teamId');
-    var uniqueTeamIds = _.uniq(teamIds);
-    return uniqueTeamIds;
-  }
-
-  function indexMembershipsByTeamIds(memberships) {
-    return _.indexBy(memberships, 'teamId');
-  }
 };
