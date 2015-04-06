@@ -62,6 +62,7 @@ module.exports = function(settings) {
       getPeopleRoute: require('./api/routes/people/getPeople'),
       updatePersonRoute: require('./api/routes/people/updatePerson'),
       deletePersonRoute: require('./api/routes/people/deletePerson'),
+      teamUtils: require('./api/routes/teams/utils'),
       teamIdParam: require('./api/routes/teams/teamIdParam'),
       createTeamRoute: require('./api/routes/teams/createTeam'),
       getTeamRoute: require('./api/routes/teams/getTeam'),

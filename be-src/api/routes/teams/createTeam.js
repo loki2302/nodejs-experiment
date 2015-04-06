@@ -1,4 +1,4 @@
-module.exports = function(Team, TeamMembersRelation, Sequelize) {
+module.exports = function(Team, teamUtils, Sequelize) {
   return function(router) {
     router.post('/teams', function* (next) {
       var team;
@@ -16,13 +16,10 @@ module.exports = function(Team, TeamMembersRelation, Sequelize) {
         throw e;
       }
 
-      team = yield Team.find({
-        where: { id: team.id },
-        include: [{ association: TeamMembersRelation }]
-      }, {
-        transaction: this.tx
-      });
+      var members = this.request.body.members || [];
+      yield teamUtils.setTeamMembersOrThrow(this, team, members);
 
+      team = yield teamUtils.findTeam(this, team.id);
       this.createdTeam(team);
     });
   };

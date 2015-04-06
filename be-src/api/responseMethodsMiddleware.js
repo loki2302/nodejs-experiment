@@ -104,7 +104,6 @@ module.exports = function(RESTError) {
 
   function makeBriefMembershipDTO(membership) {
     return {
-      // consider extracting brief team DTO
       team: {
         id: membership.id, // is it actually teamId or not?
         name: membership.name
@@ -138,7 +137,11 @@ module.exports = function(RESTError) {
 
   function makeBriefMemberDTO(member) {
     return {
-      /* TODO: what do I put here? */
+      person: {
+        id: member.id,
+        name: member.name
+      },
+      role: member.Membership.role
     };
   }
 };
