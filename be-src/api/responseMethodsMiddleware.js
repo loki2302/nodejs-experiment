@@ -104,10 +104,14 @@ module.exports = function(RESTError) {
 
   function makeBriefMembershipDTO(membership) {
     return {
-      /* TODO: what do I put here? */
+      // consider extracting brief team DTO
+      team: {
+        id: membership.id, // is it actually teamId or not?
+        name: membership.name
+      },
+      role: membership.Membership.role
     };
   }
-
 
   function makeBriefTeamDTOs(teams) {
     return teams.map(makeBriefTeamDTO);

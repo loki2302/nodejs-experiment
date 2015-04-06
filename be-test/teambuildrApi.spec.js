@@ -258,9 +258,9 @@ describe('Teambuild API', function() {
     });
   });
 
-  describe('CRUD with relations', function() {
+  describe.only('CRUD with relations', function() {
     describe('POST /people', function() {
-      it/*.only*/('should create a person with memberships', function* () {
+      it('should create a person with memberships', function* () {
         var teamAId = (yield client.createTeam({
           name: 'team A'
         })).body.id;
@@ -277,7 +277,56 @@ describe('Teambuild API', function() {
           ]
         });
 
+        expect(response.statusCode).to.equal(201);
         expect(response.body.memberships.length).to.equal(2);
+        expect(response.body).to.deep.equal({
+          id: 1,
+          name: 'john',
+          memberships: [
+            {
+              team: { id: 1, name: 'team A' },
+              role: 'developer'
+            },
+            {
+              team: { id: 2, name: 'team B' },
+              role: 'manager'
+            }
+          ]
+        });
+      });
+
+      it('should return a validation error if at least one team does not exist', function* () {
+        var teamAId = (yield client.createTeam({
+          name: 'team A'
+        })).body.id;
+
+        var response = yield client.createPerson({
+          name: 'john',
+          memberships: [
+            { teamId: teamAId, role: 'developer' },
+            { teamId: 123, role: 'manager' }
+          ]
+        });
+
+        expect(response.statusCode).to.equal(400);
+        expect(response.body.memberships).to.exist;
+      });
+
+      it('should return a validation error if teams are not unique', function* () {
+        var teamAId = (yield client.createTeam({
+          name: 'team A'
+        })).body.id;
+
+        var response = yield client.createPerson({
+          name: 'john',
+          memberships: [
+            { teamId: teamAId, role: 'developer' },
+            { teamId: teamAId, role: 'manager' }
+          ]
+        });
+
+        expect(response.statusCode).to.equal(400);
+        expect(response.body.memberships).to.exist;
       });
     });
   });

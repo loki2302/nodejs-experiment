@@ -1,15 +1,17 @@
+var _ = require('lodash');
+
 module.exports = function(Person, Team, PersonMembershipsRelation, Sequelize) {
   return function(router) {
     router.post('/people', function* (next) {
-      // pairs of {teamId: , role:}
       var memberships = this.request.body.memberships || [];
+      var teamIds = extractUniqueTeamIds(memberships);
 
-      // team IDs
-      var teamIds = memberships.map(function(membership) {
-        return membership.teamId;
-      });
+      if(teamIds.length !== memberships.length) {
+        this.validationError({
+          memberships: 'Teams should be unique'
+        });
+      }
 
-      // teams
       var teams = yield Team.findAll({
         where: {
           id: { in: teamIds }
@@ -19,6 +21,7 @@ module.exports = function(Person, Team, PersonMembershipsRelation, Sequelize) {
       });
 
       if(teams.length !== teamIds.length) {
+        // TODO: should I make it describe what exactly does not exist?
         this.validationError({
           memberships: 'At least one team does not exist'
         });
@@ -39,16 +42,10 @@ module.exports = function(Person, Team, PersonMembershipsRelation, Sequelize) {
         throw e;
       }
 
-      // map of x[teamId] = role
-      var rolesByTeamIds = memberships.reduce(function(acc, membership) {
-        acc[membership.teamId] = membership.role;
-        return acc;
-      }, {});
-
-      // for each team, set the Membership/role based on team.id
+      var membershipsByTeamIdsIndex = indexMembershipsByTeamIds(memberships);
       teams.forEach(function(team, index) {
         team.Membership = {
-          role: rolesByTeamIds[team.id]
+          role: membershipsByTeamIdsIndex[team.id].role
         };
       });
 
@@ -66,4 +63,14 @@ module.exports = function(Person, Team, PersonMembershipsRelation, Sequelize) {
       this.createdPerson(person);
     });
   };
+
+  function extractUniqueTeamIds(memberships) {
+    var teamIds = _.map(memberships, 'teamId');
+    var uniqueTeamIds = _.uniq(teamIds);
+    return uniqueTeamIds;
+  }
+
+  function indexMembershipsByTeamIds(memberships) {
+    return _.indexBy(memberships, 'teamId');
+  }
 };
