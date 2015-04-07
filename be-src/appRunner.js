@@ -1,4 +1,4 @@
-module.exports = function(Q, enableDestroy, app, dataContext, serverPort) {
+module.exports = function(Q, enableDestroy, app, dataContext, generateFakeData, serverPort) {
   var isRunning = false;
   var server;
 
@@ -43,6 +43,15 @@ module.exports = function(Q, enableDestroy, app, dataContext, serverPort) {
       return dataContext.drop().then(function() {
         return dataContext.sync();
       });
+    },
+    generateFakeData: function() {
+      if(!isRunning) {
+        return Q.reject(new Error('The application is not running'));
+      }
+
+      generateFakeData();
+
+      return Q.when();
     }
   }
 };

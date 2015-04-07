@@ -13,6 +13,7 @@ module.exports = function(settings) {
       koaCompose: require('koa-compose'),
       koaSend: require('koa-send'),
       koaMount: require('koa-mount'),
+      faker: require('faker'),
       RESTError: require('./api/restError'),
 
       staticRootPath: path.resolve(__dirname, '../fe-build/'),
@@ -39,6 +40,9 @@ module.exports = function(settings) {
       dummyMessage: (settings && settings.dummyMessage) || 'hello there'
     },
     factories: {
+      // FAKE DATA
+      generateFakeData: require('./generateFakeData'),
+
       // DATA CONTEXT
       sequelize: require('./models/sequelize'),
       dataContext: require('./models/dataContext'),

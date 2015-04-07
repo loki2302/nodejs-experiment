@@ -528,7 +528,7 @@ describe('Teambuild API', function() {
         expect(response.body.members).to.exist;
       });
 
-      it('should return a validation error if person are not unique', function* () {
+      it('should return a validation error if people are not unique', function* () {
         var response = yield client.updateTeam({
           id: teamId,
           name: 'the team',

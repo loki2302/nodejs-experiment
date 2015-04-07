@@ -1,12 +1,20 @@
+var co = require('co');
 var appRunnerFactory = require('./appRunnerFactory');
 
-appRunnerFactory().then(function(appRunner) {
+co(function* () {
+  var appRunner = yield appRunnerFactory();
   console.log('Constructed appRunner successfully');
-  appRunner.start().then(function() {
-    console.log('Started appRunner successfully');
-  }, function(err) {
-    console.log('Failed to start appRunner', err);
-  });
-}, function(err) {
-  console.log('Failed to construct appRunner', err);
+
+  yield appRunner.start();
+  console.log('Started appRunner successfully');
+
+  yield appRunner.reset();
+  console.log('Removed all the existing data');
+
+  yield appRunner.generateFakeData();
+  console.log('Generated fake data')
+}).then(function() {
+  console.log('OK');
+}, function(error) {
+  console.error('Error', error);
 });
