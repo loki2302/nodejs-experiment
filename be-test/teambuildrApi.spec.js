@@ -4,7 +4,7 @@ var expect = require('chai').expect;
 var appRunnerFactory = require('../be-src/appRunnerFactory');
 var TeambuildrClient = require('./teambuildrClient');
 
-describe('Teambuild API', function() {
+describe('Teambuildr API', function() {
   var appRunner;
   var client;
   beforeEach(function* () {
@@ -79,7 +79,8 @@ describe('Teambuild API', function() {
         var people = (yield client.getPeople()).body;
         expect(people).to.deep.equal([{
           id: 1,
-          name: 'john'
+          name: 'john',
+          memberships: []
         }]);
       });
     });
@@ -402,6 +403,49 @@ describe('Teambuild API', function() {
       });
     });
 
+    describe('GET /people', function() {
+      // TODO: convert to GET /people
+      var teamAId;
+      var teamBId;
+      var personId;
+      beforeEach(function* () {
+        teamAId = (yield client.createTeam({
+          name: 'team A'
+        })).body.id;
+
+        teamBId = (yield client.createTeam({
+          name: 'team B'
+        })).body.id;
+
+        personId = (yield client.createPerson({
+          name: 'john',
+          memberships: [
+            { teamId: teamAId, role: 'developer' },
+            { teamId: teamBId, role: 'manager' },
+          ]
+        })).body.id;
+      });
+
+      it('should return a collection of people with memberships', function* () {
+        var response = yield client.getPeople();
+        expect(response.statusCode).to.equal(200);
+        expect(response.body).to.deep.equal([{
+          id: personId,
+          name: 'john',
+          memberships: [
+            {
+              team: { id: teamAId, name: 'team A' },
+              role: 'developer'
+            },
+            {
+              team: { id: teamBId, name: 'team B' },
+              role: 'manager'
+            }
+          ]
+        }]);
+      });
+    });
+
     describe('POST /teams', function() {
       var personAId;
       var personBId;
@@ -500,7 +544,7 @@ describe('Teambuild API', function() {
         expect(response.statusCode).to.equal(200);
         expect(response.body.members.length).to.equal(2);
         expect(response.body).to.deep.equal({
-          id: 1,
+          id: teamId,
           name: 'the team',
           members: [
             {
@@ -547,7 +591,7 @@ describe('Teambuild API', function() {
     describe('GET /teams', function() {
       var personAId;
       var personBId;
-      var teamAId;
+      var teamId;
       beforeEach(function* () {
         personAId = (yield client.createPerson({
           name: 'person A'
@@ -570,7 +614,7 @@ describe('Teambuild API', function() {
         var response = yield client.getTeams();
         expect(response.statusCode).to.equal(200);
         expect(response.body).to.deep.equal([{
-          id: 1,
+          id: teamId,
           name: 'the team',
           members: [
             {

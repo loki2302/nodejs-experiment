@@ -18,7 +18,7 @@ module.exports = function(RESTError) {
 
     this.okPersonCollection = function(people) {
       this.status = 200;
-      this.body = makeBriefPersonDTOs(people);
+      this.body = makeCompletePersonDTOs(people);
     };
 
     this.createdPerson = function(person) {
@@ -88,6 +88,10 @@ module.exports = function(RESTError) {
       id: person.id,
       name: person.name
     };
+  }
+
+  function makeCompletePersonDTOs(people) {
+    return people.map(makeCompletePersonDTO);
   }
 
   function makeCompletePersonDTO(person) {
