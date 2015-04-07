@@ -22,7 +22,10 @@ angular.module('tbValidationFacade', [])
           angular.forEach(errorMap, function(message, fieldName) {
             var field = ctrl[fieldName];
             if(!field) {
-              throw new Error('No field with name ' + fieldName);
+              // disabling this, because in some cases validation errors
+              // refer to the model attributes which are not necessarily form fields
+              // throw new Error('No field with name ' + fieldName);
+              return;
             }
 
             ctrl[fieldName].$setValidity('tbValidationFacadeValidator', false);
@@ -36,12 +39,16 @@ angular.module('tbValidationFacade', [])
         isError: function(fieldName) {
           var field = ctrl[fieldName];
           if(!field) {
-            // because form's child elements get linked _before_ the
-            // form itself is ready, isError() may get called _before_
-            // the control has had registered. In this case we just
-            // say the field is valid
-            // TODO: is there a better approach?
-            return false;
+            if(!errors[fieldName]) {
+              // because form's child elements get linked _before_ the
+              // form itself is ready, isError() may get called _before_
+              // the control has had registered. In this case we just
+              // say the field is valid
+              // TODO: is there a better approach?
+              return false;
+            }
+
+            return true;
           }
 
           return field.$invalid && field.$pristine;

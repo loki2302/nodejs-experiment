@@ -39,12 +39,12 @@ describe('tbValidationFacade', function() {
     expect($scope.vf.getFieldError('password')).toBe('very invalid');
   });
 
-  it('should throw when error map has the unknown fields', function() {
+  it('should not throw when error map has unknown fields', function() {
     expect(function() {
       $scope.vf.setFieldErrors({
         iLikeCats: 'yes I do'
       });
-    }).toThrowError(/iLikeCats/);
+    }).not.toThrowError();
   });
 
   it('should allow cleaning up the error map', function() {

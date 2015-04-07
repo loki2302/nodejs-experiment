@@ -463,8 +463,14 @@ describe('Teambuildr API', function() {
         var response = yield client.createTeam({
           name: 'the team',
           members: [
-            { personId: personAId, role: 'developer' },
-            { personId: personBId, role: 'manager' }
+            {
+              person: { id: personAId },
+              role: 'developer'
+            },
+            {
+              person: { id: personBId },
+              role: 'manager'
+            }
           ]
         });
 
@@ -490,8 +496,14 @@ describe('Teambuildr API', function() {
         var response = yield client.createTeam({
           name: 'the team',
           members: [
-            { personId: personAId, role: 'developer' },
-            { personId: 123, role: 'manager' }
+            {
+              person: { id: personAId },
+              role: 'developer'
+            },
+            {
+              person: 123,
+              role: 'manager'
+            }
           ]
         });
 
@@ -503,8 +515,14 @@ describe('Teambuildr API', function() {
         var response = yield client.createTeam({
           name: 'the team',
           members: [
-            { personId: personAId, role: 'developer' },
-            { personId: personAId, role: 'manager' }
+            {
+              person: { id: personAId },
+              role: 'developer'
+            },
+            {
+              person: { id: personAId },
+              role: 'manager'
+            }
           ]
         });
 
@@ -536,8 +554,14 @@ describe('Teambuildr API', function() {
           id: teamId,
           name: 'the team',
           members: [
-            { personId: personAId, role: 'developer' },
-            { personId: personBId, role: 'manager' }
+            {
+              person: { id: personAId },
+              role: 'developer'
+            },
+            {
+              person: { id: personBId },
+              role: 'manager'
+            }
           ]
         });
 
@@ -564,8 +588,14 @@ describe('Teambuildr API', function() {
           id: teamId,
           name: 'the team',
           members: [
-            { personId: personAId, role: 'developer' },
-            { personId: 123, role: 'manager' }
+            {
+              person: { id: personAId },
+              role: 'developer'
+            },
+            {
+              person: { id: 123 },
+              role: 'manager'
+            }
           ]
         });
 
@@ -578,8 +608,14 @@ describe('Teambuildr API', function() {
           id: teamId,
           name: 'the team',
           members: [
-            { personId: personAId, role: 'developer' },
-            { personId: personAId, role: 'manager' }
+            {
+              person: { id: personAId },
+              role: 'developer'
+            },
+            {
+              person: { id: personAId },
+              role: 'manager'
+            }
           ]
         });
 
@@ -604,8 +640,14 @@ describe('Teambuildr API', function() {
         teamId = (yield client.createTeam({
           name: 'the team',
           members: [
-            { personId: personAId, role: 'developer' },
-            { personId: personBId, role: 'manager' },
+            {
+              person: { id: personAId },
+              role: 'developer'
+            },
+            {
+              person: { id: personBId },
+              role: 'manager'
+            }
           ]
         })).body.id;
       });

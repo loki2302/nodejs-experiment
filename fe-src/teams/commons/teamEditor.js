@@ -40,6 +40,15 @@ angular.module('tbTeamEditor', [
           scope.vf.setFieldErrors(errors);
         });
       };
+
+      scope.removeMember = function(member) {
+        var memberIndex = scope.team.members.indexOf(member);
+        if(memberIndex < 0) {
+          throw new Error('Did not find the member in members');
+        }
+
+        scope.team.members.splice(memberIndex, 1);
+      };
     }
   };
 });

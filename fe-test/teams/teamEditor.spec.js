@@ -59,7 +59,15 @@ describe('tbTeamEditor', function() {
   });
 
   it('should prepopulate the fields based on teamTemplate', function() {
-    $scope.team = { name: 'the team' };
+    $scope.team = {
+      name: 'the team',
+      members: [
+        {
+          person: { id: 123, name: 'john' },
+          role: 'developer'
+        }
+      ]
+    };
     var element = $compile(
       '<tb-team-editor ' +
       '  busy="busy"' +
@@ -71,6 +79,10 @@ describe('tbTeamEditor', function() {
 
     var ui = new UiMap(element);
     expect(ui.nameInputElement().val()).toBe('the team');
+
+    var firstTeamMemberElement = ui.teamMemberElement(0);
+    expect(firstTeamMemberElement.text()).toContain('john');
+    expect(firstTeamMemberElement.text()).toContain('developer');
   });
 
   describe('busy handling', function() {
@@ -153,7 +165,7 @@ describe('tbTeamEditor', function() {
         handleTeamDeferred.reject({ name: 'the team' });
       });
 
-      ui.nameInputElement().val('the tean 2');
+      ui.nameInputElement().val('the team 2');
       ui.nameInputElement().change();
 
       expect(ui.nameFormGroupElement().hasClass('has-error')).toBe(false);
@@ -194,6 +206,11 @@ describe('tbTeamEditor', function() {
 
     this.nameHelpBlockElement = function() {
       return element.find('.form-group.name .help-block');
+    };
+
+    this.teamMemberElement = function(index) {
+      var elementClassName = 'li.member-' + index;
+      return element.find(elementClassName);
     };
 
     this.submitButtonElement = function() {
