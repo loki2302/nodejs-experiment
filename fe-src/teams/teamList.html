@@ -9,6 +9,12 @@
       <a ng-href="/teams/{{team.id}}">{{team.name}}</a>
       <a ng-href="/teams/{{team.id}}/edit" class="btn btn-default btn-xs">Edit</a>
       <button type="button" class="btn btn-danger btn-xs" ng-click="deleteTeam(team)">Delete</button>
+      <span ng-if="team.members.length === 0" class="label label-info">No members</span>
+      <span ng-if="team.members.length > 0">
+        <span ng-repeat="member in team.members | orderBy:'person.id'">
+          <a href="/people/{{member.person.id}}">{{member.person.name}}</a><span ng-if="!$last">, </span>
+        </span>
+      </span>
     </li>
   </ul>
 </div>

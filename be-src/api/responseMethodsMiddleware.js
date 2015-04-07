@@ -33,7 +33,7 @@ module.exports = function(RESTError) {
 
     this.okTeamCollection = function(teams) {
       this.status = 200;
-      this.body = makeBriefTeamDTOs(teams);
+      this.body = makeCompleteTeamDTOs(teams);
     };
 
     this.createdTeam = function(team) {
@@ -121,6 +121,10 @@ module.exports = function(RESTError) {
       id: team.id,
       name: team.name
     };
+  }
+
+  function makeCompleteTeamDTOs(teams) {
+    return teams.map(makeCompleteTeamDTO);
   }
 
   function makeCompleteTeamDTO(team) {

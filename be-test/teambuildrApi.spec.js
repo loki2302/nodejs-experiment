@@ -197,7 +197,8 @@ describe('Teambuild API', function() {
         var teams = (yield client.getTeams()).body;
         expect(teams).to.deep.equal([{
           id: 1,
-          name: 'the team'
+          name: 'the team',
+          members: []
         }]);
       });
     });
@@ -540,6 +541,48 @@ describe('Teambuild API', function() {
 
         expect(response.statusCode).to.equal(400);
         expect(response.body.members).to.exist;
+      });
+    });
+
+    describe('GET /teams', function() {
+      var personAId;
+      var personBId;
+      var teamAId;
+      beforeEach(function* () {
+        personAId = (yield client.createPerson({
+          name: 'person A'
+        })).body.id;
+
+        personBId = (yield client.createPerson({
+          name: 'person B'
+        })).body.id;
+
+        teamId = (yield client.createTeam({
+          name: 'the team',
+          members: [
+            { personId: personAId, role: 'developer' },
+            { personId: personBId, role: 'manager' },
+          ]
+        })).body.id;
+      });
+
+      it('should return a collection of teams with members', function* () {
+        var response = yield client.getTeams();
+        expect(response.statusCode).to.equal(200);
+        expect(response.body).to.deep.equal([{
+          id: 1,
+          name: 'the team',
+          members: [
+            {
+              person: { id: personAId, name: 'person A' },
+              role: 'developer'
+            },
+            {
+              person: { id: personBId, name: 'person B' },
+              role: 'manager'
+            }
+          ]
+        }]);
       });
     });
   });
