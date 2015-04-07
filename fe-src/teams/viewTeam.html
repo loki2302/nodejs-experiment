@@ -1,12 +1,9 @@
-<h1>View team</h1>
-<p>id: {{team.id}}</p>
-<p>name: {{team.name}}</p>
+<h1 class="page-header">{{team.name}} <small>#{{team.id}}</h1>
 <div id="no-members-alert" class="alert alert-info" ng-if="team.members.length === 0">
   There are no members in this team so far.
 </div>
 <div id="got-members-container" ng-if="team.members.length > 0">
   <ul id="member-list" class="list-unstyled">
-    <!-- TODO: order by -->
     <li ng-class="'member-' + {{$index}}" ng-repeat="member in team.members | orderBy:'person.id'">
       <a ng-href="/people/{{member.person.id}}">{{member.person.name}}</a> ({{member.role}})
     </li>
