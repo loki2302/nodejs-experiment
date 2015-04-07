@@ -42,8 +42,8 @@ module.exports = function(Q, Person, Team, faker) {
           var personId = teamCandidateIds[randomCandidateIndex];
           var person = yield Person.find(personId);
 
-          var randomRoleIndex = Math.floor(Math.random() * roles.length);
-          var role = roles[randomRoleIndex];
+          var randomRoleIndex = Math.floor(Math.random() * ROLES.length);
+          var role = ROLES[randomRoleIndex];
 
           yield team.addMember(person, { role: role });
           teamCandidateIds.splice(randomCandidateIndex, 1);
