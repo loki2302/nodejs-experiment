@@ -187,6 +187,51 @@ describe('tbPersonEditor', function() {
     });
   });
 
+  describe('membership removal', function() {
+    var handlePersonDeferred;
+    var ui;
+    beforeEach(inject(function() {
+      handlePersonDeferred = $q.defer();
+      $scope.person = {
+        name: 'john',
+        memberships: [
+          {
+            team: { id: 111, name: 'team a' },
+            role: 'developer'
+          },
+          {
+            team: { id: 222, name: 'team b' },
+            role: 'qa'
+          }
+        ]
+      };
+      $scope.handlePerson = jasmine.createSpy('handlePerson').and.callFake(function() {
+        return handlePersonDeferred.promise;
+      });
+      var element = $compile(
+        '<tb-person-editor ' +
+        '  submit-title="Hello World"' +
+        '  person-template="person"' +
+        '  on-submit="handlePerson(person)">' +
+        '</tb-person-editor>')($scope);
+      $scope.$digest();
+
+      ui = new UiMap(element);
+    }));
+
+    // TODO: check if I can somehow look at the real remove functionality
+
+    it('should remove a member when Remove button is clicked', function() {
+      ui.personMembershipRemoveButtonElement(0).click();
+      ui.formElement().submit();
+
+      // first argument of first call to handleTeam(x)
+      var submittedPerson = $scope.handlePerson.calls.allArgs()[0][0];
+      expect(submittedPerson.memberships.length).toBe(1);
+      expect(submittedPerson.memberships[0].team.id).toBe(222);
+    });
+  });
+
   function UiMap(element) {
     this.formElement = function() {
       return element.find('form');
@@ -210,6 +255,11 @@ describe('tbPersonEditor', function() {
 
     this.personMembershipElement = function(index) {
       var elementClassName = 'li.membership-' + index;
+      return element.find(elementClassName);
+    };
+
+    this.personMembershipRemoveButtonElement = function(index) {
+      var elementClassName = 'li.membership-' + index + ' button';
       return element.find(elementClassName);
     };
 
