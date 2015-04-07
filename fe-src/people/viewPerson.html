@@ -1,4 +1,7 @@
-<h1 class="page-header">{{person.name}} <small>#{{person.id}}</small></h1>
+<h3 class="page-header">{{person.name}} <small>#{{person.id}}</small></h3>
+
+<a ng-href="/people/{{person.id}}/edit" class="btn btn-default">Edit</a>
+
 <div id="no-memberships-alert" class="alert alert-info" ng-if="person.memberships.length === 0">
   This person does not belong to any teams so far.
 </div>

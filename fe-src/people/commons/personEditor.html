@@ -5,6 +5,17 @@
       <input type="text" class="form-control" id="name" name="name" ng-model="person.name">
       <p class="help-block" ng-if="vf.isError('name')">{{vf.getFieldError('name')}}</p>
     </div>
+    <div id="no-memberships-alert" class="alert alert-info" ng-if="person.memberships.length === 0">
+      This person does not belong to any teams so far.
+    </div>
+    <div id="got-memberships-container" ng-if="person.memberships.length > 0">
+      <ul id="membership-list" class="list-unstyled">
+        <li ng-class="'membership-' + {{$index}}" ng-repeat="membership in person.memberships | orderBy:'team.id'">
+          <strong>{{membership.role}}</strong> at <a ng-href="/teams/{{membership.team.id}}">{{membership.team.name}}</a>
+          <button type="button" ng-click="removeMembership(membership)" class="btn btn-danger btn-xs">Remove</button>
+        </li>
+      </ul>
+    </div>
     <div class="form-group">
       <button type="submit" class="btn btn-default">{{submitTitle}}</button>
     </div>

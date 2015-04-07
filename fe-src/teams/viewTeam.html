@@ -1,5 +1,7 @@
-<h3 class="page-header">{{team.name}} <small>#{{team.id}}</h3>
+<h3 class="page-header">{{team.name}} <small>#{{team.id}}</small></h3>
+
 <a ng-href="/teams/{{team.id}}/edit" class="btn btn-default">Edit</a>
+
 <div id="no-members-alert" class="alert alert-info" ng-if="team.members.length === 0">
   There are no members in this team so far.
 </div>

@@ -15,7 +15,7 @@ angular.module('tbPersonEditor', [
     templateUrl: function(element, attrs) {
       // TODO: make it throw if templateUrl is not specified
       var templateUrl = attrs.templateUrl || 'people/commons/personEditor.html';
-      return templateUrl;      
+      return templateUrl;
     },
     link: function(scope) {
       if(!scope.submitTitle) {
@@ -44,6 +44,15 @@ angular.module('tbPersonEditor', [
         }, function(errors) {
           scope.vf.setFieldErrors(errors);
         });
+      };
+
+      scope.removeMembership = function(membership) {
+        var membershipIndex = scope.person.memberships.indexOf(membership);
+        if(membershipIndex < 0) {
+          throw new Error('Did not find the membership in memberships');
+        }
+
+        scope.person.memberships.splice(membershipIndex, 1);
       };
     }
   };

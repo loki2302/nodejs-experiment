@@ -2,13 +2,18 @@ var _ = require('lodash');
 
 module.exports = function(Person, Team, PersonMembershipsRelation, TeamMembersRelation) {
   function extractUniqueTeamIds(memberships) {
-    var teamIds = _.map(memberships, 'teamId');
+    var teamIds = _.map(memberships, function(membership) {
+      return membership.team.id;
+    });
+
     var uniqueTeamIds = _.uniq(teamIds);
     return uniqueTeamIds;
   }
 
   function indexMembershipsByTeamIds(memberships) {
-    return _.indexBy(memberships, 'teamId');
+    return _.indexBy(memberships, function(membership) {
+      return membership.team.id;
+    });
   }
 
   return {

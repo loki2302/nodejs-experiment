@@ -59,7 +59,15 @@ describe('tbPersonEditor', function() {
   });
 
   it('should prepopulate the fields based on personTemplate', function() {
-    $scope.person = { name: 'john smith' };
+    $scope.person = {
+      name: 'john smith',
+      memberships: [
+        {
+          team: { id: 123, name: 'the team' },
+          role: 'developer'
+        }
+      ]
+    };
     var element = $compile(
       '<tb-person-editor ' +
       '  busy="busy"' +
@@ -71,6 +79,10 @@ describe('tbPersonEditor', function() {
 
     var ui = new UiMap(element);
     expect(ui.nameInputElement().val()).toBe('john smith');
+
+    var firstPersonMembershipElement = ui.personMembershipElement(0);
+    expect(firstPersonMembershipElement.text()).toContain('the team');
+    expect(firstPersonMembershipElement.text()).toContain('developer');
   });
 
   describe('busy handling', function() {
@@ -194,6 +206,11 @@ describe('tbPersonEditor', function() {
 
     this.nameHelpBlockElement = function() {
       return element.find('.form-group.name .help-block');
+    };
+
+    this.personMembershipElement = function(index) {
+      var elementClassName = 'li.membership-' + index;
+      return element.find(elementClassName);
     };
 
     this.submitButtonElement = function() {
