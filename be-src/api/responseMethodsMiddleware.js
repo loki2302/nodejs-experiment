@@ -74,21 +74,10 @@ module.exports = function(RESTError) {
         this.body = e.body;
       } else {
         this.status = 500;
-        this.body = 'internal server error ' + e;
+        this.body = 'Internal Server Error: ' + e;
       }
     }
   };
-
-  function makeBriefPersonDTOs(people) {
-    return people.map(makeBriefPersonDTO);
-  }
-
-  function makeBriefPersonDTO(person) {
-    return {
-      id: person.id,
-      name: person.name
-    };
-  }
 
   function makeCompletePersonDTOs(people) {
     return people.map(makeCompletePersonDTO);
@@ -109,21 +98,10 @@ module.exports = function(RESTError) {
   function makeBriefMembershipDTO(membership) {
     return {
       team: {
-        id: membership.id, // is it actually teamId or not?
+        id: membership.id,
         name: membership.name
       },
       role: membership.Membership.role
-    };
-  }
-
-  function makeBriefTeamDTOs(teams) {
-    return teams.map(makeBriefTeamDTO);
-  }
-
-  function makeBriefTeamDTO(team) {
-    return {
-      id: team.id,
-      name: team.name
     };
   }
 
