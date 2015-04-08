@@ -95,8 +95,8 @@ TeambuildrClient.prototype.getTeam = function(teamId) {
   return this.get('teams/{id}', { id: teamId });
 };
 
-TeambuildrClient.prototype.getTeams = function() {
-  return this.get('teams', null);
+TeambuildrClient.prototype.getTeams = function(queryParams) {
+  return this.get('teams', null, queryParams);
 };
 
 TeambuildrClient.prototype.updateTeam = function(team) {

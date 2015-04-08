@@ -234,6 +234,38 @@ describe('Teambuildr API', function() {
           members: []
         }]);
       });
+
+      describe('when there are many teams', function() {
+        beforeEach(function* () {
+          // how do I forEach loop here?
+          yield client.createTeam({ name: 'microsoft' });
+          yield client.createTeam({ name: 'supermicro' });
+          yield client.createTeam({ name: 'mirabilis' });
+          yield client.createTeam({ name: 'google' });
+        });
+
+        it('should filter them by "nameContains"', function* () {
+          var people = (yield client.getTeams({
+            nameContains: 'mi'
+          })).body;
+          expect(people.length).to.equal(3);
+        });
+
+        it('should limit them by "max"', function* () {
+          var people = (yield client.getTeams({
+            max: 3
+          })).body;
+          expect(people.length).to.equal(3);
+        });
+
+        it('should both filter them by "nameContains" and limit them by "max"', function* () {
+          var people = (yield client.getTeams({
+            nameContains: 'mi',
+            max: 2
+          })).body;
+          expect(people.length).to.equal(2);
+        });
+      });
     });
 
     describe('PUT /teams/{id}', function() {
