@@ -36,7 +36,10 @@ angular.module('tbEditTeam', [
     };
 
     $scope.findPeopleByQuery = function(query) {
-      return apiService.getPeople();
+      return apiService.getPeople({
+        nameContains: query,
+        max: 5
+      });
     };
   }]
 );

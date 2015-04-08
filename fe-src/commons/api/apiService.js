@@ -53,8 +53,10 @@ angular.module('tbApiService', [
       });
     };
 
-    ApiService.prototype.getPeople = function() {
-      return handle($http.get(url('people'))).likeThis({
+    ApiService.prototype.getPeople = function(params) {
+      return handle($http.get(url('people'), {
+        params: params
+      })).likeThis({
         0: throwConnectivityError(),
         200: returnData(),
         otherwise: throwUnexpectedError()
