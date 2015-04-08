@@ -26,7 +26,7 @@
         <h4 class="panel-title">Add a new member</h4>
       </div>
       <div class="panel-body">
-        <div class="form-group form-inline">
+        <ng-form class="form-group form-inline">
           <div class="form-group">
             <label for="newMemberName">Name</label>
             <input type="text"
@@ -41,8 +41,8 @@
             <label for="newMemberRole">Role</label>
             <input type="text" id="newMemberRole" ng-model="newMember.role" class="form-control">
           </div>
-          <button ng-click="addMember()" ng-disabled="!canAddMember()" type="button" class="btn btn-success">Add</button>
-        </div>
+          <button ng-click="addMember()" ng-disabled="!canAddMember()" type="submit" class="btn btn-success">Add</button>
+        </ng-form>
       </div>
     </div>
 

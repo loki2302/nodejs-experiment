@@ -14,7 +14,7 @@ module.exports = function(Q, Person, Team, faker) {
   ];
 
   return function() {
-    co(function* () {
+    return co(function* () {
       var personIds = [];
       for(var i = 0; i < NUMBER_OF_PEOPLE; ++i) {
         var person = yield Person.create({
