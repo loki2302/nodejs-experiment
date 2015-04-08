@@ -18,6 +18,28 @@
       </ul>
       <p ng-if="vf.isError('members')">{{vf.getFieldError('members')}}</p>
     </div>
+
+    <div class="well">
+      <h4>Add a new member</h4>
+      <div class="form-group form-inline">
+        <div class="form-group">
+          <label for="newMemberName">Name</label>
+          <input type="text"
+            id="newMemberName"
+            ng-model="newMember.person"
+            typeahead="person as person.name for person in searchPeople($viewValue)"
+            typeahead-editable="false"
+            typeahead-template-url="teams/commons/personLookupItem.html"
+            class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="newMemberRole">Role</label>
+          <input type="text" id="newMemberRole" ng-model="newMember.role" class="form-control">
+        </div>
+        <button ng-click="addMember()" type="button" class="btn btn-success">Add</button>
+      </div>
+    </div>
+
     <div class="form-group">
       <button type="submit" class="btn btn-default">{{submitTitle}}</button>
     </div>

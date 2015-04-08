@@ -1,12 +1,14 @@
 angular.module('tbTeamEditor', [
   'tbValidationFacade',
-  'tbTemplates'
+  'tbTemplates',
+  'ui.bootstrap'
 ])
 .directive('tbTeamEditor', function() {
   return {
     restrict: 'E',
     scope: {
       onSubmit: '&',
+      onPersonLookup: '&',
       submitTitle: '@',
       teamTemplate: '=',
       busy: '='
@@ -27,6 +29,7 @@ angular.module('tbTeamEditor', [
       };
 
       scope.team = this.getTeam();
+      scope.newMember = {};
 
       scope.submitTeam = function(e) {
         e.preventDefault();
@@ -48,6 +51,17 @@ angular.module('tbTeamEditor', [
         }
 
         scope.team.members.splice(memberIndex, 1);
+      };
+
+      scope.searchPeople = function(query) {
+        return scope.onPersonLookup({
+          query: query
+        });
+      };
+
+      scope.addMember = function() {
+        scope.team.members.push(scope.newMember);
+        scope.newMember = {};
       };
     }
   };

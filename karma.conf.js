@@ -2,12 +2,13 @@ module.exports = function(config) {
   config.set({
     basePath: './',
     files: [
+      'bower_components/jquery/dist/jquery.js',
       'bower_components/uri.js/src/URI.min.js',
       'bower_components/uri.js/src/URITemplate.js',
-      'bower_components/jquery/dist/jquery.js',
       'bower_components/angular/angular.js',
       'bower_components/angular-route/angular-route.js',
       'bower_components/angular-mocks/angular-mocks.js',
+      'bower_components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min.js',
       'fe-src/**/*.js',
       'fe-src/**/*.html',
       'fe-test/**/*.spec.js'

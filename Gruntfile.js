@@ -41,10 +41,12 @@ module.exports = function(grunt) {
     concat: {
       allJs: {
         src: [
+          '<%= feBowerComponentsDir %>/jquery/dist/jquery.min.js',
           '<%= feBowerComponentsDir %>/uri.js/src/URI.min.js',
           '<%= feBowerComponentsDir %>/uri.js/src/URITemplate.js',
           '<%= feBowerComponentsDir %>/angular/angular.min.js',
           '<%= feBowerComponentsDir %>/angular-route/angular-route.min.js',
+          '<%= feBowerComponentsDir %>/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min.js',
           '<%= feAmalgamatedJsFile %>'
         ],
         dest: '<%= feAmalgamatedJsFileWithDependencies %>'

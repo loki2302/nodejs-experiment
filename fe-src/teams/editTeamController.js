@@ -34,5 +34,9 @@ angular.module('tbEditTeam', [
         throw error;
       }));
     };
+
+    $scope.findPeopleByQuery = function(query) {
+      return apiService.getPeople();
+    };
   }]
 );
