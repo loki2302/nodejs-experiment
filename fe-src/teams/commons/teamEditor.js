@@ -59,6 +59,12 @@ angular.module('tbTeamEditor', [
         });
       };
 
+      scope.canAddMember = function() {
+        return scope.newMember &&
+          scope.newMember.person &&
+          scope.newMember.role;
+      };
+
       scope.addMember = function() {
         scope.team.members.push(scope.newMember);
         scope.newMember = {};

@@ -26,5 +26,12 @@ angular.module('tbCreateTeam', [
         throw error;
       }));
     };
+
+    $scope.findPeopleByQuery = function(query) {
+      return apiService.getPeople({
+        nameContains: query,
+        max: 5
+      });
+    };
   }]
 );

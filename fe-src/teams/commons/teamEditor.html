@@ -8,7 +8,7 @@
     <div id="no-members-alert" class="alert alert-info" ng-if="team.members.length === 0">
       There are no members in this team so far.
     </div>
-    <div id="got-members-container" ng-if="team.members.length > 0">
+    <div id="got-members-container" class="form-group" ng-class="{'has-error': vf.isError('members')}" ng-if="team.members.length > 0">
       <ul id="member-list" class="list-unstyled">
         <li ng-class="'member-' + {{$index}}" ng-repeat="member in team.members | orderBy:'person.id'">
           <div class="form-group form-inline">
@@ -18,7 +18,7 @@
           </div>
         </li>
       </ul>
-      <p ng-if="vf.isError('members')">{{vf.getFieldError('members')}}</p>
+      <p class="help-block" ng-if="vf.isError('members')">{{vf.getFieldError('members')}}</p>
     </div>
 
     <div class="well">
@@ -38,7 +38,7 @@
           <label for="newMemberRole">Role</label>
           <input type="text" id="newMemberRole" ng-model="newMember.role" class="form-control">
         </div>
-        <button ng-click="addMember()" type="button" class="btn btn-success">Add</button>
+        <button ng-click="addMember()" ng-disabled="!canAddMember()" type="button" class="btn btn-success">Add</button>
       </div>
     </div>
 
