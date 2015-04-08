@@ -11,8 +11,12 @@
     <div id="got-memberships-container" ng-if="person.memberships.length > 0">
       <ul id="membership-list" class="list-unstyled">
         <li ng-class="'membership-' + {{$index}}" ng-repeat="membership in person.memberships | orderBy:'team.id'">
-          <strong>{{membership.role}}</strong> at <a ng-href="/teams/{{membership.team.id}}">{{membership.team.name}}</a>
-          <button type="button" ng-click="removeMembership(membership)" class="btn btn-danger btn-xs">Remove</button>
+          <div class="form-group form-inline">
+            <input type="text" ng-model="membership.role" class="form-control input-sm">
+            in
+            <strong>{{membership.team.name}}</strong>
+            <button type="button" ng-click="removeMembership(membership)" class="btn btn-danger btn-xs">Remove</button>
+          </div>
         </li>
       </ul>
     </div>
