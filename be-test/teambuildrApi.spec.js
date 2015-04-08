@@ -83,6 +83,38 @@ describe('Teambuildr API', function() {
           memberships: []
         }]);
       });
+
+      describe('when there are many people', function() {
+        beforeEach(function* () {
+          // how do I forEach loop here?
+          yield client.createPerson({ name: 'john' });
+          yield client.createPerson({ name: 'joe' });
+          yield client.createPerson({ name: 'jonathan' });
+          yield client.createPerson({ name: 'bill' });
+        });
+
+        it('should filter them by "nameContains"', function* () {
+          var people = (yield client.getPeople({
+            nameContains: 'jo'
+          })).body;
+          expect(people.length).to.equal(3);
+        });
+
+        it('should limit them by "max"', function* () {
+          var people = (yield client.getPeople({
+            max: 3
+          })).body;
+          expect(people.length).to.equal(3);
+        });
+
+        it('should both filter them by "nameContains" and limit them by "max"', function* () {
+          var people = (yield client.getPeople({
+            nameContains: 'jo',
+            max: 2
+          })).body;
+          expect(people.length).to.equal(2);
+        });
+      });
     });
 
     describe('PUT /people/{id}', function() {

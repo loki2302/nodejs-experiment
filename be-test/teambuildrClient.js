@@ -19,12 +19,13 @@ TeambuildrClient.prototype.makeUrl = function(resourceTemplateString, resourceVa
   return uriString;
 };
 
-TeambuildrClient.prototype.get = function(resourceTemplateString, resourceValues) {
+TeambuildrClient.prototype.get = function(resourceTemplateString, resourceValues, queryParams) {
   var url = this.makeUrl(resourceTemplateString, resourceValues);
   return rp({
     simple: false,
     method: 'GET',
     url: url,
+    qs: queryParams,
     json: true,
     resolveWithFullResponse: true
   });
@@ -73,8 +74,9 @@ TeambuildrClient.prototype.getPerson = function(personId) {
   return this.get('people/{id}', { id: personId });
 };
 
-TeambuildrClient.prototype.getPeople = function() {
-  return this.get('people', null);
+// queryParams: {nameContains, max}
+TeambuildrClient.prototype.getPeople = function(queryParams) {
+  return this.get('people', null, queryParams);
 };
 
 TeambuildrClient.prototype.updatePerson = function(person) {
