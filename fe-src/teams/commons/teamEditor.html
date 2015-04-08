@@ -11,9 +11,11 @@
     <div id="got-members-container" ng-if="team.members.length > 0">
       <ul id="member-list" class="list-unstyled">
         <li ng-class="'member-' + {{$index}}" ng-repeat="member in team.members | orderBy:'person.id'">
-          <a ng-href="/people/{{member.person.id}}">{{member.person.name}}</a>
-          ({{member.role}})
-          <button type="button" ng-click="removeMember(member)" class="btn btn-danger btn-xs">Remove</button>
+          <div class="form-group form-inline">
+            <strong>{{member.person.name}}</strong> is a
+            <input type="text" ng-model="member.role" class="form-control input-sm">
+            <button type="button" ng-click="removeMember(member)" class="btn btn-danger">Remove</button>
+          </div>
         </li>
       </ul>
       <p ng-if="vf.isError('members')">{{vf.getFieldError('members')}}</p>
