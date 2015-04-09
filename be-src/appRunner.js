@@ -49,9 +49,7 @@ module.exports = function(Q, enableDestroy, app, dataContext, generateFakeData, 
         return Q.reject(new Error('The application is not running'));
       }
 
-      generateFakeData();
-
-      return Q.when();
+      return generateFakeData();
     }
   }
 };
