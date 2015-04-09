@@ -55,7 +55,7 @@ describe('tbTeamEditor', function() {
     $scope.$digest();
 
     var ui = new UiMap(element);
-    expect(ui.submitButtonElement().text()).toBe('Hello World');
+    expect(ui.submitTeamButtonElement().text()).toBe('Hello World');
   });
 
   it('should prepopulate the fields based on teamTemplate', function() {
@@ -80,10 +80,14 @@ describe('tbTeamEditor', function() {
     var ui = new UiMap(element);
     expect(ui.nameInputElement().val()).toBe('the team');
 
-    var firstTeamMemberElement = ui.teamMemberElement(0);
-    expect(firstTeamMemberElement.text()).toContain('john');
-    // TODO: there's an input field now
-    // expect(firstTeamMemberElement.text()).toContain('developer');
+    var firstTeamMemberNameElement = ui.teamMemberNameElement(0);
+    expect(firstTeamMemberNameElement.text()).toBe('john');
+
+    var firstTeamMemberRoleElement = ui.teamMemberRoleElement(0);
+    expect(firstTeamMemberRoleElement.val()).toBe('developer');
+
+    var firstTeamMemberRemoveButtonElement = ui.teamMemberRemoveButtonElement(0);
+    expect(firstTeamMemberRemoveButtonElement.length).toBe(1);
   });
 
   describe('busy handling', function() {
@@ -114,6 +118,100 @@ describe('tbTeamEditor', function() {
       });
 
       expect(ui.fieldsetElement().attr('disabled')).toBe('disabled');
+    });
+  });
+
+  describe('adding a new member', function() {
+    var ui;
+    var element;
+    beforeEach(function() {
+      $scope.team = {
+        name: 'the team',
+        members: []
+      };
+
+      element = $compile(
+        '<tb-team-editor ' +
+        '  submit-title="Hello World"' +
+        '  team-template="team"' +
+        '  on-person-lookup="lookupPerson(query)"' +
+        '  on-submit="handleTeam(team)">' +
+        '</tb-team-editor>')($scope);
+      $scope.lookupPerson = jasmine.createSpy('lookupPerson');
+      $scope.$digest();
+
+      ui = new UiMap(element);
+    });
+
+    it('should let me add a new member', function() {
+      var elementScope = element.scope();
+      expect(elementScope.team).toBeDefined();
+      expect(elementScope.teamTemplate).not.toBeDefined();
+      // expect(elementScope.getTeam).not.toBeDefined(); // it's not on the scope
+      expect(elementScope.newMember).not.toBeDefined();
+      expect(elementScope.submitTeam).not.toBeDefined();
+      expect(elementScope.removeMember).not.toBeDefined();
+      expect(elementScope.searchPeople).not.toBeDefined();
+      expect(elementScope.canAddMember).not.toBeDefined();
+      expect(elementScope.addMember).not.toBeDefined();
+      expect(elementScope.addMember).not.toBeDefined();
+
+      var isolateScope = element.isolateScope();
+      expect(isolateScope.team).toBeDefined();
+      expect(isolateScope.teamTemplate).toBeDefined();
+      // expect(isolateScope.getTeam).toBeDefined(); // it's not on the scope
+      expect(isolateScope.newMember).toBeDefined();
+      expect(isolateScope.submitTeam).toBeDefined();
+      expect(isolateScope.removeMember).toBeDefined();
+      expect(isolateScope.searchPeople).toBeDefined();
+      expect(isolateScope.canAddMember).toBeDefined();
+      expect(isolateScope.addMember).toBeDefined();
+      expect(isolateScope.addMember).toBeDefined();
+    });
+  });
+
+  describe('removing an existing member', function() {
+    var handleTeamDeferred;
+    var ui;
+    beforeEach(function() {
+      handleTeamDeferred = $q.defer();
+      $scope.team = {
+        name: 'the team',
+        members: [
+          {
+            person: { id: 111, name: 'person A' },
+            role: 'developer'
+          },
+          {
+            person: { id: 222, name: 'person B' },
+            role: 'qa'
+          }
+        ]
+      };
+      $scope.handleTeam = jasmine.createSpy('handleTeam').and.callFake(function() {
+        return handleTeamDeferred.promise;
+      });
+      var element = $compile(
+        '<tb-team-editor ' +
+        '  submit-title="Hello World"' +
+        '  team-template="team"' +
+        '  on-submit="handleTeam(team)">' +
+        '</tb-team-editor>')($scope);
+      $scope.$digest();
+
+      ui = new UiMap(element);
+    });
+
+    // TODO: check if I can somehow look at the real remove functionality
+
+    it('should remove a member when Remove button is clicked', function() {
+      ui.teamMemberRemoveButtonElement(0).click();
+      ui.formElement().submit();
+
+      // first argument of first call to handleTeam(x)
+      var submittedTeam = $scope.handleTeam.calls.allArgs()[0][0];
+      expect(submittedTeam.members.length).toBe(1);
+      expect(submittedTeam.members[0].person.id).toBe(222);
     });
   });
 
@@ -188,51 +286,6 @@ describe('tbTeamEditor', function() {
     });
   });
 
-  describe('member removal', function() {
-    var handleTeamDeferred;
-    var ui;
-    beforeEach(inject(function() {
-      handleTeamDeferred = $q.defer();
-      $scope.team = {
-        name: 'the team',
-        members: [
-          {
-            person: { id: 111, name: 'person A' },
-            role: 'developer'
-          },
-          {
-            person: { id: 222, name: 'person B' },
-            role: 'qa'
-          }
-        ]
-      };
-      $scope.handleTeam = jasmine.createSpy('handleTeam').and.callFake(function() {
-        return handleTeamDeferred.promise;
-      });
-      var element = $compile(
-        '<tb-team-editor ' +
-        '  submit-title="Hello World"' +
-        '  team-template="team"' +
-        '  on-submit="handleTeam(team)">' +
-        '</tb-team-editor>')($scope);
-      $scope.$digest();
-
-      ui = new UiMap(element);
-    }));
-
-    // TODO: check if I can somehow look at the real remove functionality
-
-    it('should remove a member when Remove button is clicked', function() {
-      ui.teamMemberRemoveButtonElement(0).click();
-      ui.formElement().submit();
-
-      // first argument of first call to handleTeam(x)
-      var submittedTeam = $scope.handleTeam.calls.allArgs()[0][0];
-      expect(submittedTeam.members.length).toBe(1);
-      expect(submittedTeam.members[0].person.id).toBe(222);
-    });
-  });
-
   function UiMap(element) {
     this.formElement = function() {
       return element.find('form');
@@ -259,13 +312,32 @@ describe('tbTeamEditor', function() {
       return element.find(elementClassName);
     };
 
-    this.teamMemberRemoveButtonElement = function(index) {
-      var elementClassName = 'li.member-' + index + ' button';
-      return element.find(elementClassName);
+    this.teamMemberNameElement = function(index) {
+      return this.teamMemberElement(index).find('.person-name');
     };
 
-    this.submitButtonElement = function() {
-      return element.find('button[type="submit"]');
+    this.teamMemberRoleElement = function(index) {
+      return this.teamMemberElement(index).find('.member-role');
+    };
+
+    this.teamMemberRemoveButtonElement = function(index) {
+      return this.teamMemberElement(index).find('.remove-member-button');
+    };
+
+    this.newMemberNameElement = function() {
+      return element.find('#new-member-name');
+    };
+
+    this.newMemberRoleElement = function() {
+      return element.find('#new-member-role');
+    };
+
+    this.addNewMemberButtonElement = function() {
+      return element.find('#add-new-member');
+    };
+
+    this.submitTeamButtonElement = function() {
+      return element.find('button#submit-team-button');
     };
   };
 });

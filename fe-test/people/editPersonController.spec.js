@@ -27,12 +27,12 @@ describe('tbEditPerson', function() {
     });
   }));
 
-  it('should publish an updatePerson() on the scope', function() {
-    expect($scope.updatePerson).toBeDefined();
-  });
-
   it('should publish a person on the scope', function() {
     expect($scope.person).toBeDefined();
+  });
+
+  it('should publish an updatePerson() on the scope', function() {
+    expect($scope.updatePerson).toBeDefined();
   });
 
   it('should call apiService.updatePerson()', function() {

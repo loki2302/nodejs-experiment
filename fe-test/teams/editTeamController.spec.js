@@ -35,6 +35,10 @@ describe('tbEditTeam', function() {
     expect($scope.team).toBeDefined();
   });
 
+  it('should publish a findPeopleByQuery() on the scope', function() {
+    expect($scope.findPeopleByQuery).toBeDefined();
+  });
+
   it('should call apiService.updateTeam()', function() {
     spyOn(apiService, 'updateTeam').and.callThrough();
     $scope.updateTeam({
