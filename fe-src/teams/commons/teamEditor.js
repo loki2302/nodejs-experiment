@@ -56,16 +56,22 @@ angular.module('tbTeamEditor', [
       scope.searchPeople = function(query) {
         return scope.onPersonLookup({
           query: query
+        }).catch(function() {
+          return [];
         });
       };
 
       scope.canAddMember = function() {
-        return scope.newMember &&
+        return !!(scope.newMember &&
           scope.newMember.person &&
-          scope.newMember.role;
+          scope.newMember.role)
       };
 
       scope.addMember = function() {
+        if(!scope.canAddMember()) {
+          throw new Error('canAddMember() says the new member is not ready yet');
+        }
+
         scope.team.members.push(scope.newMember);
         scope.newMember = {};
       };
