@@ -65,26 +65,6 @@ describe('tbTeamEditor', function() {
       it('should publish the "newMember" on a scope', function() {
         expect(scope.newMember).toBeDefined();
       });
-
-      it('should publish the "submitTeam" on a scope', function() {
-        expect(scope.submitTeam).toBeDefined();
-      });
-
-      it('should publish the "removeMember" on a scope', function() {
-        expect(scope.removeMember).toBeDefined();
-      });
-
-      it('should publish the "searchPeople" on a scope', function() {
-        expect(scope.searchPeople).toBeDefined();
-      });
-
-      it('should publish the "canAddMember" on a scope', function() {
-        expect(scope.canAddMember).toBeDefined();
-      });
-
-      it('should publish the "addMember" on a scope', function() {
-        expect(scope.addMember).toBeDefined();
-      });
     });
   });
 
@@ -105,6 +85,10 @@ describe('tbTeamEditor', function() {
 
       $scope.$digest();
       scope = element.isolateScope();
+    });
+
+    it('should be defined', function() {
+      expect(scope.submitTeam).toBeDefined();
     });
 
     it('should call onSubmit', function() {
@@ -156,6 +140,10 @@ describe('tbTeamEditor', function() {
       scope = element.isolateScope();
     });
 
+    it('should be defined', function() {
+      expect(scope.searchPeople).toBeDefined();
+    });
+
     it('should call onPersonLookup', function() {
       scope.searchPeople('a');
       expect($scope.onPersonLookup).toHaveBeenCalled();
@@ -189,6 +177,10 @@ describe('tbTeamEditor', function() {
 
       $scope.$digest();
       scope = element.isolateScope();
+    });
+
+    it('should be defined', function() {
+      expect(scope.canAddMember).toBeDefined();
     });
 
     it('should return false if newMember is not set', function() {
@@ -232,6 +224,10 @@ describe('tbTeamEditor', function() {
       scope = element.isolateScope();
     });
 
+    it('should be defined', function() {
+      expect(scope.addMember).toBeDefined();
+    });
+
     it('should throw if canAddMember() returns false', function() {
       scope.canAddMember = jasmine.createSpy('canAddMember').and.returnValue(false);
       expect(function() {
@@ -273,6 +269,10 @@ describe('tbTeamEditor', function() {
 
       $scope.$digest();
       scope = element.isolateScope();
+    });
+
+    it('should be defined', function() {
+      expect(scope.removeMember).toBeDefined();
     });
 
     it('should throw if member is not on the list', function() {
@@ -365,6 +365,8 @@ describe('tbTeamEditor', function() {
         expect(ui.fieldsetElement().attr('disabled')).toBe('disabled');
       });
     });
+
+
 
     describe('adding a new member', function() {
       var ui;
