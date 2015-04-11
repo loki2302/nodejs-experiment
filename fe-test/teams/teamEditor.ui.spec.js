@@ -96,18 +96,32 @@ describe('tbTeamEditor UI', function() {
         expect(scope.searchPeople).toHaveBeenCalledWith('a');
       });
 
-      xit('should display a typeahead list', function() {
+      it('should display a typeahead list', function() {
         expect(ui.newMemberNameTypeaheadList().hasClass('ng-hide')).toBe(true);
-        spyOn(scope, 'searchPeople').and.returnValue($q.when([]));
-        ui.newMemberNameElement().val('a');
+        ui.newMemberNameElement().val('j');
         ui.newMemberNameElement().change();
         $scope.$apply(function() {
-          handlePersonLookupDeferred.resolve([{id:123, name:'andrey'}]);
+          handlePersonLookupDeferred.resolve([{
+            id: 123, name: 'john'
+          }]);
         });
         $scope.$digest();
 
-        // TODO: fails here
         expect(ui.newMemberNameTypeaheadList().hasClass('ng-hide')).toBe(false);
+      });
+
+      it('should update the person when typeahead item is clicked', function() {
+        ui.newMemberNameElement().val('j');
+        ui.newMemberNameElement().change();
+        $scope.$apply(function() {
+          handlePersonLookupDeferred.resolve([{
+            id: 123, name: 'john'
+          }]);
+        });
+
+        ui.newMemberNameTypeaheadListItem(0).click();
+
+        expect(scope.newMember.person).toEqual({ id: 123, name: 'john' });
       });
     });
 
@@ -117,6 +131,14 @@ describe('tbTeamEditor UI', function() {
         ui.newMemberRoleElement().change();
         expect(scope.newMember.role).toBe('developer');
       });
+    });
+
+    describe('add member button', function() {
+      it('should delegate to scope.addMember()', function() {
+        spyOn(scope, 'addMember');
+        ui.addNewMemberButtonElement().click();
+        expect(scope.addMember).toHaveBeenCalled();
+      })
     });
   });
 
@@ -238,12 +260,16 @@ describe('tbTeamEditor UI', function() {
       return element.find('ul.dropdown-menu');
     };
 
+    this.newMemberNameTypeaheadListItem = function(index) {
+      return this.newMemberNameTypeaheadList().find('li')[0];
+    }
+
     this.newMemberRoleElement = function() {
       return element.find('#new-member-role');
     };
 
     this.addNewMemberButtonElement = function() {
-      return element.find('#add-new-member');
+      return element.find('button#add-member-button');
     };
 
     this.submitTeamButtonElement = function() {
