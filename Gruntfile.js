@@ -1,5 +1,16 @@
 module.exports = function(grunt) {
   grunt.initConfig({
+    distDir: 'dist',
+    git_deploy: {
+      dist: {
+        options: {
+          url: 'https://git.heroku.com/powerful-beach-8366.git',
+          message: 'Deployment by Grunt',
+          branch: 'master'
+        },
+        src: 'dist'
+      }
+    },
 
     // Backend tests
     beTestSrcDir: 'be-test',
@@ -63,11 +74,19 @@ module.exports = function(grunt) {
         flatten: true,
         src: ['<%= feIndexHtmlFile %>'],
         dest: '<%= feBuildDir %>'
+      },
+      dist: {
+        files: [
+          { expand: true, src: ['be-src/**'], dest: '<%= distDir %>/' },
+          { expand: true, src: ['fe-build/**'], dest: '<%= distDir %>/' },
+          { expand: true, src: ['Procfile', 'package.json'], dest: '<%= distDir %>/' }
+        ]
       }
     },
     clean: {
       feBuild: ['<%= feBuildDir %>'],
-      feTmpBuildDir: ['<%= feTmpBuildDir %>']
+      feTmpBuildDir: ['<%= feTmpBuildDir %>'],
+      dist: ['<%= distDir %>']
     },
 
     // Launch
@@ -128,6 +147,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-protractor-webdriver');
   grunt.loadNpmTasks('grunt-protractor-runner');
   grunt.loadNpmTasks('grunt-karma');
+  grunt.loadNpmTasks('grunt-git-deploy');
 
   grunt.registerTask('be-test', 'Run backend tests', ['mochaTest']);
   grunt.registerTask('test', 'Run all tests',
@@ -147,4 +167,12 @@ module.exports = function(grunt) {
 
   grunt.registerTask('fe-test', 'Run FE tests once', ['karma:runOnce']);
   grunt.registerTask('fe-watch', 'Run FE tests continuously', ['karma:watch']);
+
+  grunt.registerTask('heroku-deployment', 'Build everything and deploy to Heroku', [
+    'clean:dist',
+    'fe-build',
+    'copy:dist',
+    'git_deploy:dist',
+    'clean:dist'
+  ]);
 };
