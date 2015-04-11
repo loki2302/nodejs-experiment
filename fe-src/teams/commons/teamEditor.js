@@ -23,9 +23,8 @@ angular.module('tbTeamEditor', [
         throw new Error('teamTemplate is required');
       }
 
-      this.teamTemplate = angular.copy(scope.teamTemplate);
       this.getTeam = function() {
-        return angular.copy(this.teamTemplate);
+        return angular.copy(scope.teamTemplate);
       };
 
       scope.team = this.getTeam();
