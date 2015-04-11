@@ -35,7 +35,7 @@ module.exports = function(settings) {
       staticRootLocation: '/',
       apiRootLocation: '/api',
 
-      serverPort: (settings && settings.serverPort) || 3000,
+      serverPort: (settings && settings.serverPort) || process.env.PORT || 3000,
       connectionString: (settings && settings.connectionString) || 'sqlite://my.db',
       dummyMessage: (settings && settings.dummyMessage) || 'hello there'
     },
@@ -80,5 +80,5 @@ module.exports = function(settings) {
     }
   };
 
-  return require('hinoki').get(container, 'appRunner');
+  return require('hinoki')(container, 'appRunner');
 };
