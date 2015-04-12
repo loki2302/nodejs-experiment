@@ -1,4 +1,296 @@
-describe('tbPersonEditor', function() {
+describe('tbPersonEditor logic', function() {
+  beforeEach(module('tbPersonEditor', 'tbTemplates'));
+
+  var $scope;
+  var $compile;
+  var $q;
+  beforeEach(inject(function($rootScope, _$compile_, _$q_) {
+    $scope = $rootScope.$new();
+    $compile = _$compile_;
+    $q = _$q_;
+  }));
+
+  describe('construction', function() {
+    it('should throw if submitTitle is not set', function() {
+      $compile(
+        '<tb-person-editor ' +
+        '  busy="busy"' +
+        '  person-template="{}">' +
+        '</tb-person-editor>')($scope);
+      expect(function() {
+        $scope.$digest();
+      }).toThrow();
+    });
+
+    it('should throw if personTemplate is not set', function() {
+      $compile(
+        '<tb-person-editor ' +
+        '  busy="busy"' +
+        '  submit-title="Submit">' +
+        '</tb-person-editor>')($scope);
+      expect(function() {
+        $scope.$digest();
+      }).toThrow();
+    });
+
+    it('should not throw if everything is set', function() {
+      $compile(
+        '<tb-person-editor ' +
+        '  busy="busy"' +
+        '  submit-title="Submit"' +
+        '  person-template="{}">' +
+        '</tb-person-editor>')($scope);
+      expect(function() {
+        $scope.$digest();
+      }).not.toThrow();
+    });
+
+    describe('isolate scope', function() {
+      var scope;
+      beforeEach(function() {
+        var element = $compile(
+          '<tb-person-editor ' +
+          '  busy="busy"' +
+          '  submit-title="Submit"' +
+          '  person-template="{}">' +
+          '</tb-person-editor>')($scope);
+        $scope.$digest();
+        scope = element.isolateScope();
+      });
+
+      it('should publish the "person" on a scope', function() {
+        expect(scope.person).toBeDefined();
+      });
+
+      it('should publish the "newMembership" on a scope', function() {
+        expect(scope.newMembership).toBeDefined();
+      });
+    });
+  });
+
+  describe('submitPerson', function() {
+    var scope;
+    var onSubmitDeferred;
+    beforeEach(function() {
+      onSubmitDeferred = $q.defer();
+      $scope.onSubmit = jasmine.createSpy('onSubmit').and.callFake(function() {
+        return onSubmitDeferred.promise;
+      });
+      var element = $compile(
+        '<tb-person-editor ' +
+        '  on-submit="onSubmit(person)"' +
+        '  submit-title="Submit"' +
+        '  person-template="{}">' +
+        '</tb-person-editor>')($scope);
+
+      $scope.$digest();
+      scope = element.isolateScope();
+    });
+
+    it('should be defined', function() {
+      expect(scope.submitPerson).toBeDefined();
+    });
+
+    it('should call onSubmit', function() {
+      scope.person = { id: 123 };
+      scope.submitPerson({ preventDefault: angular.noop });
+      expect($scope.onSubmit).toHaveBeenCalledWith({ id: 123 });
+    });
+
+    it('should reload the person from personTemplate if onSubmit resolves', function() {
+      scope.person = { id: 123 };
+      scope.submitPerson({ preventDefault: angular.noop });
+      onSubmitDeferred.resolve();
+      $scope.$digest();
+      expect(scope.person).toEqual({});
+    });
+
+    it('should handle validation errors if onSubmit rejects', function() {
+      scope.person = { id: 123 };
+
+      spyOn(scope.vf, 'setFieldErrors');
+      scope.submitPerson({ preventDefault: angular.noop });
+      onSubmitDeferred.reject({
+        name: 'ugly'
+      });
+      $scope.$digest();
+
+      expect(scope.vf.setFieldErrors).toHaveBeenCalledWith({
+        name: 'ugly'
+      });
+    });
+  });
+
+  describe('searchTeams', function() {
+    var scope;
+    var onTeamLookupDeferred;
+    beforeEach(function() {
+      onTeamLookupDeferred = $q.defer();
+      $scope.onTeamLookup = jasmine.createSpy('onTeamLookup').and.callFake(function() {
+        return onTeamLookupDeferred.promise;
+      });
+      var element = $compile(
+        '<tb-person-editor ' +
+        '  on-team-lookup="onTeamLookup(query)"' +
+        '  submit-title="Submit"' +
+        '  person-template="{}">' +
+        '</tb-person-editor>')($scope);
+
+      $scope.$digest();
+      scope = element.isolateScope();
+    });
+
+    it('should be defined', function() {
+      expect(scope.searchTeams).toBeDefined();
+    });
+
+    it('should call onTeamLookup', function() {
+      scope.searchTeams('a');
+      expect($scope.onTeamLookup).toHaveBeenCalled();
+    });
+
+    it('should return the result if onTeamLookup succeeds', function() {
+      var onSuccess = jasmine.createSpy('onSuccess');
+      scope.searchTeams('a').then(onSuccess);
+      onTeamLookupDeferred.resolve('hello');
+      $scope.$digest();
+      expect(onSuccess).toHaveBeenCalledWith('hello');
+    });
+
+    it('should return an empty collection if onTeamLookup fails', function() {
+      var onSuccess = jasmine.createSpy('onSuccess');
+      scope.searchTeams('a').then(onSuccess);
+      onTeamLookupDeferred.reject('error');
+      $scope.$digest();
+      expect(onSuccess).toHaveBeenCalledWith([]);
+    });
+  });
+
+  describe('canAddMember', function() {
+    var scope;
+    beforeEach(function() {
+      var element = $compile(
+        '<tb-person-editor ' +
+        '  submit-title="Submit"' +
+        '  person-template="{}">' +
+        '</tb-person-editor>')($scope);
+
+      $scope.$digest();
+      scope = element.isolateScope();
+    });
+
+    it('should be defined', function() {
+      expect(scope.canAddMembership).toBeDefined();
+    });
+
+    it('should return false if newMembership is not set', function() {
+      scope.newMembership = null;
+      expect(scope.canAddMembership()).toBe(false);
+    });
+
+    it('should return false if newMembership.team is not set', function() {
+      scope.newMembership = {
+        role: 'developer'
+      };
+      expect(scope.canAddMembership()).toBe(false);
+    });
+
+    it('should return false if newMembership.role is not set', function() {
+      scope.newMembership = {
+        team: {}
+      };
+      expect(scope.canAddMembership()).toBe(false);
+    });
+
+    it('should return true if newMembership has everything set up', function() {
+      scope.newMembership = {
+        team: {},
+        role: 'developer'
+      };
+      expect(scope.canAddMembership()).toBe(true);
+    });
+  });
+
+  describe('addMembership', function() {
+    var scope;
+    beforeEach(function() {
+      var element = $compile(
+        '<tb-person-editor ' +
+        '  submit-title="Submit"' +
+        '  person-template="{memberships:[]}">' +
+        '</tb-person-editor>')($scope);
+
+      $scope.$digest();
+      scope = element.isolateScope();
+    });
+
+    it('should be defined', function() {
+      expect(scope.addMembership).toBeDefined();
+    });
+
+    it('should throw if canAddMembership() returns false', function() {
+      scope.canAddMembership = jasmine.createSpy('canAddMembership').and.returnValue(false);
+      expect(function() {
+        scope.addMembership();
+      }).toThrow();
+      expect(scope.canAddMembership).toHaveBeenCalled();
+    });
+
+    it('should append a new membership to the list of memberships', function() {
+      scope.canAddMembership = function() { return true; };
+      scope.newMembership = 'new membership';
+      scope.addMembership();
+      expect(scope.person.memberships).toEqual(['new membership']);
+    });
+
+    it('should clean up the current new membership', function() {
+      scope.canAddMembership = function() { return true; };
+      scope.newMembership = 'new membership';
+      scope.addMembership();
+      expect(scope.newMembership).toEqual({});
+    });
+  });
+
+  describe('removeMembership', function() {
+    var scope;
+    beforeEach(function() {
+      $scope.person = {
+        memberships: [
+          {
+            team: { id: 11 }
+          }
+        ]
+      };
+      var element = $compile(
+        '<tb-person-editor ' +
+        '  submit-title="Submit"' +
+        '  person-template="person">' +
+        '</tb-person-editor>')($scope);
+
+      $scope.$digest();
+      scope = element.isolateScope();
+    });
+
+    it('should be defined', function() {
+      expect(scope.removeMembership).toBeDefined();
+    });
+
+    it('should throw if membership is not on the list', function() {
+      expect(function() {
+        scope.removeMembership({});
+      }).toThrow();
+      expect(scope.person.memberships.length).toBe(1);
+    });
+
+    it('should remove the membership if it is on the list', function() {
+      scope.removeMembership(scope.person.memberships[0]);
+      expect(scope.person.memberships.length).toBe(0);
+    });
+  });
+});
+
+
+/*describe('tbPersonEditor', function() {
   beforeEach(module('tbPersonEditor', 'tbTemplates'));
 
   var $scope;
@@ -269,3 +561,4 @@ describe('tbPersonEditor', function() {
     };
   };
 });
+*/

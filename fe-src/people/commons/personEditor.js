@@ -20,7 +20,7 @@ angular.module('tbPersonEditor', [
       }
 
       if(!scope.personTemplate) {
-        throw new Error('teamTemplate is required');
+        throw new Error('personTemplate is required');
       }
 
       this.getPerson = function() {
