@@ -265,7 +265,7 @@ describe('tbPersonEditor', function() {
     };
 
     this.submitButtonElement = function() {
-      return element.find('button[type="submit"]');
+      return element.find('button#submit-person-button');
     };
   };
 });

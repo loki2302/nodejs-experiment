@@ -2,6 +2,6 @@
 <tb-person-editor
   busy="busy"
   submit-title="Create"
-  template-url="people/commons/personEditor.html"
   person-template="{}"
+  on-team-lookup="findTeamsByQuery(query)"
   on-submit="createPerson(person)"></tb-person-editor>

@@ -1,37 +1,34 @@
 angular.module('tbPersonEditor', [
   'tbValidationFacade',
-  'tbTemplates'
+  'tbTemplates',
+  'ui.bootstrap'
 ])
 .directive('tbPersonEditor', function() {
   return {
     restrict: 'E',
     scope: {
       onSubmit: '&',
+      onTeamLookup: '&',
       submitTitle: '@',
       personTemplate: '=',
       busy: '='
     },
-    // templateUrl: 'people/commons/personEditor.html',
-    templateUrl: function(element, attrs) {
-      // TODO: make it throw if templateUrl is not specified
-      var templateUrl = attrs.templateUrl || 'people/commons/personEditor.html';
-      return templateUrl;
-    },
+    templateUrl: 'people/commons/personEditor.html',
     link: function(scope) {
       if(!scope.submitTitle) {
         throw new Error('submitTitle is required');
       }
 
       if(!scope.personTemplate) {
-        throw new Error('personTemplate is required');
+        throw new Error('teamTemplate is required');
       }
 
-      this.personTemplate = angular.copy(scope.personTemplate);
       this.getPerson = function() {
-        return angular.copy(this.personTemplate);
+        return angular.copy(scope.personTemplate);
       };
 
       scope.person = this.getPerson();
+      scope.newMembership = {};
 
       scope.submitPerson = function(e) {
         e.preventDefault();
@@ -53,6 +50,29 @@ angular.module('tbPersonEditor', [
         }
 
         scope.person.memberships.splice(membershipIndex, 1);
+      };
+
+      scope.searchTeams = function(query) {
+        return scope.onTeamLookup({
+          query: query
+        }).catch(function() {
+          return [];
+        });
+      };
+
+      scope.canAddMembership = function() {
+        return !!(scope.newMembership &&
+          scope.newMembership.team &&
+          scope.newMembership.role)
+      };
+
+      scope.addMembership = function() {
+        if(!scope.canAddMembership()) {
+          throw new Error('canAddMembership() says the new membership is not ready yet');
+        }
+
+        scope.person.memberships.push(scope.newMembership);
+        scope.newMembership = {};
       };
     }
   };

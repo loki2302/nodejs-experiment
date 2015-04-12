@@ -1,0 +1,5 @@
+<a>
+  {{match.model.name}}
+  (#{{match.model.id}})
+  <span bind-html-unsafe="match.label | typeaheadHighlight:query"></span>
+</a>
