@@ -29,7 +29,7 @@ angular.module('tbSuperPersonEditor', [
       };
 
       scope.person = this.getPerson();
-      
+
       scope.submitPerson = function(e) {
         e.preventDefault();
 
@@ -49,12 +49,6 @@ angular.module('tbSuperPersonEditor', [
         }).catch(function() {
           return [];
         });
-      };
-
-      scope.canAddMembership = function(membership) {
-        return !!(membership &&
-          membership.team &&
-          membership.role)
       };
     }
   };

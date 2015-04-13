@@ -50,12 +50,6 @@ angular.module('tbSuperTeamEditor', [
           return [];
         });
       };
-
-      scope.canAddMember = function(member) {
-        return !!(member &&
-          member.person &&
-          member.role)
-      };
     }
   };
 });

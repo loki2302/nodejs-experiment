@@ -1,4 +1,4 @@
-<form ng-submit="submitPerson($event)" tb-validation-facade="vf">
+<form ng-submit="submitPerson($event)" novalidate tb-validation-facade="vf">
   <fieldset ng-disabled="busy">
     <div class="form-group name" ng-class="{'has-error': vf.isError('name')}">
       <label for="name" class="control-label">Name</label>
@@ -28,10 +28,11 @@
           <h4 class="panel-title">Add a new membership</h4>
         </div>
         <div class="panel-body">
-          <ng-form class="form-group form-inline">
+          <ng-form class="form-group form-inline" name="addMembershipForm">
             <div class="form-group">
               <label for="new-membership-name">Name</label>
               <input type="text"
+                ng-required="true"
                 id="new-membership-name"
                 ng-model="membershipsEditor.newItem.team"
                 typeahead="team as team.name for team in searchTeams($viewValue)"
@@ -41,9 +42,9 @@
             </div>
             <div class="form-group">
               <label for="new-membership-role">Role</label>
-              <input type="text" id="new-membership-role" ng-model="membershipsEditor.newItem.role" class="form-control">
+              <input type="text" ng-required="true" id="new-membership-role" ng-model="membershipsEditor.newItem.role" class="form-control">
             </div>
-            <button type="button" ng-click="membershipsEditor.addItem()" ng-disabled="!canAddMembership(membershipsEditor.newItem)" id="add-membership-button" class="btn btn-success">Add</button>
+            <button type="button" ng-click="membershipsEditor.addItem()" ng-disabled="addMembershipForm.$invalid" id="add-membership-button" class="btn btn-success">Add</button>
           </ng-form>
         </div>
       </div>
