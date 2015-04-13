@@ -52,7 +52,8 @@ module.exports = function(grunt) {
     concat: {
       allJs: {
         src: [
-          '<%= feBowerComponentsDir %>/jquery/dist/jquery.min.js',
+          // JQuery is not needed in runtime
+          // '<%= feBowerComponentsDir %>/jquery/dist/jquery.min.js',
           '<%= feBowerComponentsDir %>/uri.js/src/URI.min.js',
           '<%= feBowerComponentsDir %>/uri.js/src/URITemplate.js',
           '<%= feBowerComponentsDir %>/angular/angular.min.js',
