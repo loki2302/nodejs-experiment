@@ -1,7 +1,7 @@
 angular.module('tbCreateTeam', [
   'ngRoute',
   'tbTemplates',
-  'tbTeamEditor',
+  'tbSuperTeamEditor',
   'tbOperationExecutor',
   'tbApiService'
 ])
