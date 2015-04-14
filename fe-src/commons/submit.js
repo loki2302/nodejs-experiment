@@ -1,0 +1,67 @@
+angular.module('tbSubmit', [])
+.directive('tbSubmit', function() {
+  return {
+    restrict: 'A',
+    require: 'form',
+    link: function(scope, element, attrs, formController) {
+      var $element = angular.element(element);
+      $element.bind('submit', function(e) {
+        e.preventDefault();
+
+        scope.$apply(function() {
+          setAllFieldsValid();
+        });
+        scope.$eval(attrs.tbSubmit).then(function() {
+          console.log('tbSubmit - success');
+        }, function(errors) {
+          console.log('tbSubmit - errors', errors);
+          setFieldErrors(errors);
+        });
+      });
+      // TODO: should I unbind
+
+      var errors = {};
+      function setAllFieldsValid() {
+        angular.forEach(formController, function(formElement, fieldName) {
+          if(fieldName[0] === '$') {
+            return;
+          }
+
+          formController[fieldName].$setValidity('omg', true);
+        });
+        errors = {};
+      };
+
+      function setFieldErrors(errorMap) {
+        angular.forEach(errorMap, function(message, fieldName) {
+          formController[fieldName].$setValidity('omg', false);
+          formController[fieldName].$setPristine();
+        });
+        errors = errorMap;
+      };
+
+      scope[attrs.exposeErrorsAs] = {
+        isError: function(fieldName) {
+          var field = formController[fieldName];
+          if(!field) {
+            if(!errors[fieldName]) {
+              // because form's child elements get linked _before_ the
+              // form itself is ready, isError() may get called _before_
+              // the control has had registered. In this case we just
+              // say the field is valid
+              // TODO: is there a better approach?
+              return false;
+            }
+
+            return true;
+          }
+
+          return field.$invalid && field.$pristine;
+        },
+        getFieldError: function(fieldName) {
+          return errors[fieldName];
+        }
+      };
+    }
+  };
+});

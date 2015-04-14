@@ -1,4 +1,4 @@
-<form ng-submit="submitPerson($event)" novalidate tb-validation-facade="vf">
+<form tb-submit="submitPerson()" novalidate expose-errors-as="vf">
   <fieldset ng-disabled="busy">
     <div class="form-group name" ng-class="{'has-error': vf.isError('name')}">
       <label for="name" class="control-label">Name</label>

@@ -1,5 +1,6 @@
 angular.module('tbPersonEditor', [
   'tbValidationFacade',
+  'tbSubmit',
   'tbListEditor',
   'tbTemplates',
   'ui.bootstrap'
@@ -30,16 +31,9 @@ angular.module('tbPersonEditor', [
 
       scope.person = this.getPerson();
 
-      scope.submitPerson = function(e) {
-        e.preventDefault();
-
-        scope.vf.setAllFieldsValid();
-        scope.onSubmit({
+      scope.submitPerson = function() {
+        return scope.onSubmit({
           person: scope.person
-        }).then(function() {
-          scope.person = this.getPerson();
-        }, function(errors) {
-          scope.vf.setFieldErrors(errors);
         });
       };
 
