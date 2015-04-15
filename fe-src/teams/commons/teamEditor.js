@@ -1,5 +1,6 @@
 angular.module('tbTeamEditor', [
-  'tbValidationFacade',
+  'tbSubmit',
+  'tbListEditor',
   'tbTemplates',
   'ui.bootstrap'
 ])
@@ -28,28 +29,11 @@ angular.module('tbTeamEditor', [
       };
 
       scope.team = this.getTeam();
-      scope.newMember = {};
 
-      scope.submitTeam = function(e) {
-        e.preventDefault();
-
-        scope.vf.setAllFieldsValid();
-        scope.onSubmit({
+      scope.submitTeam = function() {
+        return scope.onSubmit({
           team: scope.team
-        }).then(function() {
-          scope.team = this.getTeam();
-        }, function(errors) {
-          scope.vf.setFieldErrors(errors);
         });
-      };
-
-      scope.removeMember = function(member) {
-        var memberIndex = scope.team.members.indexOf(member);
-        if(memberIndex < 0) {
-          throw new Error('Did not find the member in members');
-        }
-
-        scope.team.members.splice(memberIndex, 1);
       };
 
       scope.searchPeople = function(query) {
@@ -58,21 +42,6 @@ angular.module('tbTeamEditor', [
         }).catch(function() {
           return [];
         });
-      };
-
-      scope.canAddMember = function() {
-        return !!(scope.newMember &&
-          scope.newMember.person &&
-          scope.newMember.role)
-      };
-
-      scope.addMember = function() {
-        if(!scope.canAddMember()) {
-          throw new Error('canAddMember() says the new member is not ready yet');
-        }
-
-        scope.team.members.push(scope.newMember);
-        scope.newMember = {};
       };
     }
   };

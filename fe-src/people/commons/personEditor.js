@@ -1,5 +1,4 @@
 angular.module('tbPersonEditor', [
-  'tbValidationFacade',
   'tbSubmit',
   'tbListEditor',
   'tbTemplates',

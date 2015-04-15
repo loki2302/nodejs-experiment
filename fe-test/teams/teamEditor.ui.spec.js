@@ -109,48 +109,22 @@ describe('tbTeamEditor UI', function() {
 
         expect(ui.newMemberNameTypeaheadList().hasClass('ng-hide')).toBe(false);
       });
-
-      it('should update the person when typeahead item is clicked', function() {
-        ui.newMemberNameElement().val('j');
-        ui.newMemberNameElement().change();
-        $scope.$apply(function() {
-          handlePersonLookupDeferred.resolve([{
-            id: 123, name: 'john'
-          }]);
-        });
-
-        ui.newMemberNameTypeaheadListItem(0).click();
-
-        expect(scope.newMember.person).toEqual({ id: 123, name: 'john' });
-      });
-    });
-
-    describe('role editor', function() {
-      it('should delegate to newMember.role', function() {
-        ui.newMemberRoleElement().val('developer');
-        ui.newMemberRoleElement().change();
-        expect(scope.newMember.role).toBe('developer');
-      });
     });
 
     describe('add member button', function() {
       it('should delegate to scope.addMember()', function() {
-        spyOn(scope, 'addMember');
+        expect(scope.team.members.length).toBe(1);
         ui.addNewMemberButtonElement().click();
-        expect(scope.addMember).toHaveBeenCalled();
+        expect(scope.team.members.length).toBe(2);
       })
     });
   });
 
   describe('removing an existing member', function() {
     it('should delegate to removeMember()', function() {
-      spyOn(scope, 'removeMember');
+      expect(scope.team.members.length).toBe(1);
       ui.teamMemberRemoveButtonElement(0).click();
-      expect(scope.removeMember).toHaveBeenCalledWith(jasmine.objectContaining({
-        person: jasmine.objectContaining({
-          id: 123
-        })
-      }));
+      expect(scope.team.members.length).toBe(0);
     });
   });
 
