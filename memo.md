@@ -1,15 +1,8 @@
 # todo
 
-1. it should throw if "for" is not specified
-2. it should throw if "as" is not specified
-3. it should look at where "for" points to
-4. it should publish at where "as" points to
-4.1. it should not be available outside the target scope
-4.2. the target scope should inherit the parent scope
-5. it should publish removeItem
-5.1. removeItem should throw if item does not exist
-5.2. removeItem should remove item if it exists
-6. it should publish newItem
-7. it should publish addItem
-7.1. addItem should append to "for"
-7.2. addItem should reset newItem
+1. It should throw if "exposeErrorsAs" is not specified
+2. It should remove all errors on submission
+3. It should not set any errors if submission resolves successfully
+4. It should set the errors if submission is rejected
+5. isError should tell if there is an error
+6. getFieldError should tell what was the error message

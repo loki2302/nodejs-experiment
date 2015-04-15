@@ -92,29 +92,6 @@ describe('tbPersonEditor logic', function() {
       scope.submitPerson({ preventDefault: angular.noop });
       expect($scope.onSubmit).toHaveBeenCalledWith({ id: 123 });
     });
-
-    it('should reload the person from personTemplate if onSubmit resolves', function() {
-      scope.person = { id: 123 };
-      scope.submitPerson({ preventDefault: angular.noop });
-      onSubmitDeferred.resolve();
-      $scope.$digest();
-      expect(scope.person).toEqual({});
-    });
-
-    it('should handle validation errors if onSubmit rejects', function() {
-      scope.person = { id: 123 };
-
-      spyOn(scope.vf, 'setFieldErrors');
-      scope.submitPerson({ preventDefault: angular.noop });
-      onSubmitDeferred.reject({
-        name: 'ugly'
-      });
-      $scope.$digest();
-
-      expect(scope.vf.setFieldErrors).toHaveBeenCalledWith({
-        name: 'ugly'
-      });
-    });
   });
 
   describe('searchTeams', function() {

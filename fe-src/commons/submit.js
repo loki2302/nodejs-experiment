@@ -4,6 +4,11 @@ angular.module('tbSubmit', [])
     restrict: 'A',
     require: 'form',
     link: function(scope, element, attrs, formController) {
+      var exposeErrorsAs = attrs.exposeErrorsAs;
+      if(!exposeErrorsAs) {
+        throw new Error('"exposeErrorsAs" is required');
+      }
+
       var $element = angular.element(element);
       $element.bind('submit', function(e) {
         e.preventDefault();
@@ -11,10 +16,7 @@ angular.module('tbSubmit', [])
         scope.$apply(function() {
           setAllFieldsValid();
         });
-        scope.$eval(attrs.tbSubmit).then(function() {
-          console.log('tbSubmit - success');
-        }, function(errors) {
-          console.log('tbSubmit - errors', errors);
+        scope.$eval(attrs.tbSubmit).then(null, function(errors) {
           setFieldErrors(errors);
         });
       });
@@ -40,7 +42,7 @@ angular.module('tbSubmit', [])
         errors = errorMap;
       };
 
-      scope[attrs.exposeErrorsAs] = {
+      scope[exposeErrorsAs] = {
         isError: function(fieldName) {
           var field = formController[fieldName];
           if(!field) {
