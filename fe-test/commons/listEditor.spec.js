@@ -31,8 +31,8 @@ describe('tbListEditor', function() {
   describe('visibility', function() {
     var innerScope;
     beforeEach(function() {
-      $compile('<tb-list-editor for="c" as="e"></tb-list-editor>')($scope);
-      innerScope = $scope.$$childTail;
+      var element = $compile('<tb-list-editor for="c" as="e"></tb-list-editor>')($scope);
+      innerScope = element.scope();
     });
 
     it('should not be visible on the outer scope', function() {
@@ -52,8 +52,8 @@ describe('tbListEditor', function() {
   describe('API', function() {
     var innerScope;
     beforeEach(function() {
-      $compile('<tb-list-editor for="c" as="e"></tb-list-editor>')($scope);
-      innerScope = $scope.$$childTail;
+      var element = $compile('<tb-list-editor for="c" as="e"></tb-list-editor>')($scope);
+      innerScope = element.scope();
     });
 
     describe('removeItem', function() {
