@@ -87,16 +87,24 @@ describe('simple-ioc', function() {
   });
   */
 
-  /*
   // https://github.com/viaplay/simple-ioc/issues/9
   it('should fail when there is no dependency', function(done) {
     ioc
       .getContainer()
-      .inject(function(a) {
+      .resolve('a', function(err, instance) {
+        expect(err).to.be.an.instanceof(Error);
+        expect(err).to.deep.equal({
+          message: 'Component unresolvable',
+          context: {
+            name: 'a',
+            errors: [{
+              problemType: 'notRegistered'
+            }]
+          }
+        });
         done();
       });
   });
-  */
 
   // TODO: how do I distinguish between singletons and per-request?
   // TODO: how do I use logging?
