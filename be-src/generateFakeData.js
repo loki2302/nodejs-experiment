@@ -18,7 +18,12 @@ module.exports = function(Q, Person, Team, faker) {
       var personIds = [];
       for(var i = 0; i < NUMBER_OF_PEOPLE; ++i) {
         var person = yield Person.create({
-          name: faker.name.findName()
+          name: faker.name.findName(),
+          city: faker.address.city(), // 'South Alycemouth'
+          state: faker.address.stateAbbr(), // 'NY'
+          phone: faker.phone.phoneNumber(), // '1-234-655-2694 x907'
+          avatar: faker.internet.avatar(), // 'https://s3.amazonaws.com/uifaces/faces/twitter/naupintos/128.jpg'
+          email: faker.internet.email() // 'Beryl.Buckridge@hotmail.com'
         });
         personIds.push(person.id);
       }

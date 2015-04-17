@@ -8,6 +8,12 @@ module.exports = function(sequelize, Sequelize) {
           msg: 'Person name should not be empty'
         }
       }
-    }
+    },
+    city: Sequelize.STRING,
+    state: Sequelize.STRING,
+    phone: Sequelize.STRING,
+    phone: Sequelize.STRING,
+    avatar: Sequelize.STRING,
+    email: Sequelize.STRING
   });
 };

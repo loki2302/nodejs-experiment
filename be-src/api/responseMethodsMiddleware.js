@@ -87,6 +87,11 @@ module.exports = function(RESTError) {
     return {
       id: person.id,
       name: person.name,
+      city: person.city,
+      state: person.state,
+      phone: person.phone,
+      avatar: person.avatar,
+      email: person.email,
       memberships: makeBriefMembershipDTOs(person.Memberships)
     };
   }
