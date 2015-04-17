@@ -26,13 +26,32 @@ describe('tbCreateTeam', function() {
     });
   }));
 
-  it('should publish a createTeam() on the scope', function() {
-    expect($scope.createTeam).toBeDefined();
+  it('should register at /teams/create', inject(function($route) {
+    var route = $route.routes['/teams/create'];
+    expect(route).toBeDefined();
+    expect(route.controller).toBe('CreateTeamController');
+    expect(route.templateUrl).toBe('teams/editTeam.html');
+  }));
+
+  it('should publish a team on the scope', function() {
+    expect($scope.team).toBeDefined();
+  });
+
+  it('should publish a pageTitle on a scope', function() {
+    expect($scope.pageTitle).toBeDefined();
+  });
+
+  it('should publish a submitTitle on a scope', function() {
+    expect($scope.submitTitle).toBeDefined();
+  });
+
+  it('should publish a submitTeam() on the scope', function() {
+    expect($scope.submitTeam).toBeDefined();
   });
 
   it('should call apiService.createTeam()', function() {
     spyOn(apiService, 'createTeam').and.callThrough();
-    $scope.createTeam({ name: 'the team' });
+    $scope.submitTeam({ name: 'the team' });
     expect(apiService.createTeam).toHaveBeenCalledWith({ name: 'the team' });
   });
 
@@ -48,7 +67,7 @@ describe('tbCreateTeam', function() {
 
       onSuccess = jasmine.createSpy('onSuccess');
       onError = jasmine.createSpy('onError');
-      $scope.createTeam({ name: 'the team' }).then(onSuccess, onError);
+      $scope.submitTeam({ name: 'the team' }).then(onSuccess, onError);
     });
 
     describe('if it finishes successfully', function() {
@@ -98,11 +117,4 @@ describe('tbCreateTeam', function() {
       });
     });
   });
-
-  it('should register at /teams/create', inject(function($route) {
-    var route = $route.routes['/teams/create'];
-    expect(route).toBeDefined();
-    expect(route.controller).toBe('CreateTeamController');
-    expect(route.templateUrl).toBe('teams/createTeam.html');
-  }));
 });

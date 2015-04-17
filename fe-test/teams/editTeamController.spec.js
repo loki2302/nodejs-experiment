@@ -27,12 +27,28 @@ describe('tbEditTeam', function() {
     });
   }));
 
-  it('should publish an updateTeam() on the scope', function() {
-    expect($scope.updateTeam).toBeDefined();
-  });
+  it('should register at /teams/{id}/edit', inject(function($route) {
+    var route = $route.routes['/teams/:id/edit'];
+    expect(route).toBeDefined();
+    expect(route.controller).toBe('EditTeamController');
+    expect(route.templateUrl).toBe('teams/editTeam.html');
+    expect(route.resolve.team).toBeDefined();
+  }));
 
   it('should publish a team on the scope', function() {
     expect($scope.team).toBeDefined();
+  });
+
+  it('should publish a pageTitle on a scope', function() {
+    expect($scope.pageTitle).toBeDefined();
+  });
+
+  it('should publish a submitTitle on a scope', function() {
+    expect($scope.submitTitle).toBeDefined();
+  });
+
+  it('should publish a submitTeam() on the scope', function() {
+    expect($scope.submitTeam).toBeDefined();
   });
 
   it('should publish a findPeopleByQuery() on the scope', function() {
@@ -41,7 +57,7 @@ describe('tbEditTeam', function() {
 
   it('should call apiService.updateTeam()', function() {
     spyOn(apiService, 'updateTeam').and.callThrough();
-    $scope.updateTeam({
+    $scope.submitTeam({
       id: 123,
       name: 'the team 2'
     });
@@ -63,7 +79,7 @@ describe('tbEditTeam', function() {
 
       onSuccess = jasmine.createSpy('onSuccess');
       onError = jasmine.createSpy('onError');
-      $scope.updateTeam({ id: 123, name: 'the team 2' }).then(onSuccess, onError);
+      $scope.submitTeam({ id: 123, name: 'the team 2' }).then(onSuccess, onError);
     });
 
     describe('if it finishes successfully', function() {
@@ -113,12 +129,4 @@ describe('tbEditTeam', function() {
       });
     });
   });
-
-  it('should register at /teams/{id}/edit', inject(function($route) {
-    var route = $route.routes['/teams/:id/edit'];
-    expect(route).toBeDefined();
-    expect(route.controller).toBe('EditTeamController');
-    expect(route.templateUrl).toBe('teams/editTeam.html');
-    expect(route.resolve.team).toBeDefined();
-  }));
 });
