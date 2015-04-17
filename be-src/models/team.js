@@ -8,6 +8,7 @@ module.exports = function(sequelize, Sequelize) {
           msg: 'Team name should not be empty'
         }
       }
-    }
+    },
+    avatar: Sequelize.STRING
   });
 };

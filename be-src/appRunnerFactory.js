@@ -14,6 +14,7 @@ module.exports = function(settings) {
       koaSend: require('koa-send'),
       koaMount: require('koa-mount'),
       faker: require('faker'),
+      gravatar: require('gravatar'),
       RESTError: require('./api/restError'),
 
       staticRootPath: path.resolve(__dirname, '../fe-build/'),

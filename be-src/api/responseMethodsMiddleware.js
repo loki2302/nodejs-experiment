@@ -118,6 +118,7 @@ module.exports = function(RESTError) {
     return {
       id: team.id,
       name: team.name,
+      avatar: team.avatar,
       members: makeBriefMemberDTOs(team.Members)
     };
   }

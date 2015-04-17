@@ -1,6 +1,6 @@
 var co = require('co');
 
-module.exports = function(Q, Person, Team, faker) {
+module.exports = function(Q, Person, Team, faker, gravatar) {
   var NUMBER_OF_PEOPLE = 30;
   var NUMBER_OF_TEAMS = 10;
   var MIN_TEAM_SIZE = 0;
@@ -30,8 +30,10 @@ module.exports = function(Q, Person, Team, faker) {
 
       var teamIds = [];
       for(var i = 0; i < NUMBER_OF_TEAMS; ++i) {
+        var companyName = faker.company.companyName();
         var team = yield Team.create({
-          name: faker.company.companyName()
+          name: companyName,
+          avatar: gravatar.url(companyName, {size: 128, default: 'retro'}, false)
         });
         teamIds.push(team.id);
       }
