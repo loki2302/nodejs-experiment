@@ -26,13 +26,32 @@ describe('tbCreatePerson', function() {
     });
   }));
 
-  it('should publish a createPerson() on the scope', function() {
-    expect($scope.createPerson).toBeDefined();
+  it('should register at /people/create', inject(function($route) {
+    var route = $route.routes['/people/create'];
+    expect(route).toBeDefined();
+    expect(route.controller).toBe('CreatePersonController');
+    expect(route.templateUrl).toBe('people/editPerson.html');
+  }));
+
+  it('should publish a person on the scope', function() {
+    expect($scope.person).toBeDefined();
   });
 
-  it('should call apiService.createPerson()', function() {
+  it('should publish a pageTitle on the scope', function() {
+    expect($scope.pageTitle).toBeDefined();
+  });
+
+  it('should publish a submitTitle on the scope', function() {
+    expect($scope.pageTitle).toBeDefined();
+  });
+
+  it('should publish a submitPerson() on the scope', function() {
+    expect($scope.submitPerson).toBeDefined();
+  });
+
+  it('should call apiService.submitPerson()', function() {
     spyOn(apiService, 'createPerson').and.callThrough();
-    $scope.createPerson({ name: 'john' });
+    $scope.submitPerson({ name: 'john' });
     expect(apiService.createPerson).toHaveBeenCalledWith({ name: 'john' });
   });
 
@@ -48,7 +67,7 @@ describe('tbCreatePerson', function() {
 
       onSuccess = jasmine.createSpy('onSuccess');
       onError = jasmine.createSpy('onError');
-      $scope.createPerson({ name: 'john' }).then(onSuccess, onError);
+      $scope.submitPerson({ name: 'john' }).then(onSuccess, onError);
     });
 
     describe('if it finishes successfully', function() {
@@ -98,11 +117,4 @@ describe('tbCreatePerson', function() {
       });
     });
   });
-
-  it('should register at /people/create', inject(function($route) {
-    var route = $route.routes['/people/create'];
-    expect(route).toBeDefined();
-    expect(route.controller).toBe('CreatePersonController');
-    expect(route.templateUrl).toBe('people/createPerson.html');
-  }));
 });

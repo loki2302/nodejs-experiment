@@ -1,22 +1,27 @@
 angular.module('tbCreatePerson', [
   'ngRoute',
   'tbTemplates',
-  'tbPersonEditor',
+  'tbListEditor',
+  'tbSubmit',
+  'ui.bootstrap',
   'tbOperationExecutor',
   'tbApiService'
 ])
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/people/create', {
-    templateUrl: 'people/createPerson.html',
+    templateUrl: 'people/editPerson.html',
     controller: 'CreatePersonController'
   });
 }])
 .controller('CreatePersonController', [
   '$scope', '$q', '$location', 'execute', 'apiService', 'ApiErrors',
   function($scope, $q, $location, execute, apiService, ApiErrors) {
-    $scope.createPerson = function(person) {
+    $scope.person = {memberships:[]};
+    $scope.pageTitle = 'Create Person';
+    $scope.submitTitle = 'Create';
+
+    $scope.submitPerson = function(person) {
       return execute(apiService.createPerson(person).then(function(person) {
-        // TODO: what would be the better option? Can I use a $route template?
         $location.path('/people/' + person.id);
       }, function(error) {
         if(error instanceof ApiErrors.ValidationError) {

@@ -1,6 +1,9 @@
 angular.module('tbEditTeam', [
   'ngRoute',
   'tbTemplates',
+  'tbListEditor',
+  'tbSubmit',
+  'ui.bootstrap',
   'tbOperationExecutor',
   'tbApiService'
 ])
@@ -21,11 +24,10 @@ angular.module('tbEditTeam', [
   function($scope, $q, $location, execute, apiService, ApiErrors, team) {
     $scope.team = team;
     $scope.pageTitle = team.name;
-    $scope.submitTitle = 'Create';
+    $scope.submitTitle = 'Update';
 
     $scope.submitTeam = function(team) {
       return execute(apiService.updateTeam(team).then(function(team) {
-        // TODO: what would be the better option? Can I use a $route template?
         $location.path('/teams/' + team.id);
       }, function(error) {
         if(error instanceof ApiErrors.ValidationError) {

@@ -27,17 +27,33 @@ describe('tbEditPerson', function() {
     });
   }));
 
+  it('should register at /people/{id}/edit', inject(function($route) {
+    var route = $route.routes['/people/:id/edit'];
+    expect(route).toBeDefined();
+    expect(route.controller).toBe('EditPersonController');
+    expect(route.templateUrl).toBe('people/editPerson.html');
+    expect(route.resolve.person).toBeDefined();
+  }));
+
   it('should publish a person on the scope', function() {
     expect($scope.person).toBeDefined();
   });
 
-  it('should publish an updatePerson() on the scope', function() {
-    expect($scope.updatePerson).toBeDefined();
+  it('should publish a pageTitle on the scope', function() {
+    expect($scope.pageTitle).toBeDefined();
+  });
+
+  it('should publish a submitTitle on the scope', function() {
+    expect($scope.pageTitle).toBeDefined();
+  });
+
+  it('should publish a submitPerson() on the scope', function() {
+    expect($scope.submitPerson).toBeDefined();
   });
 
   it('should call apiService.updatePerson()', function() {
     spyOn(apiService, 'updatePerson').and.callThrough();
-    $scope.updatePerson({
+    $scope.submitPerson({
       id: 123,
       name: 'john1'
     });
@@ -59,7 +75,7 @@ describe('tbEditPerson', function() {
 
       onSuccess = jasmine.createSpy('onSuccess');
       onError = jasmine.createSpy('onError');
-      $scope.updatePerson({ id: 123, name: 'john' }).then(onSuccess, onError);
+      $scope.submitPerson({ id: 123, name: 'john' }).then(onSuccess, onError);
     });
 
     describe('if it finishes successfully', function() {
@@ -109,12 +125,4 @@ describe('tbEditPerson', function() {
       });
     });
   });
-
-  it('should register at /people/{id}/edit', inject(function($route) {
-    var route = $route.routes['/people/:id/edit'];
-    expect(route).toBeDefined();
-    expect(route.controller).toBe('EditPersonController');
-    expect(route.templateUrl).toBe('people/editPerson.html');
-    expect(route.resolve.person).toBeDefined();
-  }));
 });
