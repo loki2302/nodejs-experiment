@@ -47,82 +47,92 @@ describe('tbEditPerson', function() {
     expect($scope.pageTitle).toBeDefined();
   });
 
-  it('should publish a submitPerson() on the scope', function() {
-    expect($scope.submitPerson).toBeDefined();
-  });
-
-  it('should call apiService.updatePerson()', function() {
-    spyOn(apiService, 'updatePerson').and.callThrough();
-    $scope.submitPerson({
-      id: 123,
-      name: 'john1'
+  describe('submitPerson()', function() {
+    it('should be defined', function() {
+      expect($scope.submitPerson).toBeDefined();
     });
-    expect(apiService.updatePerson).toHaveBeenCalledWith({
-      id: 123,
-      name: 'john1'
-    });
-  });
 
-  describe('when apiService.updatePerson() call finishes', function() {
-    var apiServiceUpdatePersonDeferred;
-    var onSuccess;
-    var onError;
-    beforeEach(function() {
-      apiServiceUpdatePersonDeferred = $q.defer();
-      spyOn(apiService, 'updatePerson').and.callFake(function(person) {
-        return apiServiceUpdatePersonDeferred.promise;
+    it('should delegate to apiService.updatePerson()', function() {
+      spyOn(apiService, 'updatePerson').and.callThrough();
+      $scope.submitPerson({
+        id: 123,
+        name: 'john1'
       });
-
-      onSuccess = jasmine.createSpy('onSuccess');
-      onError = jasmine.createSpy('onError');
-      $scope.submitPerson({ id: 123, name: 'john' }).then(onSuccess, onError);
+      expect(apiService.updatePerson).toHaveBeenCalledWith({
+        id: 123,
+        name: 'john1'
+      });
     });
 
-    describe('if it finishes successfully', function() {
+    describe('when apiService.updatePerson() call finishes', function() {
+      var apiServiceUpdatePersonDeferred;
+      var onSuccess;
+      var onError;
       beforeEach(function() {
-        $scope.$apply(function() {
-          apiServiceUpdatePersonDeferred.resolve({ id: 123 });
+        apiServiceUpdatePersonDeferred = $q.defer();
+        spyOn(apiService, 'updatePerson').and.callFake(function(person) {
+          return apiServiceUpdatePersonDeferred.promise;
         });
+
+        onSuccess = jasmine.createSpy('onSuccess');
+        onError = jasmine.createSpy('onError');
+        $scope.submitPerson({ id: 123, name: 'john' }).then(onSuccess, onError);
       });
 
-      it('should resolve the returned promise', function() {
-        expect(onSuccess).toHaveBeenCalledWith(undefined);
-      });
-
-      it('should redirect the user to /people/:id', function() {
-        expect($location.path()).toBe('/people/123');
-      });
-    });
-
-    describe('if it finishes with an error', function() {
-      describe('and that error is ValidationError', function() {
+      describe('if it finishes successfully', function() {
         beforeEach(function() {
           $scope.$apply(function() {
-            apiServiceUpdatePersonDeferred.reject(new ApiErrors.ValidationError({
-              name: 'ugly'
-            }));
+            apiServiceUpdatePersonDeferred.resolve({ id: 123 });
           });
         });
 
-        it('should reject the returned promise with field error map', function() {
-          expect(onError).toHaveBeenCalledWith({
-            name: 'ugly'
-          });
+        it('should resolve the returned promise', function() {
+          expect(onSuccess).toHaveBeenCalledWith(undefined);
+        });
+
+        it('should redirect the user to /people/:id', function() {
+          expect($location.path()).toBe('/people/123');
         });
       });
 
-      describe('and that error is NOT ValidationError', function() {
-        beforeEach(function() {
-          // this call is outside the digest context by intention
-          apiServiceUpdatePersonDeferred.reject(new ApiErrors.UnexpectedError());
+      describe('if it finishes with an error', function() {
+        describe('and that error is ValidationError', function() {
+          beforeEach(function() {
+            $scope.$apply(function() {
+              apiServiceUpdatePersonDeferred.reject(new ApiErrors.ValidationError({
+                name: 'ugly'
+              }));
+            });
+          });
+
+          it('should reject the returned promise with field error map', function() {
+            expect(onError).toHaveBeenCalledWith({
+              name: 'ugly'
+            });
+          });
         });
 
-        it('should re-throw that error', function() {
-          expect(function() {
-            $scope.$digest();
-          }).toThrowError(ApiErrors.UnexpectedError);
+        describe('and that error is NOT ValidationError', function() {
+          beforeEach(function() {
+            // this call is outside the digest context by intention
+            apiServiceUpdatePersonDeferred.reject(new ApiErrors.UnexpectedError());
+          });
+
+          it('should re-throw that error', function() {
+            expect(function() {
+              $scope.$digest();
+            }).toThrowError(ApiErrors.UnexpectedError);
+          });
         });
       });
     });
+  });
+
+  describe('findTeamsByQuery()', function() {
+    it('should be defined', function() {
+      expect($scope.findTeamsByQuery).toBeDefined();
+    });
+
+    // TODO: add more tests
   });
 });
