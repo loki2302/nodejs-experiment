@@ -1,0 +1,13 @@
+.team-list[deckgrid]::before {
+  content: '4 .column.column-1-4';
+  font-size: 0;
+  visibility: hidden;
+}
+
+.team-list .column {
+  float: left;
+}
+
+.team-list .column-1-4 {
+  width: 25%;
+}

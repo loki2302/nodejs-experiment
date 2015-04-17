@@ -56,12 +56,16 @@ module.exports = function(grunt) {
           '<%= feBowerComponentsDir %>/angular/angular.min.js',
           '<%= feBowerComponentsDir %>/angular-route/angular-route.min.js',
           '<%= feBowerComponentsDir %>/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min.js',
+          '<%= feBowerComponentsDir %>/angular-deckgrid/angular-deckgrid.js',
           '<%= feAmalgamatedJsFile %>'
         ],
         dest: '<%= feAmalgamatedJsFileWithDependencies %>'
       },
       allCss: {
-        src: ['<%= feBowerComponentsDir %>/bootstrap/dist/css/bootstrap.min.css'],
+        src: [
+          '<%= feBowerComponentsDir %>/bootstrap/dist/css/bootstrap.min.css',
+          '<%= feSrcDir %>/teams/teams.css'
+        ],
         dest: '<%= feAmalgamatedCssFile %>'
       }
     },
