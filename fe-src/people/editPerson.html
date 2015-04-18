@@ -1,15 +1,16 @@
-<!--<h3 class="page-header">{{pageTitle}}</h3>-->
 <form tb-submit="submitPerson(person)" novalidate expose-errors-as="vf">
   <fieldset ng-disabled="busy">
     <div class="row">
-      <div class="col-md-2">
-        <img ng-src="{{person.avatar}}" class="img-responsive">
-      </div>
-      <div class="col-md-5">
+      <div class="col-md-6">
         <h4 class="page-header">{{pageTitle}}</h4>
         <div class="form-group form-group-lg name" ng-class="{'has-error': vf.isError('name')}">
           <input type="text" class="form-control" id="name" name="name" ng-model="person.name">
           <p class="help-block" ng-if="vf.isError('name')">{{vf.getFieldError('name')}}</p>
+        </div>
+
+        <div class="form-group avatar">
+          <img ng-src="{{person.avatar}}" class="img-responsive">
+          <button type="button" class="btn btn-xs" ng-click="randomizeAvatar()">Randomize!</button>
         </div>
 
         <div class="form-group form-group-sm position" ng-class="{'has-error': vf.isError('position')}">
@@ -36,7 +37,7 @@
           <p class="help-block" ng-if="vf.isError('email')">{{vf.getFieldError('email')}}</p>
         </div>
       </div>
-      <div class="col-md-5">
+      <div class="col-md-6">
         <h4 class="page-header">Memberships</h4>
         <tb-list-editor for="person.memberships" as="membershipsEditor">
           <div id="no-memberships-alert" class="alert alert-info" ng-if="person.memberships.length === 0">
@@ -94,7 +95,7 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-md-offset-2 col-md-10">
+      <div class="col-md-12">
         <div class="form-group">
           <button type="submit" id="submit-person-button" class="btn btn-success btn-lg">{{submitTitle}}</button>
         </div>

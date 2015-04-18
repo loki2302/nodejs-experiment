@@ -38,6 +38,14 @@ angular.module('tbEditPerson', [
       }));
     };
 
+    $scope.randomizeAvatar = function() {
+      return execute(apiService.getRandomAvatar().then(function(randomAvatar) {
+        $scope.person.avatar = randomAvatar.url;
+      }, function(error) {
+        throw error;
+      }));
+    };
+
     $scope.findTeamsByQuery = function(query) {
       return apiService.getTeams({
         nameContains: query,

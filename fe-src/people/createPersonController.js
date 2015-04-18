@@ -10,13 +10,23 @@ angular.module('tbCreatePerson', [
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/people/create', {
     templateUrl: 'people/editPerson.html',
-    controller: 'CreatePersonController'
+    controller: 'CreatePersonController',
+    resolve: {
+      avatar: ['execute', 'apiService', function(execute, apiService) {
+        return execute(apiService.getRandomAvatar().then(function(randomAvatar) {
+          return randomAvatar.url;
+        }));
+      }]
+    }
   });
 }])
 .controller('CreatePersonController', [
-  '$scope', '$q', '$location', 'execute', 'apiService', 'ApiErrors',
-  function($scope, $q, $location, execute, apiService, ApiErrors) {
-    $scope.person = {memberships:[]};
+  '$scope', '$q', '$location', 'avatar', 'execute', 'apiService', 'ApiErrors',
+  function($scope, $q, $location, avatar, execute, apiService, ApiErrors) {
+    $scope.person = {
+      avatar: avatar,
+      memberships: []
+    };
     $scope.pageTitle = 'Create Person';
     $scope.submitTitle = 'Create';
 
@@ -28,6 +38,14 @@ angular.module('tbCreatePerson', [
           return $q.reject(error.errorMap);
         }
 
+        throw error;
+      }));
+    };
+
+    $scope.randomizeAvatar = function() {
+      return execute(apiService.getRandomAvatar().then(function(randomAvatar) {
+        $scope.person.avatar = randomAvatar.url;
+      }, function(error) {
         throw error;
       }));
     };

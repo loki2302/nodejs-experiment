@@ -111,6 +111,14 @@ angular.module('tbApiService', [
       });
     };
 
+    ApiService.prototype.getRandomAvatar = function() {
+      return handle($http.get(url('utils/randomAvatar'))).likeThis({
+        0: throwConnectivityError(),
+        200: returnData(),
+        otherwise: throwUnexpectedError()
+      });
+    };
+
     return new ApiService();
 
     function url(resourceTemplateString, resourceValues) {
