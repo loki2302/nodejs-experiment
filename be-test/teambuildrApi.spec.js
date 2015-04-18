@@ -1,8 +1,12 @@
 require('co-mocha');
 
-var expect = require('chai').expect;
 var appRunnerFactory = require('../be-src/appRunnerFactory');
 var TeambuildrClient = require('./teambuildrClient');
+
+var chai = require('chai');
+var chaiSubset = require('chai-subset');
+chai.use(chaiSubset);
+var expect = chai.expect;
 
 describe('Teambuildr API', function() {
   var appRunner;
@@ -27,7 +31,7 @@ describe('Teambuildr API', function() {
           name: 'john'
         });
         expect(response.statusCode).to.equal(201);
-        expect(response.body).to.deep.equal({
+        expect(response.body).to.containSubset({
           id: 1,
           name: 'john',
           memberships: []
@@ -55,7 +59,7 @@ describe('Teambuildr API', function() {
 
         var response = yield client.getPerson(createdPerson.id);
         expect(response.statusCode).to.equal(200);
-        expect(response.body).to.deep.equal(createdPerson);
+        expect(response.body).to.containSubset(createdPerson);
       });
 
       it('should respond with 404 if person does not exist', function* () {
@@ -77,7 +81,7 @@ describe('Teambuildr API', function() {
         });
 
         var people = (yield client.getPeople()).body;
-        expect(people).to.deep.equal([{
+        expect(people).to.containSubset([{
           id: 1,
           name: 'john',
           memberships: []
@@ -178,7 +182,7 @@ describe('Teambuildr API', function() {
           name: 'the team'
         });
         expect(response.statusCode).to.equal(201);
-        expect(response.body).to.deep.equal({
+        expect(response.body).to.containSubset({
           id: 1,
           name: 'the team',
           members: []
@@ -206,7 +210,7 @@ describe('Teambuildr API', function() {
 
         var response = yield client.getTeam(createdTeam.id);
         expect(response.statusCode).to.equal(200);
-        expect(response.body).to.deep.equal(createdTeam);
+        expect(response.body).to.containSubset(createdTeam);
       });
 
       it('should respond with 404 if team does not exist', function* () {
@@ -228,7 +232,7 @@ describe('Teambuildr API', function() {
         });
 
         var teams = (yield client.getTeams()).body;
-        expect(teams).to.deep.equal([{
+        expect(teams).to.containSubset([{
           id: 1,
           name: 'the team',
           members: []
@@ -355,7 +359,7 @@ describe('Teambuildr API', function() {
 
         expect(response.statusCode).to.equal(201);
         expect(response.body.memberships.length).to.equal(2);
-        expect(response.body).to.deep.equal({
+        expect(response.body).to.containSubset({
           id: 1,
           name: 'john',
           memberships: [
@@ -446,7 +450,7 @@ describe('Teambuildr API', function() {
 
         expect(response.statusCode).to.equal(200);
         expect(response.body.memberships.length).to.equal(2);
-        expect(response.body).to.deep.equal({
+        expect(response.body).to.containSubset({
           id: 1,
           name: 'john',
           memberships: [
@@ -535,7 +539,7 @@ describe('Teambuildr API', function() {
       it('should return a collection of people with memberships', function* () {
         var response = yield client.getPeople();
         expect(response.statusCode).to.equal(200);
-        expect(response.body).to.deep.equal([{
+        expect(response.body).to.containSubset([{
           id: personId,
           name: 'john',
           memberships: [
@@ -582,7 +586,7 @@ describe('Teambuildr API', function() {
 
         expect(response.statusCode).to.equal(201);
         expect(response.body.members.length).to.equal(2);
-        expect(response.body).to.deep.equal({
+        expect(response.body).to.containSubset({
           id: 1,
           name: 'the team',
           members: [
@@ -673,7 +677,7 @@ describe('Teambuildr API', function() {
 
         expect(response.statusCode).to.equal(200);
         expect(response.body.members.length).to.equal(2);
-        expect(response.body).to.deep.equal({
+        expect(response.body).to.containSubset({
           id: teamId,
           name: 'the team',
           members: [
@@ -761,7 +765,7 @@ describe('Teambuildr API', function() {
       it('should return a collection of teams with members', function* () {
         var response = yield client.getTeams();
         expect(response.statusCode).to.equal(200);
-        expect(response.body).to.deep.equal([{
+        expect(response.body).to.containSubset([{
           id: teamId,
           name: 'the team',
           members: [
