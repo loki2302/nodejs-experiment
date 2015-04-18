@@ -1,10 +1,17 @@
 module.exports = function(Person, personUtils, Sequelize) {
   return function(router) {
     router.post('/people', function* (next) {
+      var body = this.request.body;
       var person;
       try {
         person = yield Person.create({
-          name: this.request.body.name
+          name: body.name,
+          position: body.position,
+          city: body.city,
+          state: body.state,
+          phone: body.phone,
+          avatar: body.avatar,
+          email: body.email
         }, {
           transaction: this.tx
         });

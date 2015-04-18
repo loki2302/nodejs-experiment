@@ -3,8 +3,17 @@ var utils = require('./utils');
 module.exports = function(Person, personUtils, Sequelize) {
   return function(router) {
     router.put('/people/:person_id', function* (next) {
+      var body = this.request.body;
+
       var person = this.person;
-      person.name = this.request.body.name;
+      person.name = body.name;
+      person.position = body.position;
+      person.city = body.city;
+      person.state = body.state;
+      person.phone = body.phone;
+      person.avatar = body.avatar;
+      person.email = body.email;
+
       try {
         yield person.save({
           transaction: this.tx
