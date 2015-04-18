@@ -20,7 +20,7 @@ angular.module('tbSubmit', [])
           setFieldErrors(errors);
         });
       });
-      // TODO: should I unbind
+      // TODO: should I unbind?
 
       var errors = {};
       function setAllFieldsValid() {
@@ -36,6 +36,11 @@ angular.module('tbSubmit', [])
 
       function setFieldErrors(errorMap) {
         angular.forEach(errorMap, function(message, fieldName) {
+          var isRealFormField = fieldName in formController;
+          if(!isRealFormField) {
+            return;
+          }
+
           formController[fieldName].$setValidity('omg', false);
           formController[fieldName].$setPristine();
         });
