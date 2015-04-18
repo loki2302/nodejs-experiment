@@ -9,6 +9,7 @@ module.exports = function(config) {
       'bower_components/angular-route/angular-route.js',
       'bower_components/angular-mocks/angular-mocks.js',
       'bower_components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min.js',
+      'bower_components/angular-deckgrid/angular-deckgrid.js',
       'fe-src/**/*.js',
       'fe-src/**/*.html',
       'fe-test/**/*.spec.js'

@@ -21,7 +21,6 @@ angular.module('tbTeamList', [
     $scope.teams = teams;
 
     $scope.deleteTeam = function(team) {
-      console.log(111);
       execute(apiService.deleteTeam(team.id)).then(function() {
         var teamIndex = $scope.teams.indexOf(team);
         if(teamIndex < 0) {
