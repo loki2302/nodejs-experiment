@@ -1,4 +1,4 @@
-<h3 class="page-header"><i class="fa fa-user"></i> People <a href="/people/create" class="btn btn-success btn-large"><i class="fa fa-plus"></i> Add a person</a></h3>
+<!--<h3 class="page-header"><i class="fa fa-user"></i> People <a href="/people/create" class="btn btn-success btn-large"><i class="fa fa-plus"></i> Add a person</a></h3>
 <div id="no-people-alert" class="alert alert-info" ng-if="people.length === 0">
   There are no people so far. <a href="/people/create" class="btn btn-default"><i class="fa fa-plus"></i> Add a person</a>
 </div>
@@ -13,6 +13,29 @@
         <a ng-href="/people/{{card.id}}/edit" class="btn btn-default btn-xs"><i class="fa fa-pencil"></i> Edit</a>
         <button type="button" class="btn btn-danger btn-xs" ng-click="mother.deletePerson(card)"><i class="fa fa-trash-o"></i> Delete</button>
       </p>
+    </div>
+  </div>
+</div>-->
+
+<h3 class="page-header"><i class="fa fa-user"></i> People <a href="/people/create" class="btn btn-success btn-large"><i class="fa fa-plus"></i> Add a person</a></h3>
+<div id="no-people-alert" class="alert alert-info" ng-if="people.length === 0">
+  There are no people so far. <a href="/people/create" class="btn btn-default"><i class="fa fa-plus"></i> Add a person</a>
+</div>
+<div id="got-people-container" ng-if="people.length > 0">
+  <div deckgrid source="people" class="person-list">
+    <div class="media">
+      <div class="media-left">
+        <a ng-href="/people/{{card.id}}"><img ng-src="{{card.avatar}}"></a>
+      </div>
+      <div class="media-body">
+        <h5><i class="fa fa-user"></i> <a ng-href="/people/{{card.id}}">{{card.name}}</a></h5>
+        <p class="text-muted"><small>{{card.position}}</small></p>
+        <p>
+          <i class="fa fa-users"></i> {{card.memberships.length}}
+          <a ng-href="/people/{{card.id}}/edit" class="btn btn-default btn-xs"><i class="fa fa-pencil"></i> Edit</a>
+          <button type="button" class="btn btn-danger btn-xs" ng-click="mother.deletePerson(card)"><i class="fa fa-trash-o"></i> Delete</button>
+        </p>
+      </div>
     </div>
   </div>
 </div>
