@@ -4,18 +4,17 @@
 </div>
 <div id="got-people-container" ng-if="people.length > 0">
   <a href="/people/create" class="btn btn-default">Add a person</a>
-  <ul id="person-list" class="list-unstyled">
-    <li ng-class="'person-' + {{$index}}" ng-repeat="person in people | orderBy:'id'">
-      <img ng-src="{{person.avatar}}">
-      <a ng-href="/people/{{person.id}}">{{person.name}}</a>
-      <a ng-href="/people/{{person.id}}/edit" class="btn btn-default btn-xs">Edit</a>
-      <button type="button" class="btn btn-danger btn-xs" ng-click="deletePerson(person)">Delete</button>
-      <span ng-if="person.memberships.length === 0" class="label label-info">No teams</span>
-      <span ng-if="person.memberships.length > 0">
-        <span ng-repeat="membership in person.memberships | orderBy:'team.id'">
-          <a href="/teams/{{membership.team.id}}">{{membership.team.name}}</a><span ng-if="!$last">, </span>
-        </span>
-      </span>
-    </li>
-  </ul>
+  <div deckgrid source="people | orderBy:'id'" class="person-list">
+    <div class="thumbnail">
+      <img ng-src="{{card.avatar}}">
+      <div class="caption">
+        <a ng-href="/people/{{card.id}}"><h5>{{card.name}}</h5></a>
+        <p>Member of {{card.memberships.length}} teams.</p>
+        <p>
+          <a ng-href="/people/{{card.id}}/edit" class="btn btn-default btn-xs">Edit</a>
+          <button type="button" class="btn btn-danger btn-xs" ng-click="mother.deletePerson(card)">Delete</button>
+        </p>
+      </div>
+    </div>
+  </div>
 </div>

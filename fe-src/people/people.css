@@ -1,0 +1,13 @@
+.person-list[deckgrid]::before {
+  content: '4 .column.column-1-4';
+  font-size: 0;
+  visibility: hidden;
+}
+
+.person-list .column {
+  float: left;
+}
+
+.person-list .column-1-4 {
+  width: 25%;
+}

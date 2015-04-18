@@ -1,6 +1,7 @@
 angular.module('tbPersonList', [
   'ngRoute',
   'tbTemplates',
+  'akoenig.deckgrid',
   'tbOperationExecutor'
 ])
 .config(['$routeProvider', function($routeProvider) {

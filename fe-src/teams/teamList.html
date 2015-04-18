@@ -4,22 +4,7 @@
 </div>
 <div id="got-people-container" ng-if="teams.length > 0">
   <a href="/teams/create" class="btn btn-default">Add a team</a>
-  <!--<ul id="team-list" class="list-unstyled">
-    <li ng-class="'team-' + {{$index}}" ng-repeat="team in teams | orderBy:'id'">
-      <img ng-src="{{team.avatar}}">
-      <a ng-href="/teams/{{team.id}}">{{team.name}}</a>
-      <a ng-href="/teams/{{team.id}}/edit" class="btn btn-default btn-xs">Edit</a>
-      <button type="button" class="btn btn-danger btn-xs" ng-click="deleteTeam(team)">Delete</button>
-      <span ng-if="team.members.length === 0" class="label label-info">No members</span>
-      <span ng-if="team.members.length > 0">
-        <span ng-repeat="member in team.members | orderBy:'person.id'">
-          <a href="/people/{{member.person.id}}">{{member.person.name}}</a><span ng-if="!$last">, </span>
-        </span>
-      </span>
-    </li>
-  </ul>-->
-
-  <div deckgrid source="teams" class="team-list">
+  <div deckgrid source="teams | orderBy:'id'" class="team-list">
     <div class="thumbnail">
       <img ng-src="{{card.avatar}}">
       <div class="caption">
