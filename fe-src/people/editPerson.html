@@ -1,6 +1,7 @@
 <h3 class="page-header">{{pageTitle}}</h3>
 <form tb-submit="submitPerson(person)" novalidate expose-errors-as="vf">
   <fieldset ng-disabled="busy">
+    <img ng-src="{{person.avatar}}">
     <div class="form-group name" ng-class="{'has-error': vf.isError('name')}">
       <label for="name" class="control-label">Name</label>
       <input type="text" class="form-control" id="name" name="name" ng-model="person.name">
