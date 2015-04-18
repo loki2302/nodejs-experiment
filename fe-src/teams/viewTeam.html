@@ -1,7 +1,17 @@
-<h3 class="page-header">{{team.name}} <small>#{{team.id}}</small></h3>
-<img ng-src="{{team.avatar}}">
+<a ng-href="/teams/{{team.id}}/edit" class="btn btn-default"><i class="fa fa-pencil"></i> Edit</a>
+<button type="button" class="btn btn-danger" ng-click="mother.deleteTeam(team)"><i class="fa fa-trash-o"></i> Delete</button>
 
-<a ng-href="/teams/{{team.id}}/edit" class="btn btn-default">Edit</a>
+<div class="jumbotron">
+  <div class="media">
+    <div class="media-left">
+      <img ng-src="{{team.avatar}}">
+    </div>
+    <div class="media-body">
+      <h2>{{team.name}}</h2>
+      <h3 class="text-muted">{{team.slogan}}</h3>
+    </div>
+  </div>
+</div>
 
 <div id="no-members-alert" class="alert alert-info" ng-if="team.members.length === 0">
   There are no members in this team so far.
