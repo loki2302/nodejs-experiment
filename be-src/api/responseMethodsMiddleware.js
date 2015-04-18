@@ -87,6 +87,7 @@ module.exports = function(RESTError) {
     return {
       id: person.id,
       name: person.name,
+      position: person.position,
       city: person.city,
       state: person.state,
       phone: person.phone,
@@ -104,7 +105,8 @@ module.exports = function(RESTError) {
     return {
       team: {
         id: membership.id,
-        name: membership.name
+        name: membership.name,
+        avatar: membership.avatar
       },
       role: membership.Membership.role
     };
@@ -131,7 +133,13 @@ module.exports = function(RESTError) {
     return {
       person: {
         id: member.id,
-        name: member.name
+        name: member.name,
+        position: member.position,
+        city: member.city,
+        state: member.state,
+        phone: member.phone,
+        avatar: member.avatar,
+        email: member.email
       },
       role: member.Membership.role
     };

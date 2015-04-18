@@ -13,6 +13,20 @@ module.exports = function(Q, Person, Team, faker, gravatar) {
     'Designer'
   ];
 
+  var POSITION_PREFIXES = [
+    'Experienced',
+    ''
+  ];
+
+  var POSITIONS = [
+    'web hacker',
+    'back-end developer',
+    'front-end developer',
+    'AngularJS fan',
+    'QA engineer',
+    'designer'
+  ];
+
   return function() {
     return co(function* () {
       var personIds = [];
@@ -23,7 +37,8 @@ module.exports = function(Q, Person, Team, faker, gravatar) {
           state: faker.address.stateAbbr(), // 'NY'
           phone: faker.phone.phoneNumber(), // '1-234-655-2694 x907'
           avatar: faker.internet.avatar(), // 'https://s3.amazonaws.com/uifaces/faces/twitter/naupintos/128.jpg'
-          email: faker.internet.email() // 'Beryl.Buckridge@hotmail.com'
+          email: faker.internet.email(), // 'Beryl.Buckridge@hotmail.com'
+          position: faker.random.array_element(POSITION_PREFIXES) + ' ' + faker.random.array_element(POSITIONS)
         });
         personIds.push(person.id);
       }

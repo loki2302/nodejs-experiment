@@ -9,9 +9,9 @@ module.exports = function(sequelize, Sequelize) {
         }
       }
     },
+    position: Sequelize.STRING,
     city: Sequelize.STRING,
     state: Sequelize.STRING,
-    phone: Sequelize.STRING,
     phone: Sequelize.STRING,
     avatar: Sequelize.STRING,
     email: Sequelize.STRING

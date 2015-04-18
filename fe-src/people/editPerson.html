@@ -10,18 +10,27 @@
       <div id="no-memberships-alert" class="alert alert-info" ng-if="person.memberships.length === 0">
         This person does not have any memberships so far.
       </div>
-      <div id="got-memberships-container" class="form-group" ng-class="{'has-error': vf.isError('members')}" ng-if="person.memberships.length > 0">
-        <ul id="memberships-list" class="list-unstyled">
-          <li ng-class="'membership-' + {{$index}}" ng-repeat="membership in person.memberships | orderBy:'team.id'">
-            <div class="form-group form-inline">
-              <input type="text" ng-model="membership.role" class="form-control input-sm membership-role">
-              in
-              <strong class="team-name">{{membership.team.name}}</strong>
-              <button type="button" ng-click="membershipsEditor.removeItem(membership)" class="btn btn-danger remove-membership-button">Remove</button>
+      <div id="got-memberships-container" class="form-group" ng-class="{'has-error': vf.isError('memberships')}" ng-if="person.memberships.length > 0">
+        <div class="media form-group" ng-class="'membership-' + {{$index}}" ng-repeat="membership in person.memberships | orderBy:'team.id'">
+          <div class="media-left">
+            <a ng-href="/teams/{{membership.team.id}}">
+              <!-- TODO: extract width/height style -->
+              <img class="media-object" ng-src="{{membership.team.avatar}}" style="width: 64px; height: 64px;">
+            </a>
+          </div>
+          <div class="media-body">
+            <a href="/teams/{{membership.team.id}}"><h4 class="media-heading">{{membership.team.name}}</h4></a>
+            <div class="form-inline">
+              <div class="form-group">
+                <input type="text" ng-model="membership.role" class="form-control input-sm membership-role">
+              </div>
+              <div class="form-group">
+                <button type="button" ng-click="membershipsEditor.removeItem(membership)" class="btn btn-danger btn-sm remove-membership-button">Remove</button>
+              </div>
             </div>
-          </li>
-        </ul>
-        <p class="help-block" ng-if="vf.isError('memberships')">{{vf.getFieldError('memberships')}}</p>
+          </div>
+        </div>
+        <p class="help-block" ng-if="vf.isError('members')">{{vf.getFieldError('memberships')}}</p>
       </div>
 
       <div class="panel panel-default">

@@ -4,7 +4,7 @@
 </div>
 <div id="got-people-container" ng-if="people.length > 0">
   <a href="/people/create" class="btn btn-default">Add a person</a>
-  <div deckgrid source="people | orderBy:'id'" class="person-list">
+  <div deckgrid source="people" class="person-list">
     <div class="thumbnail">
       <img ng-src="{{card.avatar}}">
       <div class="caption">

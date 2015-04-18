@@ -1,6 +1,7 @@
 <h3 class="page-header">{{pageTitle}}</h3>
 <form tb-submit="submitTeam(team)" novalidate expose-errors-as="vf">
   <fieldset ng-disabled="busy">
+    <img ng-src="{{team.avatar}}">
     <div class="form-group name" ng-class="{'has-error': vf.isError('name')}">
       <label for="name" class="control-label">Name</label>
       <input type="text" class="form-control" id="name" name="name" ng-model="team.name">
@@ -11,15 +12,25 @@
         There are no members in this team so far.
       </div>
       <div id="got-members-container" class="form-group" ng-class="{'has-error': vf.isError('members')}" ng-if="team.members.length > 0">
-        <ul id="member-list" class="list-unstyled">
-          <li ng-class="'member-' + {{$index}}" ng-repeat="member in team.members | orderBy:'person.id'">
-            <div class="form-group form-inline">
-              <strong class="person-name">{{member.person.name}}</strong> is a
-              <input type="text" ng-model="member.role" class="form-control input-sm member-role">
-              <button type="button" ng-click="membersEditor.removeItem(member)" class="btn btn-danger remove-member-button">Remove</button>
+        <div class="media form-group" ng-class="'member-' + {{$index}}" ng-repeat="member in team.members | orderBy:'person.id'">
+          <div class="media-left">
+            <a ng-href="/people/{{member.person.id}}">
+              <!-- TODO: extract width/height style -->
+              <img class="media-object" ng-src="{{member.person.avatar}}" style="width: 64px; height: 64px;">
+            </a>
+          </div>
+          <div class="media-body">
+            <a href="/people/{{member.person.id}}"><h4 class="media-heading">{{member.person.name}} <small>{{member.person.position}}</small></h4></a>
+            <div class="form-inline">
+              <div class="form-group">
+                <input type="text" ng-model="member.role" class="form-control input-sm member-role">
+              </div>
+              <div class="form-group">
+                <button type="button" ng-click="membersEditor.removeItem(member)" class="btn btn-danger btn-sm remove-member-button">Remove</button>
+              </div>
             </div>
-          </li>
-        </ul>
+          </div>
+        </div>
         <p class="help-block" ng-if="vf.isError('members')">{{vf.getFieldError('members')}}</p>
       </div>
 

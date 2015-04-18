@@ -1,4 +1,5 @@
 <h3 class="page-header">{{team.name}} <small>#{{team.id}}</small></h3>
+<img ng-src="{{team.avatar}}">
 
 <a ng-href="/teams/{{team.id}}/edit" class="btn btn-default">Edit</a>
 
@@ -6,9 +7,15 @@
   There are no members in this team so far.
 </div>
 <div id="got-members-container" ng-if="team.members.length > 0">
-  <ul id="member-list" class="list-unstyled">
-    <li ng-class="'member-' + {{$index}}" ng-repeat="member in team.members | orderBy:'person.id'">
-      <a ng-href="/people/{{member.person.id}}">{{member.person.name}}</a> ({{member.role}})
-    </li>
-  </ul>
+  <div class="media" ng-class="'member-' + {{$index}}" ng-repeat="member in team.members | orderBy:'person.id'">
+    <div class="media-left">
+      <a ng-href="/people/{{member.person.id}}">
+        <img class="media-object" ng-src="{{member.person.avatar}}" style="width: 64px; height: 64px;">
+      </a>
+    </div>
+    <div class="media-body">
+      <a href="/people/{{member.person.id}}"><h4 class="media-heading">{{member.person.name}} <small>{{member.role}}</small></h4></a>
+      <p>{{member.person.city}}, {{member.person.state}}, {{member.person.phone}}, {{member.person.email}}</p>
+    </div>
+  </div>
 </div>
