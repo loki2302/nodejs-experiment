@@ -101,8 +101,10 @@ angular.module('tbApiService', [
       });
     };
 
-    ApiService.prototype.getTeams = function() {
-      return handle($http.get(url('teams'))).likeThis({
+    ApiService.prototype.getTeams = function(params) {
+      return handle($http.get(url('teams'), {
+        params: params
+      })).likeThis({
         0: throwConnectivityError(),
         200: returnData(),
         otherwise: throwUnexpectedError()
