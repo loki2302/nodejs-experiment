@@ -106,7 +106,9 @@ module.exports = function(RESTError) {
       team: {
         id: membership.id,
         name: membership.name,
-        avatar: membership.avatar
+        avatar: membership.avatar,
+        url: membership.url,
+        slogan: membership.slogan
       },
       role: membership.Membership.role
     };
@@ -121,6 +123,8 @@ module.exports = function(RESTError) {
       id: team.id,
       name: team.name,
       avatar: team.avatar,
+      url: team.url,
+      slogan: team.slogan,
       members: makeBriefMemberDTOs(team.Members)
     };
   }

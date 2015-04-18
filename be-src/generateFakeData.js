@@ -48,7 +48,9 @@ module.exports = function(Q, Person, Team, faker, gravatar) {
         var companyName = faker.company.companyName();
         var team = yield Team.create({
           name: companyName,
-          avatar: gravatar.url(companyName, {size: 128, default: 'retro'}, false)
+          avatar: gravatar.url(companyName, {size: 128, default: 'retro'}, false),
+          url: 'http://' + faker.internet.domainName(),
+          slogan: faker.company.catchPhrase()
         });
         teamIds.push(team.id);
       }

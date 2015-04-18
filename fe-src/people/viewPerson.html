@@ -1,22 +1,41 @@
-<h3 class="page-header">{{person.name}} <small>#{{person.id}}</small></h3>
-<img ng-src="{{person.avatar}}">
+<a ng-href="/people/{{person.id}}/edit" class="btn btn-default"><i class="fa fa-pencil"></i> Edit</a>
+<button type="button" class="btn btn-danger" ng-click="mother.deletePerson(card)"><i class="fa fa-trash-o"></i> Delete</button>
 
-<a ng-href="/people/{{person.id}}/edit" class="btn btn-default">Edit</a>
-
-<div id="no-memberships-alert" class="alert alert-info" ng-if="person.memberships.length === 0">
-  This person does not belong to any teams so far.
-</div>
-<div id="got-memberships-container" ng-if="person.memberships.length > 0">
-  <div class="media" ng-class="'membership' + {{$index}}" ng-repeat="membership in person.memberships | orderBy:'team.id'">
-    <div class="media-left">
-      <a ng-href="/teams/{{membership.team.id}}">
-        <!-- TODO: extract style -->
-        <img class="media-object" ng-src="{{membership.team.avatar}}" style="width: 64px; height: 64px;">
-      </a>
+<div class="row">
+  <div class="col-md-6">
+    <h4 class="page-header">{{person.name}}</h4>
+    <div class="media">
+      <div class="media-left">
+        <img ng-src="{{person.avatar}}">
+      </div>
+      <div class="media-body">
+        <strong>{{person.name}}</strong> <span class="text-muted">is a full-time</span>
+        {{person.position}}<span class="text-muted">, who lives in</span>
+        {{person.city}}, {{person.state}}<span class="text-muted">. You can contact them by calling</span>
+        {{person.phone}}
+        <span class="text-muted"> or by sending an email to</span>
+        <a ng-href="mailto:{{person.email}}">{{person.email}}</a>.
+      </div>
     </div>
-    <div class="media-body">
-      <a href="/teams/{{membership.team.id}}"><h4 class="media-heading">{{membership.team.name}} <small>{{membership.role}}</small></h4></a>
-      <!-- TODO: add something here -->
+  </div>
+  <div class="col-md-6">
+    <h4 class="page-header">Team memberships</h4>
+    <div id="no-memberships-alert" class="alert alert-info" ng-if="person.memberships.length === 0">
+      This person does not belong to any teams so far.
+    </div>
+    <div id="got-memberships-container" ng-if="person.memberships.length > 0">
+      <div class="media" ng-class="'membership' + {{$index}}" ng-repeat="membership in person.memberships | orderBy:'team.id'">
+        <div class="media-left">
+          <a ng-href="/teams/{{membership.team.id}}">
+            <!-- TODO: extract style -->
+            <img class="media-object" ng-src="{{membership.team.avatar}}" style="width: 64px; height: 64px;">
+          </a>
+        </div>
+        <div class="media-body">
+          <h4 class="media-heading">{{membership.role}} at <a href="/teams/{{membership.team.id}}">{{membership.team.name}}</a></h4>
+          <p class="text-muted">{{membership.team.slogan}}</p>
+        </div>
+      </div>
     </div>
   </div>
 </div>

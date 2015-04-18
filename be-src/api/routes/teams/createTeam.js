@@ -1,10 +1,13 @@
 module.exports = function(Team, teamUtils, Sequelize) {
   return function(router) {
     router.post('/teams', function* (next) {
+      var body = this.request.body;
       var team;
       try {
         team = yield Team.create({
-          name: this.request.body.name
+          name: body.name,
+          url: body.url,
+          slogan: body.slogan
         }, {
           transaction: this.tx
         });

@@ -4,7 +4,10 @@ module.exports = function(Team, teamUtils, Sequelize) {
   return function(router) {
     router.put('/teams/:team_id', function* (next) {
       var team = this.team;
-      team.name = this.request.body.name;
+      var body = this.request.body;
+      team.name = body.name;
+      team.url = body.url;
+      team.slogan = body.slogan;
       try {
         yield team.save({
           transaction: this.tx

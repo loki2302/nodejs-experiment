@@ -8,15 +8,25 @@
           <p class="help-block" ng-if="vf.isError('name')">{{vf.getFieldError('name')}}</p>
         </div>
 
-        <div class="form-group avatar">
-          <img ng-src="{{person.avatar}}" class="img-responsive">
-          <button type="button" class="btn btn-xs" ng-click="randomizeAvatar()">Randomize!</button>
+        <div class="media avatar">
+          <div class="media-left">
+            <img ng-src="{{person.avatar}}">
+          </div>
+          <div class="media-body">
+            <button type="button" class="btn btn-default btn-xs" ng-click="randomizeAvatar()"><i class="fa fa-refresh"></i> Randomize!</button>
+          </div>
         </div>
 
         <div class="form-group form-group-sm position" ng-class="{'has-error': vf.isError('position')}">
           <label for="position" class="control-label">Position</label>
           <input type="text" class="form-control" id="position" name="position" ng-model="person.position">
           <p class="help-block" ng-if="vf.isError('position')">{{vf.getFieldError('position')}}</p>
+        </div>
+
+        <div class="form-group form-group-sm city" ng-class="{'has-error': vf.isError('city')}">
+          <label for="city" class="control-label">City</label>
+          <input type="text" class="form-control" id="city" name="city" ng-model="person.city">
+          <p class="help-block" ng-if="vf.isError('city')">{{vf.getFieldError('city')}}</p>
         </div>
 
         <div class="form-group form-group-sm state" ng-class="{'has-error': vf.isError('state')}">
@@ -38,7 +48,7 @@
         </div>
       </div>
       <div class="col-md-6">
-        <h4 class="page-header">Memberships</h4>
+        <h4 class="page-header">Team memberships</h4>
         <tb-list-editor for="person.memberships" as="membershipsEditor">
           <div id="no-memberships-alert" class="alert alert-info" ng-if="person.memberships.length === 0">
             This person does not have any memberships so far.
@@ -73,7 +83,7 @@
             <div class="panel-body">
               <ng-form name="addMembershipForm">
                 <div class="form-group form-group-sm">
-                  <label for="new-membership-name">Name</label>
+                  <label for="new-membership-name">Team</label>
                   <input type="text"
                     ng-required="true"
                     id="new-membership-name"
