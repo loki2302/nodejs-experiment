@@ -1,18 +1,18 @@
-<h3 class="page-header">Teams</h3>
+<h3 class="page-header"><i class="fa fa-users"></i> Teams</h3>
 <div id="no-teams-alert" class="alert alert-info" ng-if="teams.length === 0">
-  There are no teams so far. <a href="/teams/create" class="btn btn-default">Add a team</a>
+  There are no teams so far. <a href="/teams/create" class="btn btn-default"><i class="fa fa-plus"></i> Add a team</a>
 </div>
 <div id="got-people-container" ng-if="teams.length > 0">
-  <a href="/teams/create" class="btn btn-default">Add a team</a>
+  <a href="/teams/create" class="btn btn-default"><i class="fa fa-plus"></i> Add a team</a>
   <div deckgrid source="teams" class="team-list">
     <div class="thumbnail">
       <img ng-src="{{card.avatar}}">
       <div class="caption">
-        <a ng-href="/teams/{{card.id}}"><h5>{{card.name}}</h5></a>
+        <h5><i class="fa fa-users"></i> <a ng-href="/teams/{{card.id}}">{{card.name}}</a></h5>
         <p>A team of {{card.members.length}}</p>
         <p>
-          <a ng-href="/teams/{{card.id}}/edit" class="btn btn-default btn-xs">Edit</a>
-          <button type="button" class="btn btn-danger btn-xs" ng-click="mother.deleteTeam(card)">Delete</button>
+          <a ng-href="/teams/{{card.id}}/edit" class="btn btn-default btn-xs"><i class="fa fa-pencil"></i> Edit</a>
+          <button type="button" class="btn btn-danger btn-xs" ng-click="mother.deleteTeam(card)"><i class="fa fa-trash-o"></i> Delete</button>
         </p>
       </div>
     </div>
