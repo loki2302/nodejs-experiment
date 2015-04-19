@@ -2,6 +2,7 @@ angular.module('tbApp', [
   'ngRoute',
   'tbApiService',
   'tbAppController',
+  'tbHomeController',
   'tbOtherwiseController',
   'tbPeople',
   'tbTeams'

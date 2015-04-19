@@ -75,6 +75,7 @@ module.exports = function(settings) {
       updateTeamRoute: require('./api/routes/teams/updateTeam'),
       deleteTeamRoute: require('./api/routes/teams/deleteTeam'),
       randomAvatarRoute: require('./api/routes/utils/randomAvatar'),
+      getStatsRoute: require('./api/routes/utils/getStats'),
 
       // KOA APPLICATION
       app: require('./app'),

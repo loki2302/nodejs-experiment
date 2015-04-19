@@ -119,6 +119,14 @@ angular.module('tbApiService', [
       });
     };
 
+    ApiService.prototype.getStats = function() {
+      return handle($http.get(url('utils/stats'))).likeThis({
+        0: throwConnectivityError(),
+        200: returnData(),
+        otherwise: throwUnexpectedError()
+      });
+    };
+
     return new ApiService();
 
     function url(resourceTemplateString, resourceValues) {
