@@ -36,3 +36,7 @@
       content: '3 .column.column-1-3';
     }
 }
+
+.team-lookup-item {
+  width: 400px;
+}
