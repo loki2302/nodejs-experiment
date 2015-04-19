@@ -14,6 +14,12 @@ describe('sockjs', function() {
       console.log('someone has connected');
       trace.push('server: connection');
 
+      connection.write('hi there');
+
+      connection.on('data', function(m) {
+        console.log('server has message', m);
+      });
+
       connection.on('close', function() {
         console.log('someone has disconnected');
         trace.push('server: close');
@@ -21,6 +27,7 @@ describe('sockjs', function() {
         expect(trace).to.deep.equal([
           'server: connection',
           'client: onopen',
+          'client: hi there',
           'client: onclose',
           'server: close'
         ]);
@@ -36,6 +43,11 @@ describe('sockjs', function() {
       sock.onopen = function() {
         console.log('connected!');
         trace.push('client: onopen');
+      };
+
+      sock.onmessage = function(m) {
+        console.log('client has message', m);
+        trace.push('client: ' + m.data);
         sock.close();
       };
 
