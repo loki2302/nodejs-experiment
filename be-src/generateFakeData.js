@@ -48,8 +48,7 @@ module.exports = function(Q, Person, Team, faker, gravatar) {
         var companyName = faker.company.companyName();
         var team = yield Team.create({
           name: companyName,
-          avatar: gravatar.url(companyName, {size: 128, default: 'retro'}, false),
-          url: 'http://' + faker.internet.domainName(),
+          url: makeTeamUrl(companyName),
           slogan: faker.company.catchPhrase()
         });
         teamIds.push(team.id);
@@ -75,4 +74,11 @@ module.exports = function(Q, Person, Team, faker, gravatar) {
       }
     });
   };
+
+  function makeTeamUrl(teamName) {
+    var slugifiedLowercaseTeamName = faker.helpers.slugify(teamName).toLowerCase();
+    var domainSuffix = faker.internet.domainSuffix();
+    var teamDomainName = slugifiedLowercaseTeamName + '.' + domainSuffix;
+    return 'http://' + teamDomainName;
+  }
 };

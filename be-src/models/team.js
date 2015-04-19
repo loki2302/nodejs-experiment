@@ -9,7 +9,6 @@ module.exports = function(sequelize, Sequelize) {
         }
       }
     },
-    avatar: Sequelize.STRING,
     url: Sequelize.STRING,
     slogan: Sequelize.STRING
   });

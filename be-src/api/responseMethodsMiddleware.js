@@ -1,4 +1,4 @@
-module.exports = function(RESTError) {
+module.exports = function(RESTError, gravatar) {
   return function* (next) {
     this.ok = function(message) {
       this.status = 200;
@@ -101,12 +101,16 @@ module.exports = function(RESTError) {
     return memberships.map(makeBriefMembershipDTO);
   }
 
+  function makeTeamAvatarUrl(teamName) {
+    return gravatar.url(teamName, {size: 128, default: 'retro'}, false);
+  }
+
   function makeBriefMembershipDTO(membership) {
     return {
       team: {
         id: membership.id,
         name: membership.name,
-        avatar: membership.avatar,
+        avatar: makeTeamAvatarUrl(membership.name),
         url: membership.url,
         slogan: membership.slogan
       },
@@ -122,7 +126,7 @@ module.exports = function(RESTError) {
     return {
       id: team.id,
       name: team.name,
-      avatar: team.avatar,
+      avatar: makeTeamAvatarUrl(team.name),
       url: team.url,
       slogan: team.slogan,
       members: makeBriefMemberDTOs(team.Members)

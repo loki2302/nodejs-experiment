@@ -8,19 +8,16 @@
           <p class="help-block" ng-if="vf.isError('name')">{{vf.getFieldError('name')}}</p>
         </div>
 
-        <div class="media avatar">
-          <div class="media-left">
-            <img ng-src="{{team.avatar}}">
-          </div>
-          <div class="media-body">
-            <button type="button" class="btn btn-default btn-xs" ng-click="randomizeAvatar()"><i class="fa fa-refresh"></i> Randomize!</button>
-          </div>
-        </div>
-
         <div class="form-group form-group-sm slogan" ng-class="{'has-error': vf.isError('slogan')}">
           <label for="slogan" class="control-label">Slogan</label>
           <input type="text" class="form-control" id="slogan" name="slogan" ng-model="team.slogan">
           <p class="help-block" ng-if="vf.isError('slogan')">{{vf.getFieldError('slogan')}}</p>
+        </div>
+
+        <div class="form-group form-group-sm url" ng-class="{'has-error': vf.isError('url')}">
+          <label for="url" class="control-label">URL</label>
+          <input type="text" class="form-control" id="url" name="url" ng-model="team.url">
+          <p class="help-block" ng-if="vf.isError('url')">{{vf.getFieldError('url')}}</p>
         </div>
       </div>
       <div class="col-md-6">
