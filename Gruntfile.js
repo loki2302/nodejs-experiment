@@ -64,6 +64,7 @@ module.exports = function(grunt) {
       allCss: {
         src: [
           '<%= feBowerComponentsDir %>/bootstrap/dist/css/bootstrap.min.css',
+          '<%= feSrcDir %>/home.css',
           '<%= feSrcDir %>/commons/avatar.css',
           '<%= feSrcDir %>/teams/teams.css',
           '<%= feSrcDir %>/people/people.css'
