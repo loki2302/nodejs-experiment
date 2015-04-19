@@ -10,7 +10,7 @@
 
         <div class="media avatar">
           <div class="media-left">
-            <img ng-src="{{person.avatar}}">
+            <img ng-src="{{person.avatar}}" class="media-object avatar128">
           </div>
           <div class="media-body">
             <button type="button" class="btn btn-default btn-xs" ng-click="randomizeAvatar()"><i class="fa fa-refresh"></i> Randomize!</button>
@@ -58,7 +58,7 @@
               <div class="media-left">
                 <a ng-href="/teams/{{membership.team.id}}">
                   <!-- TODO: extract width/height style -->
-                  <img class="media-object" ng-src="{{membership.team.avatar}}" style="width: 64px; height: 64px;">
+                  <img class="media-object avatar64" ng-src="{{membership.team.avatar}}">
                 </a>
               </div>
               <div class="media-body">

@@ -4,7 +4,7 @@
 <div class="jumbotron">
   <div class="media">
     <div class="media-left">
-      <img ng-src="{{team.avatar}}">
+      <img ng-src="{{team.avatar}}" class="media-object avatar128">
     </div>
     <div class="media-body">
       <h2>{{team.name}}</h2>
@@ -21,7 +21,7 @@
   <div class="media" ng-class="'member-' + {{$index}}" ng-repeat="member in team.members | orderBy:'person.id'">
     <div class="media-left">
       <a ng-href="/people/{{member.person.id}}">
-        <img class="media-object" ng-src="{{member.person.avatar}}" style="width: 64px; height: 64px;">
+        <img class="media-object avatar64" ng-src="{{member.person.avatar}}">
       </a>
     </div>
     <div class="media-body">

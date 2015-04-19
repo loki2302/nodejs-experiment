@@ -29,8 +29,7 @@
             <div class="media form-group" ng-class="'member-' + {{$index}}" ng-repeat="member in team.members | orderBy:'person.id'">
               <div class="media-left">
                 <a ng-href="/people/{{member.person.id}}">
-                  <!-- TODO: extract width/height style -->
-                  <img class="media-object" ng-src="{{member.person.avatar}}" style="width: 64px; height: 64px;">
+                  <img class="media-object avatar64" ng-src="{{member.person.avatar}}">
                 </a>
               </div>
               <div class="media-body">

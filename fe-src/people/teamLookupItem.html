@@ -2,12 +2,11 @@
   <!-- TODO: extract width to external CSS -->
   <div class="media" style="width: 400px;">
     <div class="media-left">
-      <!-- TODO: extract width/height to external CSS -->
-      <img ng-src="{{match.model.avatar}}" style="width: 48px; height: 48px">
+      <img ng-src="{{match.model.avatar}}" class="media-object avatar48">
     </div>
     <div class="media-body">
       <h4 style="margin: 0" bind-html-unsafe="match.label | typeaheadHighlight:query"></h4>
-      <!-- TODO: add something here -->
+      <p>{{match.slogan}}</p>
     </div>
   </div>
 </a>
