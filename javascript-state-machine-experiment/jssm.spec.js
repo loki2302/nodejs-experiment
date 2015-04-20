@@ -19,9 +19,17 @@ describe('javascript state machine', function() {
       expect(lightBulb.current).to.equal('off');
     });
 
+    it('should say it is possible to turn it on', function() {
+      expect(lightBulb.can('turnOn')).to.equal(true);
+    });
+
     it('should be possible to turn it on', function() {
       lightBulb.turnOn();
       expect(lightBulb.current).to.equal('on');
+    });
+
+    it('should say it is not be possible to turn it off', function() {
+      expect(lightBulb.can('turnOff')).to.equal(false);
     });
 
     it('should not be possible to turn it off', function() {
@@ -35,9 +43,17 @@ describe('javascript state machine', function() {
         lightBulb.turnOn();
       });
 
+      it('should say it is possible to turn it off', function() {
+        expect(lightBulb.can('turnOff')).to.equal(true);
+      });
+
       it('should be possible to turn it off', function() {
         lightBulb.turnOff();
         expect(lightBulb.current).to.equal('off');
+      });
+
+      it('should say it is not possible to turn it on', function() {
+        expect(lightBulb.can('turnOn')).to.equal(false);
       });
 
       it('should not be possible to turn it on again', function() {
