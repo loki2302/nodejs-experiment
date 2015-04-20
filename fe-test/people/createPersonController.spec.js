@@ -20,6 +20,7 @@ describe('tbCreatePerson', function() {
       $scope: $scope,
       $q: $q,
       $location: $location,
+      avatar: 'avatar.png',
       execute: execute,
       apiService: apiService,
       ApiErrors: ApiErrors
