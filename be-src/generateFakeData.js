@@ -31,13 +31,14 @@ module.exports = function(Q, Person, Team, faker, gravatar) {
     return co(function* () {
       var personIds = [];
       for(var i = 0; i < NUMBER_OF_PEOPLE; ++i) {
+        var personName = faker.name.findName();
         var person = yield Person.create({
-          name: faker.name.findName(),
+          name: personName,
           city: faker.address.city(), // 'South Alycemouth'
           state: faker.address.stateAbbr(), // 'NY'
           phone: faker.phone.phoneNumber(), // '1-234-655-2694 x907'
           avatar: faker.internet.avatar(), // 'https://s3.amazonaws.com/uifaces/faces/twitter/naupintos/128.jpg'
-          email: faker.internet.email(), // 'Beryl.Buckridge@hotmail.com'
+          email: makePersonEmail(personName),
           position: faker.random.array_element(POSITION_PREFIXES) + ' ' + faker.random.array_element(POSITIONS)
         });
         personIds.push(person.id);
@@ -74,6 +75,13 @@ module.exports = function(Q, Person, Team, faker, gravatar) {
       }
     });
   };
+
+  function makePersonEmail(personName) {
+    var slugifiedLowercasePersonName = faker.helpers.slugify(personName).toLowerCase();
+    var domainName = faker.internet.domainName();
+    var email = slugifiedLowercasePersonName + '@' + domainName;
+    return email;
+  }
 
   function makeTeamUrl(teamName) {
     var slugifiedLowercaseTeamName = faker.helpers.slugify(teamName).toLowerCase();
