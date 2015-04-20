@@ -5,8 +5,8 @@ module.exports = function(sequelize, Sequelize) {
       allowNull: false,
       validate: {
         len: {
-          args: [2, 30],
-          msg: 'Team name should be 2 to 30 characters long'
+          args: [2, 50],
+          msg: 'Team name should be 2 to 50 characters long'
         }
       }
     },
