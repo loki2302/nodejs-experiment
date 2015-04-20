@@ -17,8 +17,16 @@ angular.module('tbViewPerson', [
   });
 }])
 .controller('ViewPersonController', [
-  '$scope', 'person',
-  function($scope, person) {
+  '$scope', '$location', 'execute', 'apiService', 'person',
+  function($scope, $location, execute, apiService, person) {
     $scope.person = person;
+
+    $scope.deletePerson = function() {
+      execute(apiService.deletePerson($scope.person.id)).then(function() {
+        $location.path('/people');
+      }, function(error) {
+        throw error;
+      });
+    };
   }]
 );

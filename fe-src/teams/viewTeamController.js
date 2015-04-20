@@ -17,8 +17,16 @@ angular.module('tbViewTeam', [
   });
 }])
 .controller('ViewTeamController', [
-  '$scope', 'team',
-  function($scope, team) {
+  '$scope', '$location', 'execute', 'apiService', 'team',
+  function($scope, $location, execute, apiService, team) {
     $scope.team = team;
+
+    $scope.deleteTeam = function() {
+      execute(apiService.deleteTeam($scope.team.id)).then(function() {
+        $location.path('/teams');
+      }, function(error) {
+        throw error;
+      });
+    };
   }]
 );
