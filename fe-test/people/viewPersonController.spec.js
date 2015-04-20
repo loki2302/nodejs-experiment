@@ -6,6 +6,9 @@ describe('tbViewPersonController', function() {
     scope = $rootScope.$new();
     $controller('ViewPersonController', {
       $scope: scope,
+      $location: null, // TODO
+      execute: null, // TODO
+      apiService: null, // TODO
       person: {
         id: 123,
         name: 'john'

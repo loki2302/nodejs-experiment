@@ -179,33 +179,43 @@ describe('Teambuildr API', function() {
     describe('POST /teams', function() {
       it('should create a team', function* () {
         var response = yield client.createTeam({
-          name: 'the team'
+          name: 'the team',
+          url: 'http://example.org',
+          slogan: 'where no man has gone before'
         });
         expect(response.statusCode).to.equal(201);
         expect(response.body).to.containSubset({
           id: 1,
           name: 'the team',
+          url: 'http://example.org',
+          slogan: 'where no man has gone before',
           members: []
         });
       });
 
-      it('should not create a team when name is null', function* () {
+      it('should not create a team when all fields are null', function* () {
         var response = yield client.createTeam({});
         expect(response.statusCode).to.equal(400);
-        expect(response.body).to.include.keys('name');
+        expect(response.body).to.include.keys('name', 'url', 'slogan');
       });
 
-      it('should not create a team when name is empty', function* () {
-        var response = yield client.createTeam({name: ''});
+      it('should not create a team when all fields are empty', function* () {
+        var response = yield client.createTeam({
+          name: '',
+          url: '',
+          slogan: ''
+        });
         expect(response.statusCode).to.equal(400);
-        expect(response.body).to.include.keys('name');
+        expect(response.body).to.include.keys('name', 'url', 'slogan');
       });
     });
 
     describe('GET /teams/{id}', function() {
       it('should respond with team details if team exists', function* () {
         var createdTeam = (yield client.createTeam({
-          name: 'the team'
+          name: 'the team',
+          url: 'http://example.org',
+          slogan: 'where no man has gone before'
         })).body;
 
         var response = yield client.getTeam(createdTeam.id);
@@ -228,13 +238,17 @@ describe('Teambuildr API', function() {
 
       it('should respond with a list of teams when at least one team exists', function* () {
         yield client.createTeam({
-          name: 'the team'
+          name: 'the team',
+          url: 'http://example.org',
+          slogan: 'where no man has gone before'
         });
 
         var teams = (yield client.getTeams()).body;
         expect(teams).to.containSubset([{
           id: 1,
           name: 'the team',
+          url: 'http://example.org',
+          slogan: 'where no man has gone before',
           members: []
         }]);
       });
@@ -242,10 +256,26 @@ describe('Teambuildr API', function() {
       describe('when there are many teams', function() {
         beforeEach(function* () {
           // how do I forEach loop here?
-          yield client.createTeam({ name: 'microsoft' });
-          yield client.createTeam({ name: 'supermicro' });
-          yield client.createTeam({ name: 'mirabilis' });
-          yield client.createTeam({ name: 'google' });
+          yield client.createTeam({
+            name: 'microsoft',
+            url: 'http://example.org',
+            slogan: 'where no man has gone before'
+          });
+          yield client.createTeam({
+            name: 'supermicro',
+            url: 'http://example.org',
+            slogan: 'where no man has gone before'
+          });
+          yield client.createTeam({
+            name: 'mirabilis',
+            url: 'http://example.org',
+            slogan: 'where no man has gone before'
+          });
+          yield client.createTeam({
+            name: 'google',
+            url: 'http://example.org',
+            slogan: 'where no man has gone before'
+          });
         });
 
         it('should filter them by "nameContains"', function* () {
@@ -276,19 +306,25 @@ describe('Teambuildr API', function() {
       it('should respond with 404 if team does not exist', function* () {
         var response = yield client.updateTeam({
           id: 123,
-          name: 'updated team'
+          name: 'updated team',
+          url: 'http://example.org',
+          slogan: 'where no man has gone before'
         });
         expect(response.statusCode).to.equal(404);
       });
 
       it('should respond with 400 when new field values are not valid', function* () {
         var teamId = (yield client.createTeam({
-          name: 'the team'
+          name: 'the team',
+          url: 'http://example.org',
+          slogan: 'where no man has gone before'
         })).body.id;
 
         var response = yield client.updateTeam({
           id: teamId,
-          name: ''
+          name: '',
+          url: 'http://example.org',
+          slogan: 'where no man has gone before'
         });
         expect(response.statusCode).to.equal(400);
         expect(response.body).to.include.keys('name');
@@ -296,12 +332,16 @@ describe('Teambuildr API', function() {
 
       it('should update the team if everything is OK', function* () {
         var teamId = (yield client.createTeam({
-          name: 'the team'
+          name: 'the team',
+          url: 'http://example.org',
+          slogan: 'where no man has gone before'
         })).body.id;
 
         var response = yield client.updateTeam({
           id: teamId,
-          name: 'updated team'
+          name: 'updated team',
+          url: 'http://example.org',
+          slogan: 'where no man has gone before'
         });
         expect(response.statusCode).to.equal(200);
         expect(response.body.id).to.equal(teamId);
@@ -317,7 +357,9 @@ describe('Teambuildr API', function() {
 
       it('should delete the team if team exists', function* () {
         var teamId = (yield client.createTeam({
-          name: 'the team'
+          name: 'the team',
+          url: 'http://example.org',
+          slogan: 'where no man has gone before'
         })).body.id;
 
         yield client.deleteTeam(teamId);
@@ -334,11 +376,15 @@ describe('Teambuildr API', function() {
       var teamBId;
       beforeEach(function* () {
         teamAId = (yield client.createTeam({
-          name: 'team A'
+          name: 'team A',
+          url: 'http://example.org',
+          slogan: 'where no man has gone before'
         })).body.id;
 
         teamBId = (yield client.createTeam({
-          name: 'team B'
+          name: 'team B',
+          url: 'http://example.org',
+          slogan: 'where no man has gone before'
         })).body.id;
       });
 
@@ -420,11 +466,15 @@ describe('Teambuildr API', function() {
       var personId;
       beforeEach(function* () {
         teamAId = (yield client.createTeam({
-          name: 'team A'
+          name: 'team A',
+          url: 'http://example.org',
+          slogan: 'where no man has gone before'
         })).body.id;
 
         teamBId = (yield client.createTeam({
-          name: 'team B'
+          name: 'team B',
+          url: 'http://example.org',
+          slogan: 'where no man has gone before'
         })).body.id;
 
         personId = (yield client.createPerson({
@@ -514,11 +564,15 @@ describe('Teambuildr API', function() {
       var personId;
       beforeEach(function* () {
         teamAId = (yield client.createTeam({
-          name: 'team A'
+          name: 'team A',
+          url: 'http://example.org',
+          slogan: 'where no man has gone before'
         })).body.id;
 
         teamBId = (yield client.createTeam({
-          name: 'team B'
+          name: 'team B',
+          url: 'http://example.org',
+          slogan: 'where no man has gone before'
         })).body.id;
 
         personId = (yield client.createPerson({
@@ -572,6 +626,8 @@ describe('Teambuildr API', function() {
       it('should create a team with members', function* () {
         var response = yield client.createTeam({
           name: 'the team',
+          url: 'http://example.org',
+          slogan: 'where no man has gone before',
           members: [
             {
               person: { id: personAId },
@@ -589,6 +645,8 @@ describe('Teambuildr API', function() {
         expect(response.body).to.containSubset({
           id: 1,
           name: 'the team',
+          url: 'http://example.org',
+          slogan: 'where no man has gone before',
           members: [
             {
               person: { id: personAId, name: 'person A' },
@@ -605,6 +663,8 @@ describe('Teambuildr API', function() {
       it('should return a validation error if at least one person does not exist', function* () {
         var response = yield client.createTeam({
           name: 'the team',
+          url: 'http://example.org',
+          slogan: 'where no man has gone before',
           members: [
             {
               person: { id: personAId },
@@ -624,6 +684,8 @@ describe('Teambuildr API', function() {
       it('should return a validation error if people are not unique', function* () {
         var response = yield client.createTeam({
           name: 'the team',
+          url: 'http://example.org',
+          slogan: 'where no man has gone before',
           members: [
             {
               person: { id: personAId },
@@ -655,7 +717,9 @@ describe('Teambuildr API', function() {
         })).body.id;
 
         teamId = (yield client.createTeam({
-          name: 'the team'
+          name: 'the team',
+          url: 'http://example.org',
+          slogan: 'where no man has gone before'
         })).body.id;
       });
 
@@ -663,6 +727,8 @@ describe('Teambuildr API', function() {
         var response = yield client.updateTeam({
           id: teamId,
           name: 'the team',
+          url: 'http://example.org',
+          slogan: 'where no man has gone before',
           members: [
             {
               person: { id: personAId },
@@ -697,6 +763,8 @@ describe('Teambuildr API', function() {
         var response = yield client.updateTeam({
           id: teamId,
           name: 'the team',
+          url: 'http://example.org',
+          slogan: 'where no man has gone before',
           members: [
             {
               person: { id: personAId },
@@ -717,6 +785,8 @@ describe('Teambuildr API', function() {
         var response = yield client.updateTeam({
           id: teamId,
           name: 'the team',
+          url: 'http://example.org',
+          slogan: 'where no man has gone before',
           members: [
             {
               person: { id: personAId },
@@ -749,6 +819,8 @@ describe('Teambuildr API', function() {
 
         teamId = (yield client.createTeam({
           name: 'the team',
+          url: 'http://example.org',
+          slogan: 'where no man has gone before',
           members: [
             {
               person: { id: personAId },
