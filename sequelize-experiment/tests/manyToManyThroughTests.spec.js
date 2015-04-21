@@ -85,7 +85,7 @@ describe('Sequelize many-to-many-through', function() {
 
       it('should let me delete project and keep an employee', function* () {
         yield aProject.destroy();
-        
+
         var employeeParticipations = yield anEmployee.getParticipations();
         expect(employeeParticipations.length).to.equal(0);
 
@@ -96,7 +96,7 @@ describe('Sequelize many-to-many-through', function() {
 
       it('should let me delete an employee and keep a project', function* () {
         yield anEmployee.destroy();
-        
+
         var projectParticipants = yield aProject.getParticipants();
         expect(projectParticipants.length).to.equal(0);
 
