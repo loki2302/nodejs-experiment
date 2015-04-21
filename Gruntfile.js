@@ -16,6 +16,9 @@ module.exports = function(grunt) {
     beTestSrcDir: 'be-test',
     mochaTest: {
       all: {
+        options: {
+          timeout: 10000
+        },
         src: ['<%= beTestSrcDir %>/**/*.spec.js']
       }
     },
