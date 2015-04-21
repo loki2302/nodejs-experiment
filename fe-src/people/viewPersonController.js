@@ -2,7 +2,8 @@ angular.module('tbViewPerson', [
   'ngRoute',
   'tbTemplates',
   'tbApiService',
-  'tbOperationExecutor'
+  'tbOperationExecutor',
+  'tbError'
 ])
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/people/:id', {
@@ -17,15 +18,23 @@ angular.module('tbViewPerson', [
   });
 }])
 .controller('ViewPersonController', [
-  '$scope', '$location', 'execute', 'apiService', 'person',
-  function($scope, $location, execute, apiService, person) {
+  '$scope', '$location', 'execute', 'apiService', 'person', 'ApiErrors', 'showError',
+  function($scope, $location, execute, apiService, person, ApiErrors, showError) {
     $scope.person = person;
 
     $scope.deletePerson = function() {
       execute(apiService.deletePerson($scope.person.id)).then(function() {
         $location.path('/people');
       }, function(error) {
-        throw error;
+        if(error instanceof ApiErrors.NotFoundError) {
+          var message = 'It took you too long: this person does not exist anymore. ' +
+            'Once you click OK, we will navigate you to the list of people.';
+          showError(message).then(function() {
+            $location.path('/people');
+          });
+        } else {
+          throw error;
+        }
       });
     };
   }]

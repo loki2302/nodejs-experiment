@@ -2,7 +2,8 @@ angular.module('tbPersonList', [
   'ngRoute',
   'tbTemplates',
   'akoenig.deckgrid',
-  'tbOperationExecutor'
+  'tbOperationExecutor',
+  'tbError'
 ])
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/people', {
@@ -16,8 +17,8 @@ angular.module('tbPersonList', [
   });
 }])
 .controller('PersonListController', [
-  '$scope', 'people', 'execute', 'apiService', 'ApiErrors',
-  function($scope, people, execute, apiService, ApiErrors) {
+  '$scope', 'people', 'execute', 'apiService', 'ApiErrors', 'showError', '$route',
+  function($scope, people, execute, apiService, ApiErrors, showError, $route) {
     $scope.people = people;
 
     $scope.deletePerson = function(person) {
@@ -30,10 +31,14 @@ angular.module('tbPersonList', [
         $scope.people.splice(personIndex, 1);
       }, function(error) {
         if(error instanceof ApiErrors.NotFoundError) {
-          console.log('PersonListController: the person does not exist');
+          var message = 'It took you too long: this person does not exist anymore. ' +
+            'Once you click OK, we will refresh this page.';
+          showError(message).then(function() {
+            $route.reload();
+          });
+        } else {
+          throw error;
         }
-
-        throw error;
       });
     };
   }

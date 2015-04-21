@@ -5,7 +5,8 @@ angular.module('tbEditTeam', [
   'tbSubmit',
   'ui.bootstrap',
   'tbOperationExecutor',
-  'tbApiService'
+  'tbApiService',
+  'tbError'
 ])
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/teams/:id/edit', {
@@ -20,8 +21,8 @@ angular.module('tbEditTeam', [
   });
 }])
 .controller('EditTeamController', [
-  '$scope', '$q', '$location', 'execute', 'apiService', 'ApiErrors', 'team',
-  function($scope, $q, $location, execute, apiService, ApiErrors, team) {
+  '$scope', '$q', '$location', 'execute', 'apiService', 'ApiErrors', 'team', 'showError',
+  function($scope, $q, $location, execute, apiService, ApiErrors, team, showError) {
     $scope.team = team;
     $scope.pageTitle = team.name;
     $scope.submitTitle = 'Update';
@@ -33,11 +34,14 @@ angular.module('tbEditTeam', [
         if(error instanceof ApiErrors.ValidationError) {
           return $q.reject(error.errorMap);
         } else if(error instanceof ApiErrors.NotFoundError) {
-          console.log('EditTeamController: the team does not exist');
-          // TODO: show modal, redirect to /teams
+          var message = 'It took you too long: this team does not exist anymore. ' +
+            'Once you click OK, we will navigate you to the list of teams.';
+          showError(message).then(function() {
+            $location.path('/teams');
+          });
+        } else {
+          throw error;
         }
-
-        throw error;
       }));
     };
 

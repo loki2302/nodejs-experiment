@@ -2,7 +2,8 @@ angular.module('tbViewTeam', [
   'ngRoute',
   'tbTemplates',
   'tbApiService',
-  'tbOperationExecutor'
+  'tbOperationExecutor',
+  'tbError'
 ])
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/teams/:id', {
@@ -17,15 +18,23 @@ angular.module('tbViewTeam', [
   });
 }])
 .controller('ViewTeamController', [
-  '$scope', '$location', 'execute', 'apiService', 'team',
-  function($scope, $location, execute, apiService, team) {
+  '$scope', '$location', 'execute', 'apiService', 'team', 'ApiErrors', 'showError',
+  function($scope, $location, execute, apiService, team, ApiErrors, showError) {
     $scope.team = team;
 
     $scope.deleteTeam = function() {
       execute(apiService.deleteTeam($scope.team.id)).then(function() {
         $location.path('/teams');
       }, function(error) {
-        throw error;
+        if(error instanceof ApiErrors.NotFoundError) {
+          var message = 'It took you too long: this team does not exist anymore. ' +
+            'Once you click OK, we will navigate you to the list of teams.';
+          showError(message).then(function() {
+            $location.path('/teams');
+          });
+        } else {
+          throw error;
+        }
       });
     };
   }]

@@ -2,7 +2,8 @@ angular.module('tbTeamList', [
   'ngRoute',
   'tbTemplates',
   'akoenig.deckgrid',
-  'tbOperationExecutor'
+  'tbOperationExecutor',
+  'tbError'
 ])
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/teams', {
@@ -16,8 +17,8 @@ angular.module('tbTeamList', [
   });
 }])
 .controller('TeamListController', [
-  '$scope', 'teams', 'execute', 'apiService', 'ApiErrors',
-  function($scope, teams, execute, apiService, ApiErrors) {
+  '$scope', 'teams', 'execute', 'apiService', 'ApiErrors', 'showError', '$route',
+  function($scope, teams, execute, apiService, ApiErrors, showError, $route) {
     $scope.teams = teams;
 
     $scope.deleteTeam = function(team) {
@@ -30,10 +31,14 @@ angular.module('tbTeamList', [
         $scope.teams.splice(teamIndex, 1);
       }, function(error) {
         if(error instanceof ApiErrors.NotFoundError) {
-          console.log('PersonListController: the person does not exist');
+          var message = 'It took you too long: this team does not exist anymore. ' +
+            'Once you click OK, we will refresh this page.';
+          showError(message).then(function() {
+            $route.reload();
+          });
+        } else {
+          throw error;
         }
-
-        throw error;
       });
     };
   }
