@@ -16,19 +16,16 @@ angular.module('tbApp', [
     return function(exception, cause) {
       $delegate(exception, cause);
 
-      console.log('the custom exception handler says', exception, cause);
-
       var ApiErrors = $injector.get('ApiErrors');
+      var showError = $injector.get('showError');
+      var $location = $injector.get('$location');
       if(exception instanceof ApiErrors.ConnectivityError) {
-        console.log('interpreted as ConnectivityError');
-      } else if(exception instanceof ApiErrors.ValidationError) {
-        console.log('interpreted as ValidationError');
-      } else if(exception instanceof ApiErrors.NotFoundError) {
-        console.log('interpreted as NotFoundError');
-      } else if(exception instanceof ApiErrors.UnexpectedError) {
-        console.log('interpreted as UnexpectedError');
+        showError('It looks like you are offline');
       } else {
-        console.log('interpreted as have no idea');
+        showError('Something very unexpected has happened. ' +
+          'The best thing we can do is navigating you to lolcats.').then(function() {
+            $location.path('https://www.google.com/search?q=lolcats&tbm=isch');
+          });
       }
     };
   }]);
