@@ -58,9 +58,14 @@ module.exports = function(Person, Team, PersonMembershipsRelation, TeamMembersRe
         };
       });
 
+      try {
       yield person.setMemberships(teams, {
         transaction: context.tx
       });
+    } catch(e) {
+      console.log(e);
+      throw e;
+    }
     }
   };
 };

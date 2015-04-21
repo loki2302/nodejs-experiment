@@ -480,6 +480,33 @@ describe('Teambuildr API', function() {
         expect(response.statusCode).to.equal(400);
         expect(response.body.memberships).to.exist;
       });
+
+      // TODO: Sequelize doesn't seem to apply validation to the 'through' thing
+      // https://github.com/sequelize/sequelize/issues/3569
+      xit('should return a validation error if roles are not specified', function* () {
+        var response = yield client.createPerson({
+          name: 'john',
+          position: 'web hacker',
+          city: 'New York',
+          state: 'NY',
+          phone: '+123456789',
+          avatar: 'http://example.org',
+          email: 'someone@example.org',
+          memberships: [
+            {
+              team: { id: teamAId },
+              role: ''
+            },
+            {
+              team: { id: teamBId },
+              role: 'manager'
+            }
+          ]
+        });
+
+        expect(response.statusCode).to.equal(400);
+        //expect(response.body.memberships).to.exist;
+      });
     });
 
     describe('PUT /people', function() {
