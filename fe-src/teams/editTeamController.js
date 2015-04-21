@@ -32,6 +32,9 @@ angular.module('tbEditTeam', [
       }, function(error) {
         if(error instanceof ApiErrors.ValidationError) {
           return $q.reject(error.errorMap);
+        } else if(error instanceof ApiErrors.NotFoundError) {
+          console.log('EditTeamController: the team does not exist');
+          // TODO: show modal, redirect to /teams
         }
 
         throw error;

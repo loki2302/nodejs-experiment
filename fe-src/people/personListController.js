@@ -16,8 +16,8 @@ angular.module('tbPersonList', [
   });
 }])
 .controller('PersonListController', [
-  '$scope', 'people', 'execute', 'apiService',
-  function($scope, people, execute, apiService) {
+  '$scope', 'people', 'execute', 'apiService', 'ApiErrors',
+  function($scope, people, execute, apiService, ApiErrors) {
     $scope.people = people;
 
     $scope.deletePerson = function(person) {
@@ -29,6 +29,10 @@ angular.module('tbPersonList', [
 
         $scope.people.splice(personIndex, 1);
       }, function(error) {
+        if(error instanceof ApiErrors.NotFoundError) {
+          console.log('PersonListController: the person does not exist');
+        }
+
         throw error;
       });
     };

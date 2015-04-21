@@ -20,8 +20,8 @@ angular.module('tbEditPerson', [
   });
 }])
 .controller('EditPersonController', [
-  '$scope', '$q', '$location', 'execute', 'apiService', 'ApiErrors', 'person',
-  function($scope, $q, $location, execute, apiService, ApiErrors, person) {
+  '$scope', '$q', '$location', 'execute', 'apiService', 'ApiErrors', 'person', '$modal',
+  function($scope, $q, $location, execute, apiService, ApiErrors, person, $modal) {
     $scope.person = person;
     $scope.pageTitle = person.name;
     $scope.submitTitle = 'Update';
@@ -32,9 +32,27 @@ angular.module('tbEditPerson', [
       }, function(error) {
         if(error instanceof ApiErrors.ValidationError) {
           return $q.reject(error.errorMap);
+        } else if(error instanceof ApiErrors.NotFoundError) {
+          console.log('EditPersonController: the person does not exist');
+          // TODO: show modal, redirect to /people
+          var modalInstance = $modal.open({
+            backdrop: 'static',
+            templateUrl: 'errorModal.html',
+            controller: 'ErrorModalController',
+            resolve: {
+              message: function() {
+                return 'It took you too long: this person does not exist anymore. ' +
+                  'Once you click OK, we will navigate you to the list of people.'
+              }
+            }
+          });
+          modalInstance.result.finally(function() {
+            console.log('modal has been closed');
+            $location.path('/people');
+          });
+        } else {
+          throw error;
         }
-
-        throw error;
       }));
     };
 

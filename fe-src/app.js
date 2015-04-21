@@ -5,7 +5,8 @@ angular.module('tbApp', [
   'tbHomeController',
   'tbOtherwiseController',
   'tbPeople',
-  'tbTeams'
+  'tbTeams',
+  'tbErrorModal',
 ]).config(['$locationProvider', function($locationProvider) {
   $locationProvider.html5Mode(true);
 }]).config(['apiServiceProvider', function(apiServiceProvider) {

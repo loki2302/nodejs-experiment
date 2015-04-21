@@ -16,8 +16,8 @@ angular.module('tbTeamList', [
   });
 }])
 .controller('TeamListController', [
-  '$scope', 'teams', 'execute', 'apiService',
-  function($scope, teams, execute, apiService) {
+  '$scope', 'teams', 'execute', 'apiService', 'ApiErrors',
+  function($scope, teams, execute, apiService, ApiErrors) {
     $scope.teams = teams;
 
     $scope.deleteTeam = function(team) {
@@ -29,6 +29,10 @@ angular.module('tbTeamList', [
 
         $scope.teams.splice(teamIndex, 1);
       }, function(error) {
+        if(error instanceof ApiErrors.NotFoundError) {
+          console.log('PersonListController: the person does not exist');
+        }
+
         throw error;
       });
     };
