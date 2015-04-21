@@ -32,13 +32,15 @@ module.exports = function(Q, Person, Team, faker, gravatar) {
       var personIds = [];
       for(var i = 0; i < NUMBER_OF_PEOPLE; ++i) {
         var personName = faker.name.findName();
+        var e = makePersonEmail(personName);
+        console.log(e);
         var person = yield Person.create({
           name: personName,
           city: faker.address.city(), // 'South Alycemouth'
           state: faker.address.stateAbbr(), // 'NY'
           phone: faker.phone.phoneNumber(), // '1-234-655-2694 x907'
           avatar: faker.internet.avatar(), // 'https://s3.amazonaws.com/uifaces/faces/twitter/naupintos/128.jpg'
-          email: makePersonEmail(personName),
+          email: e,
           position: faker.random.array_element(POSITION_PREFIXES) + ' ' + faker.random.array_element(POSITIONS)
         });
         personIds.push(person.id);
@@ -76,15 +78,19 @@ module.exports = function(Q, Person, Team, faker, gravatar) {
     });
   };
 
+  function slugify(something) {
+    return faker.helpers.slugify(something).replace('.', '');
+  }
+
   function makePersonEmail(personName) {
-    var slugifiedLowercasePersonName = faker.helpers.slugify(personName).toLowerCase();
+    var slugifiedLowercasePersonName = slugify(personName).toLowerCase();
     var domainName = faker.internet.domainName();
     var email = slugifiedLowercasePersonName + '@' + domainName;
     return email;
   }
 
   function makeTeamUrl(teamName) {
-    var slugifiedLowercaseTeamName = faker.helpers.slugify(teamName).toLowerCase();
+    var slugifiedLowercaseTeamName = slugify(teamName).toLowerCase();
     var domainSuffix = faker.internet.domainSuffix();
     var teamDomainName = slugifiedLowercaseTeamName + '.' + domainSuffix;
     return 'http://' + teamDomainName;

@@ -17,6 +17,18 @@ function makeTeam(name) {
   };
 };
 
+function makePerson(name) {
+  return {
+    name: name,
+    position: 'web hacker',
+    city: 'New York',
+    state: 'NY',
+    phone: '+123456789',
+    avatar: 'http://example.org',
+    email: 'someone@example.org'
+  };
+};
+
 describe('Teambuildr API', function() {
   var appRunner;
   var client;
@@ -36,13 +48,18 @@ describe('Teambuildr API', function() {
   describe('Simple CRUD without relations', function() {
     describe('POST /people', function() {
       it('should create a person', function* () {
-        var response = yield client.createPerson({
-          name: 'john'
-        });
+        var personDescription = makePerson('john');
+        var response = yield client.createPerson(personDescription);
         expect(response.statusCode).to.equal(201);
         expect(response.body).to.containSubset({
           id: 1,
           name: 'john',
+          position: 'web hacker',
+          city: 'New York',
+          state: 'NY',
+          phone: '+123456789',
+          avatar: 'http://example.org',
+          email: 'someone@example.org',
           memberships: []
         });
       });
@@ -50,21 +67,30 @@ describe('Teambuildr API', function() {
       it('should not create a person when name is null', function* () {
         var response = yield client.createPerson({});
         expect(response.statusCode).to.equal(400);
-        expect(response.body).to.include.keys('name');
+        expect(response.body).to.include.keys(
+          'name', 'position', 'city', 'state', 'phone', 'avatar', 'email');
       });
 
       it('should not create a person when name is empty', function* () {
-        var response = yield client.createPerson({name: ''});
+        var response = yield client.createPerson({
+          name: '',
+          position: '',
+          city: '',
+          state: '',
+          phone: '',
+          avatar: '',
+          email: ''
+        });
         expect(response.statusCode).to.equal(400);
-        expect(response.body).to.include.keys('name');
+        expect(response.body).to.include.keys(
+          'name', 'position', 'city', 'state', 'phone', 'avatar', 'email');
       });
     });
 
     describe('GET /people/{id}', function() {
       it('should respond with person details if person exists', function* () {
-        var createdPerson = (yield client.createPerson({
-          name: 'john'
-        })).body;
+        var personDescription = makePerson('john');
+        var createdPerson = (yield client.createPerson(personDescription)).body;
 
         var response = yield client.getPerson(createdPerson.id);
         expect(response.statusCode).to.equal(200);
@@ -85,9 +111,8 @@ describe('Teambuildr API', function() {
       });
 
       it('should respond with a list of people when at least one person exists', function* () {
-        yield client.createPerson({
-          name: 'john'
-        });
+        var personDescription = makePerson('john');
+        yield client.createPerson(personDescription);
 
         var people = (yield client.getPeople()).body;
         expect(people).to.containSubset([{
@@ -100,10 +125,10 @@ describe('Teambuildr API', function() {
       describe('when there are many people', function() {
         beforeEach(function* () {
           // how do I forEach loop here?
-          yield client.createPerson({ name: 'john' });
-          yield client.createPerson({ name: 'joe' });
-          yield client.createPerson({ name: 'jonathan' });
-          yield client.createPerson({ name: 'bill' });
+          yield client.createPerson(makePerson('john'));
+          yield client.createPerson(makePerson('joe'));
+          yield client.createPerson(makePerson('jonathan'));
+          yield client.createPerson(makePerson('bill'));
         });
 
         it('should filter them by "nameContains"', function* () {
@@ -134,32 +159,41 @@ describe('Teambuildr API', function() {
       it('should respond with 404 if person does not exist', function* () {
         var response = yield client.updatePerson({
           id: 123,
-          name: 'updated john'
+          name: 'john',
+          position: 'web hacker',
+          city: 'New York',
+          state: 'NY',
+          phone: '+123456789',
+          avatar: 'http://example.org',
+          email: 'someone@example.org'
         });
         expect(response.statusCode).to.equal(404);
       });
 
       it('should respond with 400 when new field values are not valid', function* () {
-        var personId = (yield client.createPerson({
-          name: 'john'
-        })).body.id;
+        var personDescription = makePerson('john');
+        var personId = (yield client.createPerson(personDescription)).body.id;
 
         var response = yield client.updatePerson({
-          id: personId,
-          name: ''
+          id: personId
         });
         expect(response.statusCode).to.equal(400);
         expect(response.body).to.include.keys('name');
       });
 
       it('should update the person if everything is OK', function* () {
-        var personId = (yield client.createPerson({
-          name: 'john'
-        })).body.id;
+        var personDescription = makePerson('john');
+        var personId = (yield client.createPerson(personDescription)).body.id;
 
         var response = yield client.updatePerson({
           id: personId,
-          name: 'updated john'
+          name: 'updated john',
+          position: 'web hacker',
+          city: 'New York',
+          state: 'NY',
+          phone: '+123456789',
+          avatar: 'http://example.org',
+          email: 'someone@example.org'
         });
         expect(response.statusCode).to.equal(200);
         expect(response.body.id).to.equal(personId);
@@ -174,9 +208,8 @@ describe('Teambuildr API', function() {
       });
 
       it('should delete the person if person exists', function* () {
-        var personId = (yield client.createPerson({
-          name: 'john'
-        })).body.id;
+        var personDescription = makePerson('john');
+        var personId = (yield client.createPerson(personDescription)).body.id;
 
         yield client.deletePerson(personId);
 
@@ -255,7 +288,6 @@ describe('Teambuildr API', function() {
 
       describe('when there are many teams', function() {
         beforeEach(function* () {
-          // how do I forEach loop here?
           yield client.createTeam(makeTeam('microsoft'));
           yield client.createTeam(makeTeam('supermicro'));
           yield client.createTeam(makeTeam('mirabilis'));
@@ -357,6 +389,12 @@ describe('Teambuildr API', function() {
       it('should create a person with memberships', function* () {
         var response = yield client.createPerson({
           name: 'john',
+          position: 'web hacker',
+          city: 'New York',
+          state: 'NY',
+          phone: '+123456789',
+          avatar: 'http://example.org',
+          email: 'someone@example.org',
           memberships: [
             {
               team: { id: teamAId },
@@ -374,6 +412,12 @@ describe('Teambuildr API', function() {
         expect(response.body).to.containSubset({
           id: 1,
           name: 'john',
+          position: 'web hacker',
+          city: 'New York',
+          state: 'NY',
+          phone: '+123456789',
+          avatar: 'http://example.org',
+          email: 'someone@example.org',
           memberships: [
             {
               team: { id: teamAId, name: 'team A' },
@@ -390,6 +434,12 @@ describe('Teambuildr API', function() {
       it('should return a validation error if at least one team does not exist', function* () {
         var response = yield client.createPerson({
           name: 'john',
+          position: 'web hacker',
+          city: 'New York',
+          state: 'NY',
+          phone: '+123456789',
+          avatar: 'http://example.org',
+          email: 'someone@example.org',
           memberships: [
             {
               team: { id: teamAId },
@@ -409,6 +459,12 @@ describe('Teambuildr API', function() {
       it('should return a validation error if teams are not unique', function* () {
         var response = yield client.createPerson({
           name: 'john',
+          position: 'web hacker',
+          city: 'New York',
+          state: 'NY',
+          phone: '+123456789',
+          avatar: 'http://example.org',
+          email: 'someone@example.org',
           memberships: [
             {
               team: { id: teamAId },
@@ -434,15 +490,20 @@ describe('Teambuildr API', function() {
         teamAId = (yield client.createTeam(makeTeam('team A'))).body.id;
         teamBId = (yield client.createTeam(makeTeam('team B'))).body.id;
 
-        personId = (yield client.createPerson({
-          name: 'john'
-        })).body.id;
+        var personDescription = makePerson('john');
+        personId = (yield client.createPerson(personDescription)).body.id;
       });
 
       it('should update person memberships', function* () {
         var response = yield client.updatePerson({
           id: personId,
           name: 'john',
+          position: 'web hacker',
+          city: 'New York',
+          state: 'NY',
+          phone: '+123456789',
+          avatar: 'http://example.org',
+          email: 'someone@example.org',
           memberships: [
             {
               team: { id: teamAId },
@@ -460,6 +521,12 @@ describe('Teambuildr API', function() {
         expect(response.body).to.containSubset({
           id: 1,
           name: 'john',
+          position: 'web hacker',
+          city: 'New York',
+          state: 'NY',
+          phone: '+123456789',
+          avatar: 'http://example.org',
+          email: 'someone@example.org',
           memberships: [
             {
               team: { id: teamAId, name: 'team A' },
@@ -477,6 +544,12 @@ describe('Teambuildr API', function() {
         var response = yield client.updatePerson({
           id: personId,
           name: 'john',
+          position: 'web hacker',
+          city: 'New York',
+          state: 'NY',
+          phone: '+123456789',
+          avatar: 'http://example.org',
+          email: 'someone@example.org',
           memberships: [
             {
               team: { id: teamAId },
@@ -497,6 +570,12 @@ describe('Teambuildr API', function() {
         var response = yield client.updatePerson({
           id: personId,
           name: 'john',
+          position: 'web hacker',
+          city: 'New York',
+          state: 'NY',
+          phone: '+123456789',
+          avatar: 'http://example.org',
+          email: 'someone@example.org',
           memberships: [
             {
               team: { id: teamAId },
@@ -515,7 +594,6 @@ describe('Teambuildr API', function() {
     });
 
     describe('GET /people', function() {
-      // TODO: convert to GET /people
       var teamAId;
       var teamBId;
       var personId;
@@ -525,6 +603,12 @@ describe('Teambuildr API', function() {
 
         personId = (yield client.createPerson({
           name: 'john',
+          position: 'web hacker',
+          city: 'New York',
+          state: 'NY',
+          phone: '+123456789',
+          avatar: 'http://example.org',
+          email: 'someone@example.org',
           memberships: [
             {
               team: { id: teamAId },
@@ -562,13 +646,8 @@ describe('Teambuildr API', function() {
       var personAId;
       var personBId;
       beforeEach(function* () {
-        personAId = (yield client.createPerson({
-          name: 'person A'
-        })).body.id;
-
-        personBId = (yield client.createPerson({
-          name: 'person B'
-        })).body.id;
+        personAId = (yield client.createPerson(makePerson('person A'))).body.id;
+        personBId = (yield client.createPerson(makePerson('person B'))).body.id;
       });
 
       it('should create a team with members', function* () {
@@ -656,13 +735,8 @@ describe('Teambuildr API', function() {
       var personBId;
       var teamId;
       beforeEach(function* () {
-        personAId = (yield client.createPerson({
-          name: 'person A'
-        })).body.id;
-
-        personBId = (yield client.createPerson({
-          name: 'person B'
-        })).body.id;
+        personAId = (yield client.createPerson(makePerson('person A'))).body.id;
+        personBId = (yield client.createPerson(makePerson('person B'))).body.id;
 
         teamId = (yield client.createTeam(makeTeam('the team'))).body.id;
       });
@@ -753,13 +827,8 @@ describe('Teambuildr API', function() {
       var personBId;
       var teamId;
       beforeEach(function* () {
-        personAId = (yield client.createPerson({
-          name: 'person A'
-        })).body.id;
-
-        personBId = (yield client.createPerson({
-          name: 'person B'
-        })).body.id;
+        personAId = (yield client.createPerson(makePerson('person A'))).body.id;
+        personBId = (yield client.createPerson(makePerson('person B'))).body.id;
 
         teamId = (yield client.createTeam({
           name: 'the team',
