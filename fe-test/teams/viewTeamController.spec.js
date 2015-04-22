@@ -29,4 +29,10 @@ describe('tbViewTeamController', function() {
     expect(route.templateUrl).toBe('teams/viewTeam.html');
     expect(route.resolve.team).toBeDefined();
   }));
+
+  describe('deleteTeam()', function() {
+    it('should be defined', function() {
+      expect(scope.deleteTeam).toBeDefined();
+    });
+  });
 });

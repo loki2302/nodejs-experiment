@@ -121,6 +121,14 @@ describe('tbCreatePerson', function() {
     });
   });
 
+  describe('randomizeAvatar()', function() {
+    it('should be defined', function() {
+      expect($scope.randomizeAvatar).toBeDefined();
+    });
+
+    // TODO: add more tests
+  });
+
   describe('findTeamsByQuery()', function() {
     it('should be defined', function() {
       expect($scope.findTeamsByQuery).toBeDefined();

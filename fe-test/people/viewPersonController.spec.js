@@ -29,4 +29,10 @@ describe('tbViewPersonController', function() {
     expect(route.templateUrl).toBe('people/viewPerson.html');
     expect(route.resolve.person).toBeDefined();
   }));
+
+  describe('deletePerson()', function() {
+    it('should be defined', function() {
+      expect(scope.deletePerson).toBeDefined();
+    });
+  });
 });
