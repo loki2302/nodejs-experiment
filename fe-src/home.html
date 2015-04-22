@@ -1,10 +1,10 @@
 <div class="jumbotron">
   <h2>Teambuildr <small>Build your team today!</small></h2>
-  <p>We have <a href="/teams"><ng-pluralize count="stats.teams" when="{
+  <p>We have <a href="/teams" id="teamCount"><ng-pluralize count="stats.teams" when="{
     '0': 'no teams',
     'one': 'one team',
     'other': '{} teams'
-  }"></ng-pluralize></a> and <a href="/people"><ng-pluralize count="stats.people" when="{
+  }"></ng-pluralize></a> and <a href="/people" id="personCount"><ng-pluralize count="stats.people" when="{
     '0': 'no people',
     'one': 'one person',
     'other': '{} people'
