@@ -23,8 +23,10 @@ describe('Home', function() {
   });
 
   var homePage;
+  var client;
   beforeEach(function() {
     homePage = new HomePage();
+    client = new TeambuildrClient('http://localhost:3000/api/');
   });
 
   it('should have stats', function() {
@@ -43,7 +45,6 @@ describe('Home', function() {
 
     describe('when there is 1 team', function() {
       beforeEach(function(done) {
-        var client = new TeambuildrClient('http://localhost:3000/api/');
         client.createTeam({
           name: 'team 1',
           url: 'http://example.org',
@@ -59,7 +60,6 @@ describe('Home', function() {
 
     describe('when there are 2 teams', function() {
       beforeEach(function(done) {
-        var client = new TeambuildrClient('http://localhost:3000/api/');
         client.createTeam({
           name: 'team 1',
           url: 'http://example1.org',
