@@ -48,4 +48,18 @@ describe('sinon', function() {
       }).to.throw(Error, /very bad/);
     });
   });
+
+  describe('mock', function() {
+    it('should let me use mocks', function() {
+      var obj = {
+        add: function(a, b) { return a + b; }
+      };
+
+      var objMock = sinon.mock(obj);
+      objMock.expects('add').once().returns(123);
+
+      expect(obj.add(2, 3)).to.equal(123);
+      objMock.verify();
+    });
+  });
 });
