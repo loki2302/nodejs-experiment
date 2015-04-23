@@ -6,17 +6,32 @@ chai.use(sinonChai);
 var expect = chai.expect;
 
 describe('sinon', function() {
-  it('should work', function() {
-    var func = sinon.spy();
-    func();
-    expect(func.calledOnce).to.equal(true);
-  });
-});
+  describe('spies', function() {
+    it('should let me use a dummy spy', function() {
+      var func = sinon.spy();
+      func(123, 'hello');
+      expect(func).to.have.been.calledOnce;
+      expect(func).to.have.been.calledWith(123, 'hello');
+    });
 
-describe('sinon-chai', function() {
-  it('should make things more straightforward', function() {
-    var func = sinon.spy();
-    func();
-    expect(func).to.have.been.calledOnce;
+    it('should let me use a spy for an existing func', function() {
+      var func = sinon.spy(function() { return 123; });
+      var result = func();
+      expect(result).to.equal(123);
+      expect(func).to.have.been.calledOnce;
+    });
+
+    it('should let me use a spy for an object func', function() {
+      var Calculator = function() {
+        this.add = function(a, b) { return a + b; };
+      };
+      var calculator = new Calculator();
+      sinon.spy(calculator, 'add');
+
+      var result = calculator.add(2, 3);
+      expect(result).to.equal(5);
+      expect(calculator.add).to.have.been.calledOnce;
+      expect(calculator.add).to.have.been.calledWith(2, 3);
+    });
   });
 });
