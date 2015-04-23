@@ -104,11 +104,15 @@ describe('PersonList', function() {
 
         it('should exist', function() {
           expect(personListItemElement.isPresent()).toBe(true);
-          expect(personListItem.name.getText()).toBe(person.name);
           expect(personListItem.position.getText()).toBe(person.position);
         });
 
-        // TODO: check the link to /people/123
+        it('should have a "view" link', function() {
+          expect(personListItem.name.getText()).toBe(person.name);
+
+          personListItem.name.click();
+          expect(browser.getLocationAbsUrl()).toBe('/people/' + person.id);
+        });
 
         it('should have an "edit" link', function() {
           expect(personListItem.edit.isPresent()).toBe(true);
