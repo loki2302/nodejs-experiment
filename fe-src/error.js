@@ -5,6 +5,7 @@ angular.module('tbError', ['ui.bootstrap'])
       backdrop: 'static',
       templateUrl: 'errorModal.html',
       controller: 'ErrorModalController',
+      windowClass: 'error-modal',
       resolve: {
         message: function() {
           return message;

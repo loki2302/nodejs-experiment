@@ -17,6 +17,12 @@ var PersonListItem = function(element) {
   this.delete = element.element(by.css('.delete'));
 };
 
+var ErrorModal = function(element) {
+  this.title = element.element(by.css('.modal-title'));
+  this.message = element.element(by.css('.modal-body'));
+  this.ok = element.element(by.css('.ok'));
+};
+
 describe('PersonList', function() {
   var appRunner;
   beforeEach(function(done) {
@@ -57,6 +63,7 @@ describe('PersonList', function() {
   });
 
   describe('when there are people', function() {
+    var person;
     beforeEach(function(done) {
       client.createPerson({
         name: 'john',
@@ -66,6 +73,8 @@ describe('PersonList', function() {
         phone: '+123456789',
         avatar: 'http://example.org',
         email: 'someone@example.org'
+      }).then(function(response) {
+        person = response.body;
       }).finally(done);
     });
 
@@ -85,32 +94,54 @@ describe('PersonList', function() {
       });
 
       describe('the only item', function() {
-        it('should exist', function() {
-          var personListItemElement = personListPage.personListItem(0);
-          expect(personListItemElement.isPresent()).toBe(true);
+        var personListItemElement;
+        var personListItem;
+        beforeEach(function() {
+          browser.get('/people');
+          personListItemElement = personListPage.personListItem(0);
+          personListItem = new PersonListItem(personListItemElement);
+        });
 
-          var personListItem = new PersonListItem(personListItemElement);
-          expect(personListItem.name.getText()).toBe('john');
-          expect(personListItem.position.getText()).toBe('web hacker');
+        it('should exist', function() {
+          expect(personListItemElement.isPresent()).toBe(true);
+          expect(personListItem.name.getText()).toBe(person.name);
+          expect(personListItem.position.getText()).toBe(person.position);
+        });
+
+        // TODO: check the link to /people/123
+
+        it('should have an "edit" link', function() {
           expect(personListItem.edit.isPresent()).toBe(true);
+
+          personListItem.edit.click();
+          expect(browser.getLocationAbsUrl()).toBe('/people/' + person.id + '/edit');
+        });
+
+        it('should have a delete button', function() {
           expect(personListItem.delete.isPresent()).toBe(true);
         });
 
-        it('should have an edit link', function() {
-          // TODO
-        });
-
         describe('delete button', function() {
-          it('should exist', function() {
-            // TODO
-          });
-
           it('should delete the person if person still exists', function() {
-            // TODO
+            personListItem.delete.click();
+            expect(personListPage.noPeopleAlert.isPresent()).toBe(true);
+            expect(personListPage.peopleContainer.isPresent()).toBe(false);
           });
 
           it('should display an error popup if person does not exist', function() {
-            // TODO
+            protractor.promise.controlFlow().await(client.deletePerson(person.id));
+            personListItem.delete.click();
+
+            var errorModalElement = element(by.css('.error-modal'));
+            expect(errorModalElement.isPresent()).toBe(true);
+
+            var errorModal = new ErrorModal(errorModalElement);
+            expect(errorModal.message.getText()).toContain('too long');
+            errorModal.ok.click();
+            expect(errorModalElement.isPresent()).toBe(false);
+
+            expect(personListPage.noPeopleAlert.isPresent()).toBe(true);
+            expect(personListPage.peopleContainer.isPresent()).toBe(false);
           });
         });
       });
