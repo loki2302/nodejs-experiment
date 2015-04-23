@@ -6,5 +6,5 @@ angular.module('tbOtherwiseController', [
     controller: 'OtherwiseController'
   });
 }]).controller('OtherwiseController', ['$rootScope', function($rootScope) {
-  $rootScope.error = '404 says the OtherwiseController';
+  $rootScope.error = '404 says the OtherwiseController'; // TODO
 }]);

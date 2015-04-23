@@ -24,8 +24,9 @@
       <div class="container" ng-if="!error" ng-view>
       </div>
       <div class="container" ng-if="error">
-        <!-- TODO: extract this to a separate directive to reuse for "otherwise" and route change errors -->
-        <h1>error: {{error}}</h1>
+        <h1>404 <small>not found</small></h1>
+        <p class="lead">Teambuildr doesn't seem to have what you're looking for.</p>
+        <p>But we have <a href="/people">people</a>, <a href="/teams">teams</a> and <a href="/">a funny landing page</a>.</p>
       </div>
 
       <div class="container">
