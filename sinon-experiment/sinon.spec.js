@@ -34,4 +34,18 @@ describe('sinon', function() {
       expect(calculator.add).to.have.been.calledWith(2, 3);
     });
   });
+
+  describe('stub', function() {
+    it('should let me use a stub that returns something', function() {
+      var func = sinon.stub().returns(123);
+      expect(func()).to.equal(123);
+    });
+
+    it('should let me use a stub that throws', function() {
+      var func = sinon.stub().throws(new Error('very bad'));
+      expect(function() {
+        func();
+      }).to.throw(Error, /very bad/);
+    });
+  });
 });
