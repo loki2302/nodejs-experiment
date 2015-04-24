@@ -32,6 +32,14 @@ describe('sinon', function() {
       expect(result).to.equal(5);
       expect(calculator.add).to.have.been.calledOnce;
       expect(calculator.add).to.have.been.calledWith(2, 3);
+      expect(calculator.add).to.have.been.called;
+      expect(calculator.add.callCount).to.equal(1);
+
+      expect(calculator.add.args.length).to.equal(1);
+      expect(calculator.add.args[0]).to.deep.equal([2, 3]);
+
+      expect(calculator.add.returnValues.length).to.equal(1);
+      expect(calculator.add.returnValues[0]).to.equal(5);
     });
   });
 
