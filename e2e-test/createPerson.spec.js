@@ -78,4 +78,27 @@ describe('CreatePersonPage', function() {
     expect(createPersonPage.phoneError.isPresent()).toBe(true);
     expect(createPersonPage.emailError.isPresent()).toBe(true);
   });
+
+  it('should create a person when all fields are OK', function() {
+    browser.get('/people/create');
+    createPersonPage.name.sendKeys('John');
+    createPersonPage.position.sendKeys('Developer');
+    createPersonPage.city.sendKeys('New York');
+    createPersonPage.state.sendKeys('NY');
+    createPersonPage.phone.sendKeys('+123456789');
+    createPersonPage.email.sendKeys('john@john.com');
+    createPersonPage.create.click();
+
+    //var person = protractor.promise.controlFlow().await(client.getPeople().then(function(x) {console.log(x);return x;}))[0];
+    expect(browser.getLocationAbsUrl()).toBe('/people/1');
+
+    // this does not work
+    /*console.log('OMG Before call');
+    var person;
+    protractor.promise.controlFlow().wait(client.getPeople()).then(function(response) {
+      person = response.body[0];
+      console.log('OMG inside then');
+    });
+    console.log('OMG after call', person);*/
+  });
 });
