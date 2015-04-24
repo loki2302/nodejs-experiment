@@ -2,7 +2,7 @@ var expect = require('chai').expect;
 
 var http = require('http');
 var sockjs = require('sockjs');
-var SockJS = require('sockjs-client-node');
+var SockJS = require('sockjs-client');
 
 describe('sockjs', function() {
   it('should work', function(done) {
