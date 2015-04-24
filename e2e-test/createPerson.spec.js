@@ -3,11 +3,23 @@ var TeambuildrClient = require('../be-test/teambuildrClient');
 
 var CreatePersonPage = function() {
   this.name = element(by.css('.name input'));
+  this.nameError = element(by.css('.name p'));
+
   this.position = element(by.css('.position input'));
+  this.positionError = element(by.css('.position p'));
+
   this.city = element(by.css('.city input'));
+  this.cityError = element(by.css('.city p'));
+
   this.state = element(by.css('.state input'));
+  this.stateError = element(by.css('.state p'));
+
   this.phone = element(by.css('.phone input'));
+  this.phoneError = element(by.css('.phone p'));
+
   this.email = element(by.css('.email input'));
+  this.emailError = element(by.css('.email p'));
+
   this.create = element(by.css('#submit-person-button'));
 };
 
@@ -54,5 +66,16 @@ describe('CreatePersonPage', function() {
   it('should have "Create" button', function() {
     browser.get('/people/create');
     expect(createPersonPage.create.isPresent()).toBe(true);
+  });
+
+  it('should have validation errors when submitting the empty form', function() {
+    browser.get('/people/create');
+    createPersonPage.create.click();
+    expect(createPersonPage.nameError.isPresent()).toBe(true);
+    expect(createPersonPage.positionError.isPresent()).toBe(true);
+    expect(createPersonPage.cityError.isPresent()).toBe(true);
+    expect(createPersonPage.stateError.isPresent()).toBe(true);
+    expect(createPersonPage.phoneError.isPresent()).toBe(true);
+    expect(createPersonPage.emailError.isPresent()).toBe(true);
   });
 });
