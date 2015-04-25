@@ -89,16 +89,13 @@ describe('CreatePersonPage', function() {
     createPersonPage.email.sendKeys('john@john.com');
     createPersonPage.create.click();
 
-    //var person = protractor.promise.controlFlow().await(client.getPeople().then(function(x) {console.log(x);return x;}))[0];
     expect(browser.getLocationAbsUrl()).toBe('/people/1');
 
-    // this does not work
-    /*console.log('OMG Before call');
-    var person;
-    protractor.promise.controlFlow().wait(client.getPeople()).then(function(response) {
-      person = response.body[0];
-      console.log('OMG inside then');
+    protractor.promise.controlFlow().execute(function() {
+      return client.getPeople().then(function(response) {
+        var people = response.body;
+        expect(people.length).toBe(1);
+      });
     });
-    console.log('OMG after call', person);*/
   });
 });

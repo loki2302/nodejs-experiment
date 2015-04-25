@@ -133,7 +133,10 @@ describe('PersonList', function() {
           });
 
           it('should display an error popup if person does not exist', function() {
-            protractor.promise.controlFlow().await(client.deletePerson(person.id));
+            protractor.promise.controlFlow().execute(function() {
+              return client.deletePerson(person.id);
+            });
+            
             personListItem.delete.click();
 
             var errorModalElement = element(by.css('.error-modal'));
