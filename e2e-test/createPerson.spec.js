@@ -49,8 +49,6 @@ describe('CreatePersonPage', function() {
   // TODO: there should be a default avatar image
   // TODO: there should be a randomize avatar button
   // TODO: the randomize avatar button should work
-  // TODO: submitting an empty form should result in validation errors
-  // TODO: submitting a non-empty form should result in a new person
   // TODO: describe "team memberships" editor
 
   it('should have all fields empty', function() {
