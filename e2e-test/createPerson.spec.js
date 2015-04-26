@@ -93,6 +93,14 @@ describe('CreatePersonPage', function() {
       return client.getPeople().then(function(response) {
         var people = response.body;
         expect(people.length).toBe(1);
+
+        var person = people[0];
+        expect(person.name).toBe('John');
+        expect(person.position).toBe('Developer');
+        expect(person.city).toBe('New York');
+        expect(person.state).toBe('NY');
+        expect(person.phone).toBe('+123456789');
+        expect(person.email).toBe('john@john.com');
       });
     });
   });
