@@ -78,13 +78,22 @@ describe('CreatePersonPage', function() {
   });
 
   it('should create a person when all fields are OK', function() {
+    var personDescription = {
+      name: 'John',
+      position: 'Developer',
+      city: 'New York',
+      state: 'NY',
+      phone: '+123456789',
+      email: 'john@john.com'
+    };
+
     browser.get('/people/create');
-    createPersonPage.name.sendKeys('John');
-    createPersonPage.position.sendKeys('Developer');
-    createPersonPage.city.sendKeys('New York');
-    createPersonPage.state.sendKeys('NY');
-    createPersonPage.phone.sendKeys('+123456789');
-    createPersonPage.email.sendKeys('john@john.com');
+    createPersonPage.name.sendKeys(personDescription.name);
+    createPersonPage.position.sendKeys(personDescription.position);
+    createPersonPage.city.sendKeys(personDescription.city);
+    createPersonPage.state.sendKeys(personDescription.state);
+    createPersonPage.phone.sendKeys(personDescription.phone);
+    createPersonPage.email.sendKeys(personDescription.email);
     createPersonPage.create.click();
 
     expect(browser.getLocationAbsUrl()).toBe('/people/1');
@@ -95,12 +104,12 @@ describe('CreatePersonPage', function() {
         expect(people.length).toBe(1);
 
         var person = people[0];
-        expect(person.name).toBe('John');
-        expect(person.position).toBe('Developer');
-        expect(person.city).toBe('New York');
-        expect(person.state).toBe('NY');
-        expect(person.phone).toBe('+123456789');
-        expect(person.email).toBe('john@john.com');
+        expect(person.name).toBe(personDescription.name);
+        expect(person.position).toBe(personDescription.position);
+        expect(person.city).toBe(personDescription.city);
+        expect(person.state).toBe(personDescription.state);
+        expect(person.phone).toBe(personDescription.phone);
+        expect(person.email).toBe(personDescription.email);
       });
     });
   });
