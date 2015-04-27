@@ -20,6 +20,16 @@ var CreatePersonPage = function() {
   this.email = element(by.css('.email input'));
   this.emailError = element(by.css('.email p'));
 
+  this.newMembershipName = element(by.css('#new-membership-name'));
+  this.newMembershipDropdown = element(by.css('ul.dropdown-menu'));
+  this.newMembershipRole = element(by.css('#new-membership-role'));
+  this.addMembership = element(by.css('#add-membership-button'));
+
+  var self = this;
+  this.newMembershipDropdownItem = function(index) {
+    return self.newMembershipDropdown.all(by.css('li')).get(index);
+  };
+
   this.create = element(by.css('#submit-person-button'));
 };
 
@@ -78,6 +88,22 @@ describe('CreatePersonPage', function() {
   });
 
   it('should create a person when all fields are OK', function() {
+    protractor.promise.controlFlow().execute(function() {
+      return client.createTeam({
+        name: 'team A',
+        url: 'http://example.org',
+        slogan: 'team A slogan'
+      });
+    });
+
+    protractor.promise.controlFlow().execute(function() {
+      return client.createTeam({
+        name: 'team B',
+        url: 'http://example.org',
+        slogan: 'team B slogan'
+      });
+    });
+
     var personDescription = {
       name: 'John',
       position: 'Developer',
@@ -94,6 +120,12 @@ describe('CreatePersonPage', function() {
     createPersonPage.state.sendKeys(personDescription.state);
     createPersonPage.phone.sendKeys(personDescription.phone);
     createPersonPage.email.sendKeys(personDescription.email);
+    
+    createPersonPage.newMembershipName.sendKeys('a');
+    createPersonPage.newMembershipDropdownItem(0).click();
+    createPersonPage.newMembershipRole.sendKeys('developer');
+    createPersonPage.addMembership.click();
+
     createPersonPage.create.click();
 
     expect(browser.getLocationAbsUrl()).toBe('/people/1');
@@ -110,6 +142,7 @@ describe('CreatePersonPage', function() {
         expect(person.state).toBe(personDescription.state);
         expect(person.phone).toBe(personDescription.phone);
         expect(person.email).toBe(personDescription.email);
+        expect(person.memberships.length).toBe(1);
       });
     });
   });
