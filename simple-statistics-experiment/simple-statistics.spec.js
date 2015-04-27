@@ -6,6 +6,10 @@ describe('simple-statistics', function() {
     expect(ss.mean([1, 2, 1])).to.be.closeTo(1.333, 0.001);
   });
 
+  it('should calculate median', function() {
+    expect(ss.median([1, 2, 3, 4, 5])).to.equal(3);
+  });
+
   it('should calculate linear regression', function() {
     var originalM = 2;
     var originalB = -3;
