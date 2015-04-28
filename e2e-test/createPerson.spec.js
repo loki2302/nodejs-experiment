@@ -101,8 +101,54 @@ describe('CreatePersonPage', function() {
     });
   });
 
-  describe('"Membrships" editor', function() {
-    it('should work', function() {
+  describe('"Memberships" editor', function() {
+    it('should "Add new membership" fields empty', function() {
+      browser.get('/people/create');
+      expect(createPersonPage.newMembershipName.getText()).toBe('');
+      expect(createPersonPage.newMembershipRole.getText()).toBe('');
+    });
+
+    it('should not allow adding a new membership if the role is not set', function() {
+      protractor.promise.controlFlow().execute(function() {
+        return client.createTeam({
+          name: 'team A',
+          url: 'http://example.org',
+          slogan: 'team A slogan'
+        });
+      });
+
+      browser.get('/people/create');
+      createPersonPage.newMembershipName.sendKeys('a');
+      createPersonPage.newMembershipDropdownItem(0).click();
+      expect(createPersonPage.addMembership.getAttribute('disabled')).not.toBeNull();
+    });
+
+    it('should not allow adding a new membership if the team is not set', function() {
+      browser.get('/people/create');
+      createPersonPage.newMembershipRole.sendKeys('developer');
+      expect(createPersonPage.addMembership.getAttribute('disabled')).not.toBeNull();
+    });
+
+    it('should allow adding a new membership if both team and role are set', function() {
+      protractor.promise.controlFlow().execute(function() {
+        return client.createTeam({
+          name: 'team A',
+          url: 'http://example.org',
+          slogan: 'team A slogan'
+        });
+      });
+
+      browser.get('/people/create');
+      createPersonPage.newMembershipName.sendKeys('a');
+      createPersonPage.newMembershipDropdownItem(0).click();
+      createPersonPage.newMembershipRole.sendKeys('developer');
+      expect(createPersonPage.addMembership.getAttribute('disabled')).toBeNull();
+
+      // TODO: click "add"
+      // TODO: make sure it appears on the list
+    });
+
+    it('should allow removing an existing membership', function() {
       // TODO
     });
   });
