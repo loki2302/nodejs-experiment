@@ -5,6 +5,9 @@ var CreatePersonPage = function() {
   this.name = element(by.css('.name input'));
   this.nameError = element(by.css('.name p'));
 
+  this.avatar = element(by.css('.avatar img'));
+  this.randomizeAvatar = element(by.css('.avatar button'));
+
   this.position = element(by.css('.position input'));
   this.positionError = element(by.css('.position p'));
 
@@ -56,11 +59,6 @@ describe('CreatePersonPage', function() {
     client = new TeambuildrClient('http://localhost:3000/api/');
   });
 
-  // TODO: there should be a default avatar image
-  // TODO: there should be a randomize avatar button
-  // TODO: the randomize avatar button should work
-  // TODO: describe "team memberships" editor
-
   it('should have all fields empty', function() {
     browser.get('/people/create');
     expect(createPersonPage.name.getText()).toBe('');
@@ -69,6 +67,44 @@ describe('CreatePersonPage', function() {
     expect(createPersonPage.state.getText()).toBe('');
     expect(createPersonPage.phone.getText()).toBe('');
     expect(createPersonPage.email.getText()).toBe('');
+  });
+
+  describe('Avatar editor', function() {
+    it('should have a default avatar image and "randomize" button', function() {
+      browser.get('/people/create');
+
+      expect(createPersonPage.avatar.isPresent()).toBe(true);
+      expect(createPersonPage.avatar.getAttribute('src')).toContain('https://');
+
+      expect(createPersonPage.randomizeAvatar.isPresent()).toBe(true);
+    });
+
+    describe('"Randomize" button', function() {
+      it('should work', function() {
+        browser.get('/people/create');
+
+        var originalSrc;
+        protractor.promise.controlFlow().execute(function() {
+          return createPersonPage.avatar.getAttribute('src').then(function(src) {
+            originalSrc = src;
+          });
+        });
+
+        createPersonPage.randomizeAvatar.click();
+
+        protractor.promise.controlFlow().execute(function() {
+          return createPersonPage.avatar.getAttribute('src').then(function(src) {
+            expect(src).not.toBe(originalSrc);
+          });
+        });
+      });
+    });
+  });
+
+  describe('"Membrships" editor', function() {
+    it('should work', function() {
+      // TODO
+    });
   });
 
   it('should have "Create" button', function() {
@@ -120,7 +156,7 @@ describe('CreatePersonPage', function() {
     createPersonPage.state.sendKeys(personDescription.state);
     createPersonPage.phone.sendKeys(personDescription.phone);
     createPersonPage.email.sendKeys(personDescription.email);
-    
+
     createPersonPage.newMembershipName.sendKeys('a');
     createPersonPage.newMembershipDropdownItem(0).click();
     createPersonPage.newMembershipRole.sendKeys('developer');
