@@ -1,6 +1,45 @@
 var appRunnerFactory = require('../be-src/appRunnerFactory');
 var TeambuildrClient = require('../be-test/teambuildrClient');
 
+// TODO: make it require a root element
+var NewMembershipEditor = function() {
+  this.name = element(by.css('#new-membership-name'));
+  this.nameDropdown = element(by.css('ul.dropdown-menu'));
+  this.role = element(by.css('#new-membership-role'));
+  this.add = element(by.css('#add-membership-button'));
+
+  var self = this;
+  this.nameDropdownItem = function(index) {
+    return self.nameDropdown.all(by.css('li')).get(index);
+  };
+};
+
+// TODO: make it require a root element
+var MembershipListEditor = function() {
+  this.membershipCount = function() {
+    return element.all(by.css('.membership')).then(function(elements) {
+      return elements.length;
+    });
+  };
+
+  this.membership = function(index) {
+    return element(by.css('.membership-' + index));
+  };
+
+  var self = this;
+  this.name = function(index) {
+    return self.membership(index).element(by.css('h4'));
+  };
+
+  this.role = function(index) {
+    return self.membership(index).element(by.css('.membership-role'));
+  };
+
+  this.remove = function(index) {
+    return self.membership(index).element(by.css('.remove-membership-button'));
+  };
+};
+
 var CreatePersonPage = function() {
   this.name = element(by.css('.name input'));
   this.nameError = element(by.css('.name p'));
@@ -23,15 +62,8 @@ var CreatePersonPage = function() {
   this.email = element(by.css('.email input'));
   this.emailError = element(by.css('.email p'));
 
-  this.newMembershipName = element(by.css('#new-membership-name'));
-  this.newMembershipDropdown = element(by.css('ul.dropdown-menu'));
-  this.newMembershipRole = element(by.css('#new-membership-role'));
-  this.addMembership = element(by.css('#add-membership-button'));
-
-  var self = this;
-  this.newMembershipDropdownItem = function(index) {
-    return self.newMembershipDropdown.all(by.css('li')).get(index);
-  };
+  this.newMembershipEditor = new NewMembershipEditor();
+  this.membershipListEditor = new MembershipListEditor();
 
   this.create = element(by.css('#submit-person-button'));
 };
@@ -104,8 +136,8 @@ describe('CreatePersonPage', function() {
   describe('"Memberships" editor', function() {
     it('should "Add new membership" fields empty', function() {
       browser.get('/people/create');
-      expect(createPersonPage.newMembershipName.getText()).toBe('');
-      expect(createPersonPage.newMembershipRole.getText()).toBe('');
+      expect(createPersonPage.newMembershipEditor.name.getText()).toBe('');
+      expect(createPersonPage.newMembershipEditor.role.getText()).toBe('');
     });
 
     it('should not allow adding a new membership if the role is not set', function() {
@@ -118,15 +150,15 @@ describe('CreatePersonPage', function() {
       });
 
       browser.get('/people/create');
-      createPersonPage.newMembershipName.sendKeys('a');
-      createPersonPage.newMembershipDropdownItem(0).click();
-      expect(createPersonPage.addMembership.getAttribute('disabled')).not.toBeNull();
+      createPersonPage.newMembershipEditor.name.sendKeys('a');
+      createPersonPage.newMembershipEditor.nameDropdownItem(0).click();
+      expect(createPersonPage.newMembershipEditor.add.getAttribute('disabled')).not.toBeNull();
     });
 
     it('should not allow adding a new membership if the team is not set', function() {
       browser.get('/people/create');
-      createPersonPage.newMembershipRole.sendKeys('developer');
-      expect(createPersonPage.addMembership.getAttribute('disabled')).not.toBeNull();
+      createPersonPage.newMembershipEditor.role.sendKeys('developer');
+      expect(createPersonPage.newMembershipEditor.add.getAttribute('disabled')).not.toBeNull();
     });
 
     it('should allow adding a new membership if both team and role are set', function() {
@@ -139,17 +171,35 @@ describe('CreatePersonPage', function() {
       });
 
       browser.get('/people/create');
-      createPersonPage.newMembershipName.sendKeys('a');
-      createPersonPage.newMembershipDropdownItem(0).click();
-      createPersonPage.newMembershipRole.sendKeys('developer');
-      expect(createPersonPage.addMembership.getAttribute('disabled')).toBeNull();
+      createPersonPage.newMembershipEditor.name.sendKeys('a');
+      createPersonPage.newMembershipEditor.nameDropdownItem(0).click();
+      createPersonPage.newMembershipEditor.role.sendKeys('developer');
+      expect(createPersonPage.newMembershipEditor.add.getAttribute('disabled')).toBeNull();
 
-      // TODO: click "add"
-      // TODO: make sure it appears on the list
+      createPersonPage.newMembershipEditor.add.click();
+      expect(createPersonPage.membershipListEditor.membershipCount()).toBe(1);
+      expect(createPersonPage.membershipListEditor.membership(0)).toBeDefined();
+      expect(createPersonPage.membershipListEditor.name(0).getText()).toBeDefined();
+      expect(createPersonPage.membershipListEditor.role(0).getText()).toBeDefined();
+      expect(createPersonPage.membershipListEditor.remove(0)).toBeDefined();
     });
 
     it('should allow removing an existing membership', function() {
-      // TODO
+      protractor.promise.controlFlow().execute(function() {
+        return client.createTeam({
+          name: 'team A',
+          url: 'http://example.org',
+          slogan: 'team A slogan'
+        });
+      });
+
+      browser.get('/people/create');
+      createPersonPage.newMembershipEditor.name.sendKeys('a');
+      createPersonPage.newMembershipEditor.nameDropdownItem(0).click();
+      createPersonPage.newMembershipEditor.role.sendKeys('developer');
+      createPersonPage.newMembershipEditor.add.click();
+      createPersonPage.membershipListEditor.remove(0).click();
+      expect(createPersonPage.membershipListEditor.membershipCount()).toBe(0);
     });
   });
 
@@ -203,10 +253,10 @@ describe('CreatePersonPage', function() {
     createPersonPage.phone.sendKeys(personDescription.phone);
     createPersonPage.email.sendKeys(personDescription.email);
 
-    createPersonPage.newMembershipName.sendKeys('a');
-    createPersonPage.newMembershipDropdownItem(0).click();
-    createPersonPage.newMembershipRole.sendKeys('developer');
-    createPersonPage.addMembership.click();
+    createPersonPage.newMembershipEditor.name.sendKeys('a');
+    createPersonPage.newMembershipEditor.nameDropdownItem(0).click();
+    createPersonPage.newMembershipEditor.role.sendKeys('developer');
+    createPersonPage.newMembershipEditor.add.click();
 
     createPersonPage.create.click();
 

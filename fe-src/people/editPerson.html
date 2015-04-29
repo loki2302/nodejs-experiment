@@ -54,7 +54,7 @@
             This person does not have any memberships so far.
           </div>
           <div id="got-memberships-container" class="form-group" ng-class="{'has-error': vf.isError('memberships')}" ng-if="person.memberships.length > 0">
-            <div class="media form-group" ng-class="'membership-' + {{$index}}" ng-repeat="membership in person.memberships | orderBy:'team.id'">
+            <div class="media form-group membership" ng-class="'membership-' + {{$index}}" ng-repeat="membership in person.memberships | orderBy:'team.id'">
               <div class="media-left">
                 <a ng-href="/teams/{{membership.team.id}}">
                   <img class="media-object avatar64" ng-src="{{membership.team.avatar}}">
