@@ -17,4 +17,22 @@ describe('lodash', function() {
       'two': { id: 'two', name: 'item two' }
     });
   });
+
+  it('should groupBy', function() {
+    expect(_.groupBy([
+      { name: 'john', says: 'hi' },
+      { name: 'jane', says: 'omg' },
+      { name: 'jane', says: 'wtf' },
+      { name: 'john', says: 'bbq' }
+    ], 'name')).to.deep.equal({
+      'john': [
+        { name: 'john', says: 'hi' },
+        { name: 'john', says: 'bbq' }
+      ],
+      'jane': [
+        { name: 'jane', says: 'omg' },
+        { name: 'jane', says: 'wtf' }
+      ]
+    });
+  });
 });
