@@ -1,16 +1,14 @@
 var appRunnerFactory = require('../be-src/appRunnerFactory');
 var TeambuildrClient = require('../be-test/teambuildrClient');
 
-var MembershipList = function() {
-  // TODO
-};
-
 var ViewPersonPage = function() {
   this.edit = element(by.css('.edit'));
   this.delete = element(by.css('.delete'));
   this.name = element(by.css('.name'));
   this.avatar = element(by.css('.avatar img'));
-  this.memberships = new MembershipList();
+
+  this.noMemberships = element(by.css('#no-memberships-alert'));
+  this.memberships = element(by.css('#got-memberships-container'));
 };
 
 describe('ViewPersonPage', function() {
@@ -75,6 +73,8 @@ describe('ViewPersonPage', function() {
       expect(viewPersonPage.delete.isPresent()).toBe(true);
       expect(viewPersonPage.name.isPresent()).toBe(true);
       expect(viewPersonPage.avatar.isPresent()).toBe(true);
+      expect(viewPersonPage.noMemberships.isPresent()).toBe(true);
+      expect(viewPersonPage.memberships.isPresent()).toBe(false);
 
       expect(viewPersonPage.name.getText()).toBe('John');
     });
