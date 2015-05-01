@@ -8,6 +8,13 @@ describe('lodash', function() {
     })).to.deep.equal([2, 4]);
   });
 
+  it('should reduce', function() {
+    expect(_.reduce([1, 2], function(s, x) {
+      s += x;
+      return s;
+    }, 0)).to.equal(3);
+  });
+
   it('should indexBy', function() {
     expect(_.indexBy([
       { id: 'one', name: 'item one' },
