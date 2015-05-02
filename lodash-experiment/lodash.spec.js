@@ -42,4 +42,12 @@ describe('lodash', function() {
       ]
     });
   });
+
+  it('should remove', function() {
+    var a = [1, 2, 3, 4];
+    expect(_.remove(a, function(x) {
+      return x % 2 === 0;
+    })).to.deep.equal([2, 4]);
+    expect(a).to.deep.equal([1, 3]);
+  });
 });
