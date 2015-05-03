@@ -1,6 +1,29 @@
 var appRunnerFactory = require('../be-src/appRunnerFactory');
 var TeambuildrClient = require('../be-test/teambuildrClient');
 
+var MembershipList = function(root) {
+  var self = this;
+  this.membership = function(index) {
+    return root.element(by.css('.membership-' + index));
+  };
+
+  this.avatar = function(index) {
+    return self.membership(index).element(by.css('img'));
+  };
+
+  this.role = function(index) {
+    return self.membership(index).element(by.css('.role'));
+  };
+
+  this.teamName = function(index) {
+    return self.membership(index).element(by.css('.team-name'));
+  };
+
+  this.teamSlogan = function(index) {
+    return self.membership(index).element(by.css('.team-slogan'));
+  };
+};
+
 var ViewPersonPage = function() {
   this.edit = element(by.css('.edit'));
   this.delete = element(by.css('.delete'));
@@ -9,6 +32,8 @@ var ViewPersonPage = function() {
 
   this.noMemberships = element(by.css('#no-memberships-alert'));
   this.memberships = element(by.css('#got-memberships-container'));
+
+  this.membershipList = new MembershipList(this.memberships);
 };
 
 describe('ViewPersonPage', function() {
@@ -45,9 +70,10 @@ describe('ViewPersonPage', function() {
   });
 
   describe('when there is a person', function() {
+    var personDescription;
     var personId;
     beforeEach(function() {
-      var personDescription = {
+      personDescription = {
         name: 'John',
         avatar: 'http://example.org',
         position: 'Developer',
@@ -77,6 +103,62 @@ describe('ViewPersonPage', function() {
       expect(viewPersonPage.memberships.isPresent()).toBe(false);
 
       expect(viewPersonPage.name.getText()).toBe('John');
+    });
+
+    describe('edit button', function() {
+      it('should work', function() {
+        browser.get('/people/' + personId);
+        expect(viewPersonPage.edit.isPresent()).toBe(true);
+        viewPersonPage.edit.click();
+        expect(browser.getLocationAbsUrl()).toBe('/people/' + personId + '/edit');
+      });
+    });
+
+    describe('delete button', function() {
+      // TODO: click and make sure person disappears
+      // TODO: click and make sure there is an error
+
+      it('should work', function() {
+        browser.get('/people/' + personId);
+        expect(viewPersonPage.delete.isPresent()).toBe(true);
+      });
+    });
+
+    describe('when it has memberships', function() {
+      beforeEach(function() {
+        var teamAId;
+        protractor.promise.controlFlow().execute(function() {
+          return client.createTeam({
+            name: 'team A',
+            url: 'http://example.org',
+            slogan: 'team A slogan'
+          }).then(function(team) {
+            teamAId = team.body.id;
+            return true;
+          });
+        });
+
+        protractor.promise.controlFlow().execute(function() {
+          personDescription.id = personId;
+          personDescription.memberships = [
+            { team: { id: teamAId }, role: 'developer' }
+          ];
+          return client.updatePerson(personDescription);
+        });
+      });
+
+      it('should work', function() {
+        browser.get('/people/' + personId);
+
+        expect(viewPersonPage.noMemberships.isPresent()).toBe(false);
+        expect(viewPersonPage.memberships.isPresent()).toBe(true);
+
+        expect(viewPersonPage.membershipList.membership(0).isPresent()).toBe(true);
+        expect(viewPersonPage.membershipList.avatar(0).getAttribute('src')).toContain('gravatar');
+        expect(viewPersonPage.membershipList.role(0).getText()).toBe('developer');
+        expect(viewPersonPage.membershipList.teamName(0).getText()).toBe('team A');
+        expect(viewPersonPage.membershipList.teamSlogan(0).getText()).toBe('team A slogan');
+      });
     });
   });
 });

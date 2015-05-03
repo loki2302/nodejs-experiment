@@ -24,15 +24,15 @@
       This person does not belong to any teams so far.
     </div>
     <div id="got-memberships-container" ng-if="person.memberships.length > 0">
-      <div class="media" ng-class="'membership' + {{$index}}" ng-repeat="membership in person.memberships | orderBy:'team.id'">
+      <div class="media membership" ng-class="'membership-' + {{$index}}" ng-repeat="membership in person.memberships | orderBy:'team.id'">
         <div class="media-left">
           <a ng-href="/teams/{{membership.team.id}}">
             <img class="media-object avatar64" ng-src="{{membership.team.avatar}}">
           </a>
         </div>
         <div class="media-body">
-          <h4 class="media-heading">{{membership.role}} at <a href="/teams/{{membership.team.id}}">{{membership.team.name}}</a></h4>
-          <p class="text-muted">{{membership.team.slogan}}</p>
+          <h4 class="media-heading"><span class="role">{{membership.role}}</span> at <a href="/teams/{{membership.team.id}}" class="team-name">{{membership.team.name}}</a></h4>
+          <p class="text-muted team-slogan">{{membership.team.slogan}}</p>
         </div>
       </div>
     </div>
