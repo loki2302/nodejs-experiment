@@ -1,10 +1,13 @@
 var appRunnerFactory = require('../be-src/appRunnerFactory');
 var TeambuildrClient = require('../be-test/teambuildrClient');
 
-var MembershipList = function(root) {
+var MembershipList = function() {
+  this.noMembershipsAlert = element(by.css('#no-memberships-alert'));
+  this.membershipsContainer = element(by.css('#got-memberships-container'));
+
   var self = this;
   this.membership = function(index) {
-    return root.element(by.css('.membership-' + index));
+    return self.membershipsContainer.element(by.css('.membership-' + index));
   };
 
   this.avatar = function(index) {
@@ -29,11 +32,7 @@ var ViewPersonPage = function() {
   this.delete = element(by.css('.delete'));
   this.name = element(by.css('.name'));
   this.avatar = element(by.css('.avatar img'));
-
-  this.noMemberships = element(by.css('#no-memberships-alert'));
-  this.memberships = element(by.css('#got-memberships-container'));
-
-  this.membershipList = new MembershipList(this.memberships);
+  this.membershipList = new MembershipList();
 };
 
 describe('ViewPersonPage', function() {
@@ -99,8 +98,8 @@ describe('ViewPersonPage', function() {
       expect(viewPersonPage.delete.isPresent()).toBe(true);
       expect(viewPersonPage.name.isPresent()).toBe(true);
       expect(viewPersonPage.avatar.isPresent()).toBe(true);
-      expect(viewPersonPage.noMemberships.isPresent()).toBe(true);
-      expect(viewPersonPage.memberships.isPresent()).toBe(false);
+      expect(viewPersonPage.membershipList.noMembershipsAlert.isPresent()).toBe(true);
+      expect(viewPersonPage.membershipList.membershipsContainer.isPresent()).toBe(false);
 
       expect(viewPersonPage.name.getText()).toBe('John');
     });
@@ -150,8 +149,8 @@ describe('ViewPersonPage', function() {
       it('should work', function() {
         browser.get('/people/' + personId);
 
-        expect(viewPersonPage.noMemberships.isPresent()).toBe(false);
-        expect(viewPersonPage.memberships.isPresent()).toBe(true);
+        expect(viewPersonPage.membershipList.noMembershipsAlert.isPresent()).toBe(false);
+        expect(viewPersonPage.membershipList.membershipsContainer.isPresent()).toBe(true);
 
         expect(viewPersonPage.membershipList.membership(0).isPresent()).toBe(true);
         expect(viewPersonPage.membershipList.avatar(0).getAttribute('src')).toContain('gravatar');
