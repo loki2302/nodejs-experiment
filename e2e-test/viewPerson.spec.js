@@ -1,6 +1,7 @@
 var appRunnerFactory = require('../be-src/appRunnerFactory');
 var TeambuildrClient = require('../be-test/teambuildrClient');
 var ErrorModal = require('./errorModal.js');
+var NotFoundPage = require('./notFoundPage.js');
 
 var MembershipList = function() {
   this.noMembershipsAlert = element(by.css('#no-memberships-alert'));
@@ -34,10 +35,6 @@ var ViewPersonPage = function() {
   this.name = element(by.css('.name'));
   this.avatar = element(by.css('.avatar img'));
   this.membershipList = new MembershipList();
-};
-
-var NotFoundPage = function() {
-  this.errorContainer = element(by.css('.container.not-found'));
 };
 
 describe('ViewPersonPage', function() {
