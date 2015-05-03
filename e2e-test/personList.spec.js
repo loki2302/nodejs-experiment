@@ -1,5 +1,6 @@
 var appRunnerFactory = require('../be-src/appRunnerFactory');
 var TeambuildrClient = require('../be-test/teambuildrClient');
+var ErrorModal = require('./errorModal.js');
 
 var PersonListPage = function() {
   this.addPerson = element(by.css('#add-person'));
@@ -15,12 +16,6 @@ var PersonListItem = function(element) {
   this.position = element.element(by.css('.position'));
   this.edit = element.element(by.css('.edit'));
   this.delete = element.element(by.css('.delete'));
-};
-
-var ErrorModal = function(element) {
-  this.title = element.element(by.css('.modal-title'));
-  this.message = element.element(by.css('.modal-body'));
-  this.ok = element.element(by.css('.ok'));
 };
 
 describe('PersonList', function() {
@@ -136,16 +131,14 @@ describe('PersonList', function() {
             protractor.promise.controlFlow().execute(function() {
               return client.deletePerson(person.id);
             });
-            
+
             personListItem.delete.click();
 
-            var errorModalElement = element(by.css('.error-modal'));
-            expect(errorModalElement.isPresent()).toBe(true);
-
-            var errorModal = new ErrorModal(errorModalElement);
+            var errorModal = new ErrorModal();
+            expect(errorModal.element.isPresent()).toBe(true);
             expect(errorModal.message.getText()).toContain('too long');
             errorModal.ok.click();
-            expect(errorModalElement.isPresent()).toBe(false);
+            expect(errorModal.element.isPresent()).toBe(false);
 
             expect(personListPage.noPeopleAlert.isPresent()).toBe(true);
             expect(personListPage.peopleContainer.isPresent()).toBe(false);

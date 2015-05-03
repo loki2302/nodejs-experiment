@@ -1,5 +1,6 @@
 var appRunnerFactory = require('../be-src/appRunnerFactory');
 var TeambuildrClient = require('../be-test/teambuildrClient');
+var ErrorModal = require('./errorModal.js');
 
 var MembershipList = function() {
   this.noMembershipsAlert = element(by.css('#no-memberships-alert'));
@@ -35,6 +36,10 @@ var ViewPersonPage = function() {
   this.membershipList = new MembershipList();
 };
 
+var NotFoundPage = function() {
+  this.errorContainer = element(by.css('.container.not-found'));
+};
+
 describe('ViewPersonPage', function() {
   var appRunner;
   beforeEach(function(done) {
@@ -52,19 +57,18 @@ describe('ViewPersonPage', function() {
   });
 
   var viewPersonPage;
+  var notFoundPage;
   var client;
   beforeEach(function() {
     viewPersonPage = new ViewPersonPage();
+    notFoundPage = new NotFoundPage();
     client = new TeambuildrClient('http://localhost:3000/api/');
   });
 
   describe('when there is no person', function() {
     it('should not be possible to look at it', function() {
       browser.get('/people/123');
-
-      // TODO: refactor - some sort of "404 recognizer"?
-      expect(element(by.css('.container h1')).isPresent()).toBe(true);
-      expect(element(by.css('.container h1')).getText()).toContain('404');
+      expect(notFoundPage.errorContainer.isPresent()).toBe(true);
     });
   });
 
@@ -91,9 +95,7 @@ describe('ViewPersonPage', function() {
 
     it('should be possible to look at it', function() {
       browser.get('/people/' + personId);
-
-      // TODO: refactor - some sort of "404 recognizer"?
-      // expect(element(by.css('.container h1')).isPresent()).toBe(false);
+      expect(notFoundPage.errorContainer.isPresent()).toBe(false);
       expect(viewPersonPage.edit.isPresent()).toBe(true);
       expect(viewPersonPage.delete.isPresent()).toBe(true);
       expect(viewPersonPage.name.isPresent()).toBe(true);
@@ -105,7 +107,7 @@ describe('ViewPersonPage', function() {
     });
 
     describe('edit button', function() {
-      it('should work', function() {
+      it('should navigate to edit person page', function() {
         browser.get('/people/' + personId);
         expect(viewPersonPage.edit.isPresent()).toBe(true);
         viewPersonPage.edit.click();
@@ -114,12 +116,32 @@ describe('ViewPersonPage', function() {
     });
 
     describe('delete button', function() {
-      // TODO: click and make sure person disappears
-      // TODO: click and make sure there is an error
-
-      it('should work', function() {
+      it('should exist', function() {
         browser.get('/people/' + personId);
         expect(viewPersonPage.delete.isPresent()).toBe(true);
+      });
+
+      it('should delete the person if person still exists', function() {
+        browser.get('/people/' + personId);
+        viewPersonPage.delete.click();
+        expect(browser.getLocationAbsUrl()).toBe('/people');
+      });
+
+      it('should display an error popup if person does not exist', function() {
+        browser.get('/people/' + personId);
+
+        protractor.promise.controlFlow().execute(function() {
+          return client.deletePerson(personId);
+        });
+
+        viewPersonPage.delete.click();
+
+        var errorModal = new ErrorModal();
+        expect(errorModal.element.isPresent()).toBe(true);
+        expect(errorModal.message.getText()).toContain('too long');
+        errorModal.ok.click();
+        expect(errorModal.element.isPresent()).toBe(false);
+        expect(browser.getLocationAbsUrl()).toBe('/people');
       });
     });
 
