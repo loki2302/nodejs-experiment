@@ -121,18 +121,40 @@ describe('EditPersonPage', function() {
     });
 
     it('should not be possible update the person when there are validation errors', function() {
-      // TODO
+      browser.get('/people/' + personId + '/edit');
+      editPersonPage.personEditor.name.clear();
+      editPersonPage.personEditor.position.clear();
+      editPersonPage.personEditor.city.clear();
+      editPersonPage.personEditor.state.clear();
+      editPersonPage.personEditor.phone.clear();
+      editPersonPage.personEditor.email.clear();
+
+      editPersonPage.update.click();
+
+      expect(editPersonPage.personEditor.nameError.isPresent()).toBe(true);
+      expect(editPersonPage.personEditor.positionError.isPresent()).toBe(true);
+      expect(editPersonPage.personEditor.cityError.isPresent()).toBe(true);
+      expect(editPersonPage.personEditor.stateError.isPresent()).toBe(true);
+      expect(editPersonPage.personEditor.phoneError.isPresent()).toBe(true);
+      expect(editPersonPage.personEditor.emailError.isPresent()).toBe(true);
     });
 
     describe('and this person suddenly disappears', function() {
-      beforeEach(function() {
-        // TODO: delete person by personId
-      });
-
       it('should display an error popup', function() {
-        // TODO: click update
-        // TODO: make sure there is an error
-        // TODO: make sure it navigates to /people
+        browser.get('/people/' + personId + '/edit');
+
+        protractor.promise.controlFlow().execute(function() {
+          return client.deletePerson(personId);
+        });
+
+        editPersonPage.update.click();
+
+        var errorModal = new ErrorModal();
+        expect(errorModal.element.isPresent()).toBe(true);
+        expect(errorModal.message.getText()).toContain('too long');
+        errorModal.ok.click();
+        expect(errorModal.element.isPresent()).toBe(false);
+        expect(browser.getLocationAbsUrl()).toBe('/people');
       });
     });
   });
