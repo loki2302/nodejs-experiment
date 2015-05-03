@@ -73,7 +73,8 @@ describe('EditPersonPage', function() {
       expect(editPersonPage.personEditor.phone.getAttribute('value')).toBe(personDescription.phone);
       expect(editPersonPage.personEditor.email.getAttribute('value')).toBe(personDescription.email);
 
-      // TODO: check if there is update button
+      expect(editPersonPage.update.isPresent()).toBe(true);
+
       // TODO: check if there membership editor
     });
 
@@ -81,10 +82,47 @@ describe('EditPersonPage', function() {
     // TODO: check memberships editor
 
     it('should be possible to update the person', function() {
-      // TODO: modify field values and click update
+      browser.get('/people/' + personId + '/edit');
+
+      var updatedPersonDescription = {
+        name: personDescription.name + '1',
+        avatar: 'http://example2.org',
+        position: personDescription.position + '1',
+        city: personDescription.city + '1',
+        state: personDescription.state + '1',
+        phone: personDescription.phone + '1',
+        email: 'john2@john.com'
+      };
+
+      editPersonPage.personEditor.name.clear().sendKeys(updatedPersonDescription.name);
+      editPersonPage.personEditor.position.clear().sendKeys(updatedPersonDescription.position);
+      editPersonPage.personEditor.city.clear().sendKeys(updatedPersonDescription.city);
+      editPersonPage.personEditor.state.clear().sendKeys(updatedPersonDescription.state);
+      editPersonPage.personEditor.phone.clear().sendKeys(updatedPersonDescription.phone);
+      editPersonPage.personEditor.email.clear().sendKeys(updatedPersonDescription.email);
+      // TODO: add membership
+
+      editPersonPage.update.click();
+
+      expect(browser.getLocationAbsUrl()).toBe('/people/' + personId);
+
+      protractor.promise.controlFlow().execute(function() {
+        return client.getPerson(personId).then(function(response) {
+          var person = response.body;
+          expect(person.name).toBe(updatedPersonDescription.name);
+          expect(person.position).toBe(updatedPersonDescription.position);
+          expect(person.city).toBe(updatedPersonDescription.city);
+          expect(person.state).toBe(updatedPersonDescription.state);
+          expect(person.phone).toBe(updatedPersonDescription.phone);
+          expect(person.email).toBe(updatedPersonDescription.email);
+          expect(person.memberships.length).toBe(0); // TODO
+        });
+      });
     });
 
-    // TODO: check validation errors when all fields are empty
+    it('should not be possible update the person when there are validation errors', function() {
+      // TODO
+    });
 
     describe('and this person suddenly disappears', function() {
       beforeEach(function() {
