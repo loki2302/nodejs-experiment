@@ -50,4 +50,16 @@ describe('lodash', function() {
     })).to.deep.equal([2, 4]);
     expect(a).to.deep.equal([1, 3]);
   });
+
+  it('should where', function() {
+    expect(_.where([
+      { language: 'JavaScript', score: 1 },
+      { language: 'C#', score: 10 },
+      { language: 'Java', score: 8 },
+      { language: 'Groovy', score: 8 }
+    ], { score: 8 })).to.deep.equal([
+      { language: 'Java', score: 8 },
+      { language: 'Groovy', score: 8 }
+    ]);
+  });
 });
