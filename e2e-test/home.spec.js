@@ -45,6 +45,7 @@ describe('Home', function() {
 
     describe('when there is 1 team', function() {
       beforeEach(function(done) {
+        // TODO: use protractor execution flow instead of chaining/done
         client.createTeam({
           name: 'team 1',
           url: 'http://example.org',
@@ -60,6 +61,7 @@ describe('Home', function() {
 
     describe('when there are 2 teams', function() {
       beforeEach(function(done) {
+        // TODO: use protractor execution flow instead of chaining/done
         client.createTeam({
           name: 'team 1',
           url: 'http://example1.org',

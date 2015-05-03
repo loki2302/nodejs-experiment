@@ -1,6 +1,6 @@
 var appRunnerFactory = require('../be-src/appRunnerFactory');
 
-describe('Dummy', function() {
+describe('General', function() {
   var appRunner;
   beforeEach(function(done) {
     appRunnerFactory().then(function(runner) {

@@ -40,6 +40,7 @@ describe('CreatePersonPage', function() {
     expect(createPersonPage.personEditor.email.getText()).toBe('');
   });
 
+  // TODO: how do I reuse the whole thing with editPerson page?
   describe('Avatar editor', function() {
     it('should have a default avatar image and "randomize" button', function() {
       browser.get('/people/create');
@@ -71,6 +72,7 @@ describe('CreatePersonPage', function() {
     });
   });
 
+  // TODO: how do I reuse the whole thing with editPerson page?
   describe('"Memberships" editor', function() {
     it('should "Add new membership" fields empty', function() {
       browser.get('/people/create');
@@ -164,14 +166,6 @@ describe('CreatePersonPage', function() {
         name: 'team A',
         url: 'http://example.org',
         slogan: 'team A slogan'
-      });
-    });
-
-    protractor.promise.controlFlow().execute(function() {
-      return client.createTeam({
-        name: 'team B',
-        url: 'http://example.org',
-        slogan: 'team B slogan'
       });
     });
 
