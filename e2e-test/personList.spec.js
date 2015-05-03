@@ -1,6 +1,6 @@
 var appRunnerFactory = require('../be-src/appRunnerFactory');
 var TeambuildrClient = require('../be-test/teambuildrClient');
-var ErrorModal = require('./errorModal.js');
+var ErrorModal = require('./uiMaps/errorModal.js');
 
 var PersonListPage = function() {
   this.addPerson = element(by.css('#add-person'));

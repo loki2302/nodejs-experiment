@@ -1,6 +1,6 @@
 var appRunnerFactory = require('../be-src/appRunnerFactory');
 var TeambuildrClient = require('../be-test/teambuildrClient');
-var PersonEditor = require('./personEditor.js');
+var PersonEditor = require('./uiMaps/personEditor.js');
 
 var CreatePersonPage = function() {
   this.personEditor = new PersonEditor();
