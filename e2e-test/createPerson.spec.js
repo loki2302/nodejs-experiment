@@ -1,6 +1,7 @@
 var appRunnerFactory = require('../be-src/appRunnerFactory');
 var TeambuildrClient = require('../be-test/teambuildrClient');
 var PersonEditor = require('./uiMaps/personEditor.js');
+var applyAvatarEditorTests = require('./avatarEditor.specTemplate');
 
 var CreatePersonPage = function() {
   this.personEditor = new PersonEditor();
@@ -40,35 +41,16 @@ describe('CreatePersonPage', function() {
     expect(createPersonPage.personEditor.email.getText()).toBe('');
   });
 
-  // TODO: how do I reuse the whole thing with editPerson page?
   describe('Avatar editor', function() {
-    it('should have a default avatar image and "randomize" button', function() {
+    beforeEach(function() {
       browser.get('/people/create');
-
-      expect(createPersonPage.personEditor.avatar.isPresent()).toBe(true);
-      expect(createPersonPage.personEditor.avatar.getAttribute('src')).toContain('https://');
-      expect(createPersonPage.personEditor.randomizeAvatar.isPresent()).toBe(true);
     });
 
-    describe('"Randomize" button', function() {
-      it('should work', function() {
-        browser.get('/people/create');
-
-        var originalSrc;
-        protractor.promise.controlFlow().execute(function() {
-          return createPersonPage.personEditor.avatar.getAttribute('src').then(function(src) {
-            originalSrc = src;
-          });
-        });
-
-        createPersonPage.personEditor.randomizeAvatar.click();
-
-        protractor.promise.controlFlow().execute(function() {
-          return createPersonPage.personEditor.avatar.getAttribute('src').then(function(src) {
-            expect(src).not.toBe(originalSrc);
-          });
-        });
-      });
+    applyAvatarEditorTests(function() {
+      return {
+        avatar: createPersonPage.personEditor.avatar,
+        randomizeAvatar: createPersonPage.personEditor.randomizeAvatar
+      };
     });
   });
 

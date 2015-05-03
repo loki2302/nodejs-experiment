@@ -3,6 +3,7 @@ var TeambuildrClient = require('../be-test/teambuildrClient');
 var ErrorModal = require('./uiMaps/errorModal.js');
 var NotFoundPage = require('./uiMaps/notFoundPage.js');
 var PersonEditor = require('./uiMaps/personEditor.js');
+var applyAvatarEditorTests = require('./avatarEditor.specTemplate');
 
 var EditPersonPage = function() {
   this.personEditor = new PersonEditor();
@@ -93,7 +94,19 @@ describe('EditPersonPage', function() {
       expect(editPersonPage.update.isPresent()).toBe(true);
     });
 
-    // TODO: check avatar editor
+    describe('Avatar editor', function() {
+      beforeEach(function() {
+        browser.get('/people/' + personId + '/edit');
+      });
+
+      applyAvatarEditorTests(function() {
+        return {
+          avatar: editPersonPage.personEditor.avatar,
+          randomizeAvatar: editPersonPage.personEditor.randomizeAvatar
+        };
+      });
+    });
+
     // TODO: check memberships editor
 
     it('should be possible to update the person', function() {
