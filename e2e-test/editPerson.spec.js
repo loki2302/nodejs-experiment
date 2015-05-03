@@ -45,17 +45,32 @@ describe('EditPersonPage', function() {
     var personDescription;
     var personId;
     beforeEach(function() {
-      personDescription = {
-        name: 'John',
-        avatar: 'http://example.org',
-        position: 'Developer',
-        city: 'New York',
-        state: 'NY',
-        phone: '+123456789',
-        email: 'john@john.com'
-      };
+      var teamAId;
+      protractor.promise.controlFlow().execute(function() {
+        return client.createTeam({
+          name: 'team A',
+          url: 'http://example.org',
+          slogan: 'team A slogan'
+        }).then(function(team) {
+          teamAId = team.body.id;
+          return true;
+        });
+      });
 
       protractor.promise.controlFlow().execute(function() {
+        personDescription = {
+          name: 'John',
+          avatar: 'http://example.org',
+          position: 'Developer',
+          city: 'New York',
+          state: 'NY',
+          phone: '+123456789',
+          email: 'john@john.com',
+          memberships: [
+            { team: { id: teamAId }, role: 'developer' }
+          ]
+        };
+
         return client.createPerson(personDescription).then(function(response) {
           personId = response.body.id;
         });
@@ -72,10 +87,10 @@ describe('EditPersonPage', function() {
       expect(editPersonPage.personEditor.state.getAttribute('value')).toBe(personDescription.state);
       expect(editPersonPage.personEditor.phone.getAttribute('value')).toBe(personDescription.phone);
       expect(editPersonPage.personEditor.email.getAttribute('value')).toBe(personDescription.email);
+      expect(editPersonPage.personEditor.email.getAttribute('value')).toBe(personDescription.email);
+      expect(editPersonPage.personEditor.membershipListEditor.membershipCount()).toBe(1);
 
       expect(editPersonPage.update.isPresent()).toBe(true);
-
-      // TODO: check if there membership editor
     });
 
     // TODO: check avatar editor
@@ -100,7 +115,7 @@ describe('EditPersonPage', function() {
       editPersonPage.personEditor.state.clear().sendKeys(updatedPersonDescription.state);
       editPersonPage.personEditor.phone.clear().sendKeys(updatedPersonDescription.phone);
       editPersonPage.personEditor.email.clear().sendKeys(updatedPersonDescription.email);
-      // TODO: add membership
+      editPersonPage.personEditor.membershipListEditor.remove(0).click();
 
       editPersonPage.update.click();
 
@@ -115,7 +130,7 @@ describe('EditPersonPage', function() {
           expect(person.state).toBe(updatedPersonDescription.state);
           expect(person.phone).toBe(updatedPersonDescription.phone);
           expect(person.email).toBe(updatedPersonDescription.email);
-          expect(person.memberships.length).toBe(0); // TODO
+          expect(person.memberships.length).toBe(0);
         });
       });
     });
