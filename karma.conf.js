@@ -18,7 +18,7 @@ module.exports = function(config) {
       'fe-src/**/*.html': ['ng-html2js']
     },
     autowatch: true,
-    frameworks: ['jasmine'], // TODO: should I use Mocha/Chai here?
+    frameworks: ['jasmine'],
     plugins: [
       'karma-chrome-launcher',
       'karma-firefox-launcher',
