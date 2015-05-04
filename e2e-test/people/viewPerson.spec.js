@@ -59,7 +59,7 @@ describe('ViewPersonPage', function() {
   beforeEach(function() {
     viewPersonPage = new ViewPersonPage();
     notFoundPage = new NotFoundPage();
-    client = new TeambuildrClient('http://localhost:3000/api/');
+    client = new TeambuildrClient(browser.params.apiUrl);
   });
 
   describe('when there is no person', function() {

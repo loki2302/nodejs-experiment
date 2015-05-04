@@ -29,7 +29,7 @@ describe('CreatePersonPage', function() {
   var client;
   beforeEach(function() {
     createPersonPage = new CreatePersonPage();
-    client = new TeambuildrClient('http://localhost:3000/api/');
+    client = new TeambuildrClient(browser.params.apiUrl);
   });
 
   it('should have all fields empty', function() {

@@ -38,7 +38,7 @@ describe('PersonList', function() {
   var client;
   beforeEach(function() {
     personListPage = new PersonListPage();
-    client = new TeambuildrClient('http://localhost:3000/api/');
+    client = new TeambuildrClient(browser.params.apiUrl);
   });
 
   describe('when there are no people', function() {
