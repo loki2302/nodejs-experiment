@@ -124,7 +124,6 @@ describe('Teambuildr API', function() {
 
       describe('when there are many people', function() {
         beforeEach(function* () {
-          // how do I forEach loop here?
           yield client.createPerson(makePerson('john'));
           yield client.createPerson(makePerson('joe'));
           yield client.createPerson(makePerson('jonathan'));
@@ -481,7 +480,7 @@ describe('Teambuildr API', function() {
         expect(response.body.memberships).to.exist;
       });
 
-      // TODO: Sequelize doesn't seem to apply validation to the 'through' thing
+      // Sequelize doesn't seem to apply validation to the 'through' thing
       // https://github.com/sequelize/sequelize/issues/3569
       xit('should return a validation error if roles are not specified', function* () {
         var response = yield client.createPerson({
@@ -505,7 +504,7 @@ describe('Teambuildr API', function() {
         });
 
         expect(response.statusCode).to.equal(400);
-        //expect(response.body.memberships).to.exist;
+        // expect(response.body.memberships).to.exist;
       });
     });
 
