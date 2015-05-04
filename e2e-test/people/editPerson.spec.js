@@ -30,18 +30,8 @@ describeTeambuildr('EditPersonPage', function() {
     var personDescription;
     var personId;
     beforeEach(function() {
-      var teamADescription = makeTeamDescription(0);
-
-      var teamAId;
-      await(function() {
-        return client.createTeam(teamADescription).then(function(team) {
-          teamAId = team.body.id;
-        });
-      });
-
       await(function() {
         personDescription = makePersonDescription(0);
-
         return client.createPerson(personDescription).then(function(response) {
           personId = response.body.id;
         });
