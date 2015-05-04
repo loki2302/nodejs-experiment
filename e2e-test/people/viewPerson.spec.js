@@ -1,5 +1,6 @@
 var ErrorModal = require('../uiMaps/errorModal.js');
 var NotFoundPage = require('../uiMaps/notFoundPage.js');
+var makePersonDescription = require('./makePersonDescription');
 
 var MembershipList = function() {
   this.noMembershipsAlert = element(by.css('#no-memberships-alert'));
@@ -54,16 +55,7 @@ describeTeambuildr('ViewPersonPage', function() {
     var personDescription;
     var personId;
     beforeEach(function() {
-      personDescription = {
-        name: 'John',
-        avatar: 'http://example.org',
-        position: 'Developer',
-        city: 'New York',
-        state: 'NY',
-        phone: '+123456789',
-        email: 'john@john.com'
-      };
-
+      personDescription = makePersonDescription(0);
       await(function() {
         return client.createPerson(personDescription).then(function(response) {
           personId = response.body.id;
@@ -81,7 +73,7 @@ describeTeambuildr('ViewPersonPage', function() {
       expect(viewPersonPage.membershipList.noMembershipsAlert.isPresent()).toBe(true);
       expect(viewPersonPage.membershipList.membershipsContainer.isPresent()).toBe(false);
 
-      expect(viewPersonPage.name.getText()).toBe('John');
+      expect(viewPersonPage.name.getText()).toBe(personDescription.name);
     });
 
     describe('edit button', function() {

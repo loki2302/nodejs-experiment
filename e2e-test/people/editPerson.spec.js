@@ -1,6 +1,7 @@
 var ErrorModal = require('../uiMaps/errorModal.js');
 var NotFoundPage = require('../uiMaps/notFoundPage.js');
 var PersonEditor = require('./uiMaps/personEditor.js');
+var makePersonDescription = require('./makePersonDescription');
 var applyAvatarEditorTests = require('./avatarEditor.specTemplate');
 var applyMembershipsEditorTests = require('./membershipsEditor.specTemplate');
 
@@ -41,15 +42,7 @@ describeTeambuildr('EditPersonPage', function() {
       });
 
       await(function() {
-        personDescription = {
-          name: 'John',
-          avatar: 'http://example.org',
-          position: 'Developer',
-          city: 'New York',
-          state: 'NY',
-          phone: '+123456789',
-          email: 'john@john.com'
-        };
+        personDescription = makePersonDescription(0);
 
         return client.createPerson(personDescription).then(function(response) {
           personId = response.body.id;
@@ -99,7 +92,7 @@ describeTeambuildr('EditPersonPage', function() {
       });
     });
 
-    it('should be possible to update the person', function() {      
+    it('should be possible to update the person', function() {
       await(function() {
         return client.createTeam({
           name: 'team A',
@@ -110,15 +103,7 @@ describeTeambuildr('EditPersonPage', function() {
 
       browser.get('/people/' + personId + '/edit');
 
-      var updatedPersonDescription = {
-        name: personDescription.name + '1',
-        avatar: 'http://example2.org',
-        position: personDescription.position + '1',
-        city: personDescription.city + '1',
-        state: personDescription.state + '1',
-        phone: personDescription.phone + '1',
-        email: 'john2@john.com'
-      };
+      var updatedPersonDescription = makePersonDescription(1);
 
       var personEditor = editPersonPage.personEditor;
       personEditor.name.clear().sendKeys(updatedPersonDescription.name);

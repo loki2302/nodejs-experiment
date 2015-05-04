@@ -1,4 +1,5 @@
 var ErrorModal = require('../uiMaps/errorModal.js');
+var makePersonDescription = require('./makePersonDescription');
 
 var PersonListPage = function() {
   this.addPerson = element(by.css('#add-person'));
@@ -42,15 +43,8 @@ describeTeambuildr('PersonList', function() {
     var person;
     beforeEach(function() {
       await(function() {
-        return client.createPerson({
-          name: 'john',
-          position: 'web hacker',
-          city: 'New York',
-          state: 'NY',
-          phone: '+123456789',
-          avatar: 'http://example.org',
-          email: 'someone@example.org'
-        }).then(function(response) {
+        var personDescription = makePersonDescription(0);
+        return client.createPerson(personDescription).then(function(response) {
           person = response.body;
         });
       });
