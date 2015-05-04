@@ -26,7 +26,7 @@
             There are no members in this team so far.
           </div>
           <div id="got-members-container" class="form-group" ng-class="{'has-error': vf.isError('members')}" ng-if="team.members.length > 0">
-            <div class="media form-group" ng-class="'member-' + {{$index}}" ng-repeat="member in team.members | orderBy:'person.id'">
+            <div class="media form-group member" ng-class="'member-' + {{$index}}" ng-repeat="member in team.members | orderBy:'person.id'">
               <div class="media-left">
                 <a ng-href="/people/{{member.person.id}}">
                   <img class="media-object avatar64" ng-src="{{member.person.avatar}}">
