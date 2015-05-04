@@ -1,7 +1,7 @@
-var appRunnerFactory = require('../be-src/appRunnerFactory');
-var TeambuildrClient = require('../be-test/teambuildrClient');
-var ErrorModal = require('./uiMaps/errorModal.js');
-var NotFoundPage = require('./uiMaps/notFoundPage.js');
+var appRunnerFactory = require('../../be-src/appRunnerFactory');
+var TeambuildrClient = require('../../be-test/teambuildrClient');
+var ErrorModal = require('../uiMaps/errorModal.js');
+var NotFoundPage = require('../uiMaps/notFoundPage.js');
 
 var MembershipList = function() {
   this.noMembershipsAlert = element(by.css('#no-memberships-alert'));

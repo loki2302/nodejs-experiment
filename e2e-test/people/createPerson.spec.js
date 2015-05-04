@@ -1,5 +1,5 @@
-var appRunnerFactory = require('../be-src/appRunnerFactory');
-var TeambuildrClient = require('../be-test/teambuildrClient');
+var appRunnerFactory = require('../../be-src/appRunnerFactory');
+var TeambuildrClient = require('../../be-test/teambuildrClient');
 var PersonEditor = require('./uiMaps/personEditor.js');
 var applyAvatarEditorTests = require('./avatarEditor.specTemplate');
 var applyMembershipsEditorTests = require('./membershipsEditor.specTemplate');
