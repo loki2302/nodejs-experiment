@@ -1,8 +1,4 @@
-var applyAppRunner = require('./applyAppRunner');
-
-describe('General', function() {
-  applyAppRunner();
-
+describeTeambuildr('General', function() {
   describe('A random route', function() {
     it('should result in 404', function() {
       browser.get('/a-random-route');

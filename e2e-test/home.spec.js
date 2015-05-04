@@ -1,4 +1,3 @@
-var applyAppRunner = require('./applyAppRunner');
 var TeambuildrClient = require('../be-test/teambuildrClient');
 
 var HomePage = function() {
@@ -6,9 +5,7 @@ var HomePage = function() {
   this.personCount = element(by.css('#personCount'));
 };
 
-describe('Home', function() {
-  applyAppRunner();
-
+describeTeambuildr('Home', function() {
   var homePage;
   var client;
   beforeEach(function() {

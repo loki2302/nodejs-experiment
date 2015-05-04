@@ -1,4 +1,3 @@
-var applyAppRunner = require('../applyAppRunner');
 var TeambuildrClient = require('../../be-test/teambuildrClient');
 var PersonEditor = require('./uiMaps/personEditor');
 var applyAvatarEditorTests = require('./avatarEditor.specTemplate');
@@ -9,9 +8,7 @@ var CreatePersonPage = function() {
   this.create = element(by.css('#submit-person-button'));
 };
 
-describe('CreatePersonPage', function() {
-  applyAppRunner();
-
+describeTeambuildr('CreatePersonPage', function() {
   var createPersonPage;
   var client;
   beforeEach(function() {

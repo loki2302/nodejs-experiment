@@ -1,4 +1,3 @@
-var applyAppRunner = require('../applyAppRunner');
 var TeambuildrClient = require('../../be-test/teambuildrClient');
 var ErrorModal = require('../uiMaps/errorModal.js');
 
@@ -18,9 +17,7 @@ var PersonListItem = function(element) {
   this.delete = element.element(by.css('.delete'));
 };
 
-describe('PersonList', function() {
-  applyAppRunner();
-
+describeTeambuildr('PersonList', function() {
   var personListPage;
   var client;
   beforeEach(function() {

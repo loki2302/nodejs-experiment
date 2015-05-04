@@ -1,12 +1,8 @@
-var applyAppRunner = require('./applyAppRunner');
-
 var TeamListPage = function() {
   this.addTeam = element(by.css('#addTeam'));
 };
 
-describe('TeamList', function() {
-  applyAppRunner();
-
+describeTeambuildr('TeamList', function() {
   var teamListPage;
   beforeEach(function() {
     teamListPage = new TeamListPage();

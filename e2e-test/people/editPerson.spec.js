@@ -1,4 +1,3 @@
-var applyAppRunner = require('../applyAppRunner');
 var TeambuildrClient = require('../../be-test/teambuildrClient');
 var ErrorModal = require('../uiMaps/errorModal.js');
 var NotFoundPage = require('../uiMaps/notFoundPage.js');
@@ -11,9 +10,7 @@ var EditPersonPage = function() {
   this.update = element(by.css('#submit-person-button'));
 };
 
-describe('EditPersonPage', function() {
-  applyAppRunner();
-
+describeTeambuildr('EditPersonPage', function() {
   var editPersonPage;
   var notFoundPage;
   var client;

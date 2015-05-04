@@ -1,4 +1,3 @@
-var applyAppRunner = require('../applyAppRunner');
 var TeambuildrClient = require('../../be-test/teambuildrClient');
 var ErrorModal = require('../uiMaps/errorModal.js');
 var NotFoundPage = require('../uiMaps/notFoundPage.js');
@@ -37,9 +36,7 @@ var ViewPersonPage = function() {
   this.membershipList = new MembershipList();
 };
 
-describe('ViewPersonPage', function() {
-  applyAppRunner();
-
+describeTeambuildr('ViewPersonPage', function() {
   var viewPersonPage;
   var notFoundPage;
   var client;
