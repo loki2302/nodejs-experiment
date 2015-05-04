@@ -55,12 +55,7 @@ describeTeambuildr('EditPersonPage', function() {
       expect(notFoundPage.errorContainer.isPresent()).toBe(false);
 
       var personEditor = editPersonPage.personEditor;
-      expect(personEditor.name.getAttribute('value')).toBe(personDescription.name);
-      expect(personEditor.position.getAttribute('value')).toBe(personDescription.position);
-      expect(personEditor.city.getAttribute('value')).toBe(personDescription.city);
-      expect(personEditor.state.getAttribute('value')).toBe(personDescription.state);
-      expect(personEditor.phone.getAttribute('value')).toBe(personDescription.phone);
-      expect(personEditor.email.getAttribute('value')).toBe(personDescription.email);
+      personEditor.expectMatchDescription(personDescription);
       expect(personEditor.membershipListEditor.membershipCount()).toBe(0);
 
       expect(editPersonPage.update.isPresent()).toBe(true);
@@ -106,12 +101,7 @@ describeTeambuildr('EditPersonPage', function() {
       var updatedPersonDescription = makePersonDescription(1);
 
       var personEditor = editPersonPage.personEditor;
-      personEditor.name.clear().sendKeys(updatedPersonDescription.name);
-      personEditor.position.clear().sendKeys(updatedPersonDescription.position);
-      personEditor.city.clear().sendKeys(updatedPersonDescription.city);
-      personEditor.state.clear().sendKeys(updatedPersonDescription.state);
-      personEditor.phone.clear().sendKeys(updatedPersonDescription.phone);
-      personEditor.email.clear().sendKeys(updatedPersonDescription.email);
+      personEditor.setFromDescription(updatedPersonDescription);
 
       personEditor.newMembershipEditor.name.sendKeys('a');
       personEditor.newMembershipEditor.nameDropdownItem(0).click();
@@ -140,21 +130,11 @@ describeTeambuildr('EditPersonPage', function() {
       browser.get('/people/' + personId + '/edit');
 
       var personEditor = editPersonPage.personEditor;
-      personEditor.name.clear();
-      personEditor.position.clear();
-      personEditor.city.clear();
-      personEditor.state.clear();
-      personEditor.phone.clear();
-      personEditor.email.clear();
+      personEditor.clearAll();
 
       editPersonPage.update.click();
 
-      expect(personEditor.nameError.isPresent()).toBe(true);
-      expect(personEditor.positionError.isPresent()).toBe(true);
-      expect(personEditor.cityError.isPresent()).toBe(true);
-      expect(personEditor.stateError.isPresent()).toBe(true);
-      expect(personEditor.phoneError.isPresent()).toBe(true);
-      expect(personEditor.emailError.isPresent()).toBe(true);
+      personEditor.expectAllFieldsInError();
     });
 
     describe('and this person suddenly disappears', function() {

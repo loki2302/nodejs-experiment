@@ -17,12 +17,7 @@ describeTeambuildr('CreatePersonPage', function() {
     browser.get('/people/create');
 
     var personEditor = createPersonPage.personEditor;
-    expect(personEditor.name.getText()).toBe('');
-    expect(personEditor.position.getText()).toBe('');
-    expect(personEditor.city.getText()).toBe('');
-    expect(personEditor.state.getText()).toBe('');
-    expect(personEditor.phone.getText()).toBe('');
-    expect(personEditor.email.getText()).toBe('');
+    personEditor.expectAllFieldsEmpty();
   });
 
   describe('Avatar editor', function() {
@@ -61,12 +56,7 @@ describeTeambuildr('CreatePersonPage', function() {
     createPersonPage.create.click();
 
     var personEditor = createPersonPage.personEditor;
-    expect(personEditor.nameError.isPresent()).toBe(true);
-    expect(personEditor.positionError.isPresent()).toBe(true);
-    expect(personEditor.cityError.isPresent()).toBe(true);
-    expect(personEditor.stateError.isPresent()).toBe(true);
-    expect(personEditor.phoneError.isPresent()).toBe(true);
-    expect(personEditor.emailError.isPresent()).toBe(true);
+    personEditor.expectAllFieldsInError();
   });
 
   it('should create a person when all fields are OK', function() {
@@ -90,12 +80,7 @@ describeTeambuildr('CreatePersonPage', function() {
     browser.get('/people/create');
 
     var personEditor = createPersonPage.personEditor;
-    personEditor.name.sendKeys(personDescription.name);
-    personEditor.position.sendKeys(personDescription.position);
-    personEditor.city.sendKeys(personDescription.city);
-    personEditor.state.sendKeys(personDescription.state);
-    personEditor.phone.sendKeys(personDescription.phone);
-    personEditor.email.sendKeys(personDescription.email);
+    personEditor.setFromDescription(personDescription);
 
     personEditor.newMembershipEditor.name.sendKeys('a');
     personEditor.newMembershipEditor.nameDropdownItem(0).click();
