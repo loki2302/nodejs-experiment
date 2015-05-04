@@ -29,7 +29,7 @@ describeTeambuildr('EditPersonPage', function() {
     var personId;
     beforeEach(function() {
       var teamAId;
-      protractor.promise.controlFlow().execute(function() {
+      await(function() {
         return client.createTeam({
           name: 'team A',
           url: 'http://example.org',
@@ -40,7 +40,7 @@ describeTeambuildr('EditPersonPage', function() {
         });
       });
 
-      protractor.promise.controlFlow().execute(function() {
+      await(function() {
         personDescription = {
           name: 'John',
           avatar: 'http://example.org',
@@ -67,7 +67,6 @@ describeTeambuildr('EditPersonPage', function() {
       expect(personEditor.city.getAttribute('value')).toBe(personDescription.city);
       expect(personEditor.state.getAttribute('value')).toBe(personDescription.state);
       expect(personEditor.phone.getAttribute('value')).toBe(personDescription.phone);
-      expect(personEditor.email.getAttribute('value')).toBe(personDescription.email);
       expect(personEditor.email.getAttribute('value')).toBe(personDescription.email);
       expect(personEditor.membershipListEditor.membershipCount()).toBe(0);
 
@@ -100,8 +99,8 @@ describeTeambuildr('EditPersonPage', function() {
       });
     });
 
-    it('should be possible to update the person', function() {
-      protractor.promise.controlFlow().execute(function() {
+    it('should be possible to update the person', function() {      
+      await(function() {
         return client.createTeam({
           name: 'team A',
           url: 'http://example.org',
@@ -138,7 +137,7 @@ describeTeambuildr('EditPersonPage', function() {
 
       expect(browser.getLocationAbsUrl()).toBe('/people/' + personId);
 
-      protractor.promise.controlFlow().execute(function() {
+      await(function() {
         return client.getPerson(personId).then(function(response) {
           var person = response.body;
           expect(person.name).toBe(updatedPersonDescription.name);
@@ -177,7 +176,7 @@ describeTeambuildr('EditPersonPage', function() {
       it('should display an error popup', function() {
         browser.get('/people/' + personId + '/edit');
 
-        protractor.promise.controlFlow().execute(function() {
+        await(function() {
           return client.deletePerson(personId);
         });
 

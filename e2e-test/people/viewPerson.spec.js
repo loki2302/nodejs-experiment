@@ -64,7 +64,7 @@ describeTeambuildr('ViewPersonPage', function() {
         email: 'john@john.com'
       };
 
-      protractor.promise.controlFlow().execute(function() {
+      await(function() {
         return client.createPerson(personDescription).then(function(response) {
           personId = response.body.id;
         });
@@ -108,7 +108,7 @@ describeTeambuildr('ViewPersonPage', function() {
       it('should display an error popup if person does not exist', function() {
         browser.get('/people/' + personId);
 
-        protractor.promise.controlFlow().execute(function() {
+        await(function() {
           return client.deletePerson(personId);
         });
 
@@ -126,18 +126,17 @@ describeTeambuildr('ViewPersonPage', function() {
     describe('when it has memberships', function() {
       beforeEach(function() {
         var teamAId;
-        protractor.promise.controlFlow().execute(function() {
+        await(function() {
           return client.createTeam({
             name: 'team A',
             url: 'http://example.org',
             slogan: 'team A slogan'
           }).then(function(team) {
             teamAId = team.body.id;
-            return true;
           });
         });
 
-        protractor.promise.controlFlow().execute(function() {
+        await(function() {
           personDescription.id = personId;
           personDescription.memberships = [
             { team: { id: teamAId }, role: 'developer' }

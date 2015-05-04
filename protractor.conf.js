@@ -9,9 +9,6 @@ module.exports = {
     }],
     maxSessions: 1,
     baseUrl: 'http://localhost:3000/',
-    /*params: {
-      apiUrl: 'http://localhost:3000/api/'
-    },*/
     onPrepare: function() {
       global.client = new (require('./be-test/teambuildrClient'))('http://localhost:3000/api/');
 
@@ -19,6 +16,14 @@ module.exports = {
         describe(name, function() {
           require('./e2e-test/applyAppRunner')();
           suiteFunction();
+        });
+      };
+
+      global.await = function(providePromise) {
+        protractor.promise.controlFlow().execute(function() {
+          return providePromise().then(function() {
+            return true;
+          });
         });
       };
     }

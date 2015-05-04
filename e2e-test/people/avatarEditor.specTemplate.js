@@ -14,7 +14,7 @@ module.exports = function applyAvatarEditorTests(provideAvatarEditor) {
   describe('"Randomize" button', function() {
     it('should work', function() {
       var originalSrc;
-      protractor.promise.controlFlow().execute(function() {
+      await(function() {
         return avatarEditor.avatar.getAttribute('src').then(function(src) {
           originalSrc = src;
         });
@@ -22,7 +22,7 @@ module.exports = function applyAvatarEditorTests(provideAvatarEditor) {
 
       avatarEditor.randomizeAvatar.click();
 
-      protractor.promise.controlFlow().execute(function() {
+      await(function() {
         return avatarEditor.avatar.getAttribute('src').then(function(src) {
           expect(src).not.toBe(originalSrc);
         });

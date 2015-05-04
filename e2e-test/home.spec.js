@@ -24,13 +24,14 @@ describeTeambuildr('Home', function() {
     });
 
     describe('when there is 1 team', function() {
-      beforeEach(function(done) {
-        // TODO: use protractor execution flow instead of chaining/done
-        client.createTeam({
-          name: 'team 1',
-          url: 'http://example.org',
-          slogan: 'team 1 slogan'
-        }).finally(done);
+      beforeEach(function() {
+        await(function() {
+          return client.createTeam({
+            name: 'team 1',
+            url: 'http://example.org',
+            slogan: 'team 1 slogan'
+          });
+        });
       });
 
       it('should say "one team"', function() {
@@ -40,19 +41,22 @@ describeTeambuildr('Home', function() {
     });
 
     describe('when there are 2 teams', function() {
-      beforeEach(function(done) {
-        // TODO: use protractor execution flow instead of chaining/done
-        client.createTeam({
-          name: 'team 1',
-          url: 'http://example1.org',
-          slogan: 'team 1 slogan'
-        }).then(function() {
+      beforeEach(function() {
+        await(function() {
+          return client.createTeam({
+            name: 'team 1',
+            url: 'http://example1.org',
+            slogan: 'team 1 slogan'
+          });
+        });
+
+        await(function() {
           return client.createTeam({
             name: 'team 2',
             url: 'http://example2.org',
             slogan: 'team 2 slogan'
           });
-        }).finally(done);
+        });
       });
 
       it('should say "2 teams"', function() {

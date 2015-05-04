@@ -20,7 +20,7 @@ module.exports = function applyMembershipsEditorTests(provideConfig) {
   });
 
   it('should not allow adding a new membership if the role is not set', function() {
-    protractor.promise.controlFlow().execute(function() {
+    await(function() {
       return client.createTeam({
         name: 'team A',
         url: 'http://example.org',
@@ -41,7 +41,7 @@ module.exports = function applyMembershipsEditorTests(provideConfig) {
   });
 
   it('should allow adding a new membership if both team and role are set', function() {
-    protractor.promise.controlFlow().execute(function() {
+    await(function() {
       return client.createTeam({
         name: 'team A',
         url: 'http://example.org',
@@ -65,7 +65,7 @@ module.exports = function applyMembershipsEditorTests(provideConfig) {
   });
 
   it('should allow removing an existing membership', function() {
-    protractor.promise.controlFlow().execute(function() {
+    await(function() {
       return client.createTeam({
         name: 'team A',
         url: 'http://example.org',

@@ -40,18 +40,20 @@ describeTeambuildr('PersonList', function() {
 
   describe('when there are people', function() {
     var person;
-    beforeEach(function(done) {
-      client.createPerson({
-        name: 'john',
-        position: 'web hacker',
-        city: 'New York',
-        state: 'NY',
-        phone: '+123456789',
-        avatar: 'http://example.org',
-        email: 'someone@example.org'
-      }).then(function(response) {
-        person = response.body;
-      }).finally(done);
+    beforeEach(function() {
+      await(function() {
+        return client.createPerson({
+          name: 'john',
+          position: 'web hacker',
+          city: 'New York',
+          state: 'NY',
+          phone: '+123456789',
+          avatar: 'http://example.org',
+          email: 'someone@example.org'
+        }).then(function(response) {
+          person = response.body;
+        });
+      });
     });
 
     it('should have an "Add Person" link', function() {
@@ -109,7 +111,7 @@ describeTeambuildr('PersonList', function() {
           });
 
           it('should display an error popup if person does not exist', function() {
-            protractor.promise.controlFlow().execute(function() {
+            await(function() {
               return client.deletePerson(person.id);
             });
 

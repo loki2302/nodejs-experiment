@@ -31,9 +31,10 @@ describeTeambuildr('CreatePersonPage', function() {
     });
 
     applyAvatarEditorTests(function() {
+      var personEditor = createPersonPage.personEditor;
       return {
-        avatar: createPersonPage.personEditor.avatar,
-        randomizeAvatar: createPersonPage.personEditor.randomizeAvatar
+        avatar: personEditor.avatar,
+        randomizeAvatar: personEditor.randomizeAvatar
       };
     });
   });
@@ -69,7 +70,7 @@ describeTeambuildr('CreatePersonPage', function() {
   });
 
   it('should create a person when all fields are OK', function() {
-    protractor.promise.controlFlow().execute(function() {
+    await(function() {
       return client.createTeam({
         name: 'team A',
         url: 'http://example.org',
@@ -105,7 +106,7 @@ describeTeambuildr('CreatePersonPage', function() {
 
     expect(browser.getLocationAbsUrl()).toBe('/people/1');
 
-    protractor.promise.controlFlow().execute(function() {
+    await(function() {
       return client.getPeople().then(function(response) {
         var people = response.body;
         expect(people.length).toBe(1);
