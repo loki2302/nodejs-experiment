@@ -30,13 +30,12 @@ describeTeambuildr('EditPersonPage', function() {
     var personDescription;
     var personId;
     beforeEach(function() {
-      var teamADescription = makeTeamDescription();
+      var teamADescription = makeTeamDescription(0);
 
       var teamAId;
       await(function() {
         return client.createTeam(teamADescription).then(function(team) {
           teamAId = team.body.id;
-          return true;
         });
       });
 
