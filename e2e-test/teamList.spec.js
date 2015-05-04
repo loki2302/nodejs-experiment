@@ -1,24 +1,11 @@
-var appRunnerFactory = require('../be-src/appRunnerFactory');
+var applyAppRunner = require('./applyAppRunner');
 
 var TeamListPage = function() {
   this.addTeam = element(by.css('#addTeam'));
 };
 
 describe('TeamList', function() {
-  var appRunner;
-  beforeEach(function(done) {
-    appRunnerFactory().then(function(runner) {
-      appRunner = runner;
-      return runner.start().then(function() {
-        return runner.reset();
-      });
-    }).finally(done);
-  });
-
-  afterEach(function(done) {
-    appRunner.stop().finally(done);
-    appRunner = null;
-  });
+  applyAppRunner();
 
   var teamListPage;
   beforeEach(function() {

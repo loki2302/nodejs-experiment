@@ -1,4 +1,4 @@
-var appRunnerFactory = require('../be-src/appRunnerFactory');
+var applyAppRunner = require('./applyAppRunner');
 var TeambuildrClient = require('../be-test/teambuildrClient');
 
 var HomePage = function() {
@@ -7,20 +7,7 @@ var HomePage = function() {
 };
 
 describe('Home', function() {
-  var appRunner;
-  beforeEach(function(done) {
-    appRunnerFactory().then(function(runner) {
-      appRunner = runner;
-      return runner.start().then(function() {
-        return runner.reset();
-      });
-    }).finally(done);
-  });
-
-  afterEach(function(done) {
-    appRunner.stop().finally(done);
-    appRunner = null;
-  });
+  applyAppRunner();
 
   var homePage;
   var client;

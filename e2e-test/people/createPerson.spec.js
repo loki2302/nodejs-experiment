@@ -1,6 +1,6 @@
-var appRunnerFactory = require('../../be-src/appRunnerFactory');
+var applyAppRunner = require('../applyAppRunner');
 var TeambuildrClient = require('../../be-test/teambuildrClient');
-var PersonEditor = require('./uiMaps/personEditor.js');
+var PersonEditor = require('./uiMaps/personEditor');
 var applyAvatarEditorTests = require('./avatarEditor.specTemplate');
 var applyMembershipsEditorTests = require('./membershipsEditor.specTemplate');
 
@@ -10,20 +10,7 @@ var CreatePersonPage = function() {
 };
 
 describe('CreatePersonPage', function() {
-  var appRunner;
-  beforeEach(function(done) {
-    appRunnerFactory().then(function(runner) {
-      appRunner = runner;
-      return runner.start().then(function() {
-        return runner.reset();
-      });
-    }).finally(done);
-  });
-
-  afterEach(function(done) {
-    appRunner.stop().finally(done);
-    appRunner = null;
-  });
+  applyAppRunner();
 
   var createPersonPage;
   var client;
