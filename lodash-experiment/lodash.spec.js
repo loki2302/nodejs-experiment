@@ -67,7 +67,7 @@ describe('lodash', function() {
     var person = {};
     _.assign(person, { name: 'loki2302' });
     _.assign(person, { id: 123, age: 40 });
-    _.assign(person, { url: 'http://loki2302.me', twitter: '@loki2302' });
+    _.assign(person, { url: 'http://loki2302.me' }, { twitter: '@loki2302' });
     expect(person).to.deep.equal({
       name: 'loki2302',
       id: 123,
