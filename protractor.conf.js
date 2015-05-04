@@ -9,10 +9,12 @@ module.exports = {
     }],
     maxSessions: 1,
     baseUrl: 'http://localhost:3000/',
-    params: {
+    /*params: {
       apiUrl: 'http://localhost:3000/api/'
-    },
+    },*/
     onPrepare: function() {
+      global.client = new (require('./be-test/teambuildrClient'))('http://localhost:3000/api/');
+
       global.describeTeambuildr = function(name, suiteFunction) {
         describe(name, function() {
           require('./e2e-test/applyAppRunner')();

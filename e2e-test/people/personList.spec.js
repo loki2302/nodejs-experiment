@@ -1,4 +1,3 @@
-var TeambuildrClient = require('../../be-test/teambuildrClient');
 var ErrorModal = require('../uiMaps/errorModal.js');
 
 var PersonListPage = function() {
@@ -19,10 +18,8 @@ var PersonListItem = function(element) {
 
 describeTeambuildr('PersonList', function() {
   var personListPage;
-  var client;
   beforeEach(function() {
     personListPage = new PersonListPage();
-    client = new TeambuildrClient(browser.params.apiUrl);
   });
 
   describe('when there are no people', function() {

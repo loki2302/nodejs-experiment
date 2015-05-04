@@ -1,4 +1,3 @@
-var TeambuildrClient = require('../../be-test/teambuildrClient');
 var PersonEditor = require('./uiMaps/personEditor');
 var applyAvatarEditorTests = require('./avatarEditor.specTemplate');
 var applyMembershipsEditorTests = require('./membershipsEditor.specTemplate');
@@ -10,10 +9,8 @@ var CreatePersonPage = function() {
 
 describeTeambuildr('CreatePersonPage', function() {
   var createPersonPage;
-  var client;
   beforeEach(function() {
     createPersonPage = new CreatePersonPage();
-    client = new TeambuildrClient(browser.params.apiUrl);
   });
 
   it('should have all fields empty', function() {

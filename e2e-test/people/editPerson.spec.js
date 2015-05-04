@@ -1,4 +1,3 @@
-var TeambuildrClient = require('../../be-test/teambuildrClient');
 var ErrorModal = require('../uiMaps/errorModal.js');
 var NotFoundPage = require('../uiMaps/notFoundPage.js');
 var PersonEditor = require('./uiMaps/personEditor.js');
@@ -13,11 +12,9 @@ var EditPersonPage = function() {
 describeTeambuildr('EditPersonPage', function() {
   var editPersonPage;
   var notFoundPage;
-  var client;
   beforeEach(function() {
     editPersonPage = new EditPersonPage();
     notFoundPage = new NotFoundPage();
-    client = new TeambuildrClient(browser.params.apiUrl);
   });
 
   describe('when there is no person', function() {

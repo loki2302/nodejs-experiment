@@ -1,5 +1,3 @@
-var TeambuildrClient = require('../be-test/teambuildrClient');
-
 var HomePage = function() {
   this.teamCount = element(by.css('#teamCount'));
   this.personCount = element(by.css('#personCount'));
@@ -7,10 +5,8 @@ var HomePage = function() {
 
 describeTeambuildr('Home', function() {
   var homePage;
-  var client;
   beforeEach(function() {
     homePage = new HomePage();
-    client = new TeambuildrClient(browser.params.apiUrl);
   });
 
   it('should have stats', function() {
