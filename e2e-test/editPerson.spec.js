@@ -4,6 +4,7 @@ var ErrorModal = require('./uiMaps/errorModal.js');
 var NotFoundPage = require('./uiMaps/notFoundPage.js');
 var PersonEditor = require('./uiMaps/personEditor.js');
 var applyAvatarEditorTests = require('./avatarEditor.specTemplate');
+var applyMembershipsEditorTests = require('./membershipsEditor.specTemplate');
 
 var EditPersonPage = function() {
   this.personEditor = new PersonEditor();
@@ -66,10 +67,7 @@ describe('EditPersonPage', function() {
           city: 'New York',
           state: 'NY',
           phone: '+123456789',
-          email: 'john@john.com',
-          memberships: [
-            { team: { id: teamAId }, role: 'developer' }
-          ]
+          email: 'john@john.com'
         };
 
         return client.createPerson(personDescription).then(function(response) {
@@ -82,14 +80,15 @@ describe('EditPersonPage', function() {
       browser.get('/people/' + personId + '/edit');
       expect(notFoundPage.errorContainer.isPresent()).toBe(false);
 
-      expect(editPersonPage.personEditor.name.getAttribute('value')).toBe(personDescription.name);
-      expect(editPersonPage.personEditor.position.getAttribute('value')).toBe(personDescription.position);
-      expect(editPersonPage.personEditor.city.getAttribute('value')).toBe(personDescription.city);
-      expect(editPersonPage.personEditor.state.getAttribute('value')).toBe(personDescription.state);
-      expect(editPersonPage.personEditor.phone.getAttribute('value')).toBe(personDescription.phone);
-      expect(editPersonPage.personEditor.email.getAttribute('value')).toBe(personDescription.email);
-      expect(editPersonPage.personEditor.email.getAttribute('value')).toBe(personDescription.email);
-      expect(editPersonPage.personEditor.membershipListEditor.membershipCount()).toBe(1);
+      var personEditor = editPersonPage.personEditor;
+      expect(personEditor.name.getAttribute('value')).toBe(personDescription.name);
+      expect(personEditor.position.getAttribute('value')).toBe(personDescription.position);
+      expect(personEditor.city.getAttribute('value')).toBe(personDescription.city);
+      expect(personEditor.state.getAttribute('value')).toBe(personDescription.state);
+      expect(personEditor.phone.getAttribute('value')).toBe(personDescription.phone);
+      expect(personEditor.email.getAttribute('value')).toBe(personDescription.email);
+      expect(personEditor.email.getAttribute('value')).toBe(personDescription.email);
+      expect(personEditor.membershipListEditor.membershipCount()).toBe(0);
 
       expect(editPersonPage.update.isPresent()).toBe(true);
     });
@@ -100,16 +99,35 @@ describe('EditPersonPage', function() {
       });
 
       applyAvatarEditorTests(function() {
+        var personEditor = editPersonPage.personEditor;
         return {
-          avatar: editPersonPage.personEditor.avatar,
-          randomizeAvatar: editPersonPage.personEditor.randomizeAvatar
+          avatar: personEditor.avatar,
+          randomizeAvatar: personEditor.randomizeAvatar
         };
       });
     });
 
-    // TODO: check memberships editor
+    describe('"Memberships" editor', function() {
+      applyMembershipsEditorTests(function() {
+        var personEditor = editPersonPage.personEditor;
+        return {
+          url: '/people/' + personId + '/edit',
+          client: client,
+          newMembershipEditor: personEditor.newMembershipEditor,
+          membershipListEditor: personEditor.membershipListEditor
+        };
+      });
+    });
 
     it('should be possible to update the person', function() {
+      protractor.promise.controlFlow().execute(function() {
+        return client.createTeam({
+          name: 'team A',
+          url: 'http://example.org',
+          slogan: 'team A slogan'
+        });
+      });
+
       browser.get('/people/' + personId + '/edit');
 
       var updatedPersonDescription = {
@@ -122,13 +140,18 @@ describe('EditPersonPage', function() {
         email: 'john2@john.com'
       };
 
-      editPersonPage.personEditor.name.clear().sendKeys(updatedPersonDescription.name);
-      editPersonPage.personEditor.position.clear().sendKeys(updatedPersonDescription.position);
-      editPersonPage.personEditor.city.clear().sendKeys(updatedPersonDescription.city);
-      editPersonPage.personEditor.state.clear().sendKeys(updatedPersonDescription.state);
-      editPersonPage.personEditor.phone.clear().sendKeys(updatedPersonDescription.phone);
-      editPersonPage.personEditor.email.clear().sendKeys(updatedPersonDescription.email);
-      editPersonPage.personEditor.membershipListEditor.remove(0).click();
+      var personEditor = editPersonPage.personEditor;
+      personEditor.name.clear().sendKeys(updatedPersonDescription.name);
+      personEditor.position.clear().sendKeys(updatedPersonDescription.position);
+      personEditor.city.clear().sendKeys(updatedPersonDescription.city);
+      personEditor.state.clear().sendKeys(updatedPersonDescription.state);
+      personEditor.phone.clear().sendKeys(updatedPersonDescription.phone);
+      personEditor.email.clear().sendKeys(updatedPersonDescription.email);
+
+      personEditor.newMembershipEditor.name.sendKeys('a');
+      personEditor.newMembershipEditor.nameDropdownItem(0).click();
+      personEditor.newMembershipEditor.role.sendKeys('developer');
+      personEditor.newMembershipEditor.add.click();
 
       editPersonPage.update.click();
 
@@ -143,28 +166,30 @@ describe('EditPersonPage', function() {
           expect(person.state).toBe(updatedPersonDescription.state);
           expect(person.phone).toBe(updatedPersonDescription.phone);
           expect(person.email).toBe(updatedPersonDescription.email);
-          expect(person.memberships.length).toBe(0);
+          expect(person.memberships.length).toBe(1);
         });
       });
     });
 
     it('should not be possible update the person when there are validation errors', function() {
       browser.get('/people/' + personId + '/edit');
-      editPersonPage.personEditor.name.clear();
-      editPersonPage.personEditor.position.clear();
-      editPersonPage.personEditor.city.clear();
-      editPersonPage.personEditor.state.clear();
-      editPersonPage.personEditor.phone.clear();
-      editPersonPage.personEditor.email.clear();
+
+      var personEditor = editPersonPage.personEditor;
+      personEditor.name.clear();
+      personEditor.position.clear();
+      personEditor.city.clear();
+      personEditor.state.clear();
+      personEditor.phone.clear();
+      personEditor.email.clear();
 
       editPersonPage.update.click();
 
-      expect(editPersonPage.personEditor.nameError.isPresent()).toBe(true);
-      expect(editPersonPage.personEditor.positionError.isPresent()).toBe(true);
-      expect(editPersonPage.personEditor.cityError.isPresent()).toBe(true);
-      expect(editPersonPage.personEditor.stateError.isPresent()).toBe(true);
-      expect(editPersonPage.personEditor.phoneError.isPresent()).toBe(true);
-      expect(editPersonPage.personEditor.emailError.isPresent()).toBe(true);
+      expect(personEditor.nameError.isPresent()).toBe(true);
+      expect(personEditor.positionError.isPresent()).toBe(true);
+      expect(personEditor.cityError.isPresent()).toBe(true);
+      expect(personEditor.stateError.isPresent()).toBe(true);
+      expect(personEditor.phoneError.isPresent()).toBe(true);
+      expect(personEditor.emailError.isPresent()).toBe(true);
     });
 
     describe('and this person suddenly disappears', function() {
