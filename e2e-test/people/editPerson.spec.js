@@ -1,7 +1,8 @@
-var ErrorModal = require('../uiMaps/errorModal.js');
-var NotFoundPage = require('../uiMaps/notFoundPage.js');
-var PersonEditor = require('./uiMaps/personEditor.js');
-var makePersonDescription = require('./makePersonDescription');
+var ErrorModal = require('../uiMaps/errorModal');
+var NotFoundPage = require('../uiMaps/notFoundPage');
+var PersonEditor = require('./uiMaps/personEditor');
+var makePersonDescription = require('../makePersonDescription');
+var makeTeamDescription = require('../makeTeamDescription');
 var applyAvatarEditorTests = require('./avatarEditor.specTemplate');
 var applyMembershipsEditorTests = require('./membershipsEditor.specTemplate');
 
@@ -29,13 +30,11 @@ describeTeambuildr('EditPersonPage', function() {
     var personDescription;
     var personId;
     beforeEach(function() {
+      var teamADescription = makeTeamDescription();
+
       var teamAId;
       await(function() {
-        return client.createTeam({
-          name: 'team A',
-          url: 'http://example.org',
-          slogan: 'team A slogan'
-        }).then(function(team) {
+        return client.createTeam(teamADescription).then(function(team) {
           teamAId = team.body.id;
           return true;
         });
@@ -88,12 +87,9 @@ describeTeambuildr('EditPersonPage', function() {
     });
 
     it('should be possible to update the person', function() {
+      var teamADescription = makeTeamDescription(0);
       await(function() {
-        return client.createTeam({
-          name: 'team A',
-          url: 'http://example.org',
-          slogan: 'team A slogan'
-        });
+        return client.createTeam(teamADescription);
       });
 
       browser.get('/people/' + personId + '/edit');

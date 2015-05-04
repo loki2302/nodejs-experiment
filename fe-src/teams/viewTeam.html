@@ -1,15 +1,15 @@
-<a ng-href="/teams/{{team.id}}/edit" class="btn btn-default"><i class="fa fa-pencil"></i> Edit</a>
-<button type="button" class="btn btn-danger" ng-click="deleteTeam()"><i class="fa fa-trash-o"></i> Delete</button>
+<a ng-href="/teams/{{team.id}}/edit" class="btn btn-default edit"><i class="fa fa-pencil"></i> Edit</a>
+<button type="button" class="btn btn-danger delete" ng-click="deleteTeam()"><i class="fa fa-trash-o"></i> Delete</button>
 
 <div class="jumbotron">
   <div class="media">
-    <div class="media-left">
+    <div class="media-left avatar">
       <img ng-src="{{team.avatar}}" class="media-object avatar128">
     </div>
     <div class="media-body">
-      <h2>{{team.name}}</h2>
-      <h3 class="text-muted">{{team.slogan}}</h3>
-      <h4><a ng-href="{{team.url}}" target="_blank">{{team.url}}</a></h4>
+      <h2 class="name">{{team.name}}</h2>
+      <h3 class="text-muted slogan">{{team.slogan}}</h3>
+      <h4><a ng-href="{{team.url}}" target="_blank" class="url">{{team.url}}</a></h4>
     </div>
   </div>
 </div>
@@ -25,8 +25,8 @@
       </a>
     </div>
     <div class="media-body">
-      <h4 class="media-heading"><a href="/people/{{member.person.id}}">{{member.person.name}}</a> <small>{{member.person.position}}</small></h4>
-      <p class="text-muted">Participates as <strong>{{member.role}}</strong></p>
+      <h4 class="media-heading"><a href="/people/{{member.person.id}}" class="person-name">{{member.person.name}}</a> <small class="person-position">{{member.person.position}}</small></h4>
+      <p class="text-muted">Participates as <strong class="role">{{member.role}}</strong></p>
     </div>
   </div>
 </div>

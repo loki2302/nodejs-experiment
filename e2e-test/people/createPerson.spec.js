@@ -1,6 +1,8 @@
 var PersonEditor = require('./uiMaps/personEditor');
 var applyAvatarEditorTests = require('./avatarEditor.specTemplate');
 var applyMembershipsEditorTests = require('./membershipsEditor.specTemplate');
+var makePersonDescription = require('../makePersonDescription');
+var makeTeamDescription = require('../makeTeamDescription');
 
 var CreatePersonPage = function() {
   this.personEditor = new PersonEditor();
@@ -61,25 +63,14 @@ describeTeambuildr('CreatePersonPage', function() {
 
   it('should create a person when all fields are OK', function() {
     await(function() {
-      return client.createTeam({
-        name: 'team A',
-        url: 'http://example.org',
-        slogan: 'team A slogan'
-      });
+      var teamDescription = makeTeamDescription(0);
+      return client.createTeam(teamDescription);
     });
-
-    var personDescription = {
-      name: 'John',
-      position: 'Developer',
-      city: 'New York',
-      state: 'NY',
-      phone: '+123456789',
-      email: 'john@john.com'
-    };
 
     browser.get('/people/create');
 
     var personEditor = createPersonPage.personEditor;
+    var personDescription = makePersonDescription(0);
     personEditor.setFromDescription(personDescription);
 
     personEditor.newMembershipEditor.name.sendKeys('a');

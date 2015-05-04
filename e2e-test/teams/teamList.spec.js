@@ -1,5 +1,5 @@
 var ErrorModal = require('../uiMaps/errorModal.js');
-var makeTeamDescription = require('./makeTeamDescription');
+var makeTeamDescription = require('../makeTeamDescription');
 
 var TeamListPage = function() {
   this.addTeam = element(by.css('#add-team'));

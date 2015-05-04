@@ -1,6 +1,7 @@
-var ErrorModal = require('../uiMaps/errorModal.js');
-var NotFoundPage = require('../uiMaps/notFoundPage.js');
-var makePersonDescription = require('./makePersonDescription');
+var ErrorModal = require('../uiMaps/errorModal');
+var NotFoundPage = require('../uiMaps/notFoundPage');
+var makePersonDescription = require('../makePersonDescription');
+var makeTeamDescription = require('../makeTeamDescription');
 
 var MembershipList = function() {
   this.noMembershipsAlert = element(by.css('#no-memberships-alert'));
@@ -116,14 +117,13 @@ describeTeambuildr('ViewPersonPage', function() {
     });
 
     describe('when it has memberships', function() {
+      var teamADescription;
       beforeEach(function() {
+        teamADescription = makeTeamDescription(0);
+
         var teamAId;
         await(function() {
-          return client.createTeam({
-            name: 'team A',
-            url: 'http://example.org',
-            slogan: 'team A slogan'
-          }).then(function(team) {
+          return client.createTeam(teamADescription).then(function(team) {
             teamAId = team.body.id;
           });
         });
@@ -146,8 +146,8 @@ describeTeambuildr('ViewPersonPage', function() {
         expect(viewPersonPage.membershipList.membership(0).isPresent()).toBe(true);
         expect(viewPersonPage.membershipList.avatar(0).getAttribute('src')).toContain('gravatar');
         expect(viewPersonPage.membershipList.role(0).getText()).toBe('developer');
-        expect(viewPersonPage.membershipList.teamName(0).getText()).toBe('team A');
-        expect(viewPersonPage.membershipList.teamSlogan(0).getText()).toBe('team A slogan');
+        expect(viewPersonPage.membershipList.teamName(0).getText()).toBe(teamADescription.name);
+        expect(viewPersonPage.membershipList.teamSlogan(0).getText()).toBe(teamADescription.slogan);
       });
     });
   });

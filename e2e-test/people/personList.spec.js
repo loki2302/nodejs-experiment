@@ -1,5 +1,5 @@
-var ErrorModal = require('../uiMaps/errorModal.js');
-var makePersonDescription = require('./makePersonDescription');
+var ErrorModal = require('../uiMaps/errorModal');
+var makePersonDescription = require('../makePersonDescription');
 
 var PersonListPage = function() {
   this.addPerson = element(by.css('#add-person'));

@@ -1,3 +1,5 @@
+var makeTeamDescription = require('../makeTeamDescription');
+
 module.exports = function applyMembershipsEditorTests(provideConfig) {
   var url;
   var client;
@@ -20,12 +22,9 @@ module.exports = function applyMembershipsEditorTests(provideConfig) {
   });
 
   it('should not allow adding a new membership if the role is not set', function() {
+    var teamDescription = makeTeamDescription(0);
     await(function() {
-      return client.createTeam({
-        name: 'team A',
-        url: 'http://example.org',
-        slogan: 'team A slogan'
-      });
+      return client.createTeam(teamDescription);
     });
 
     browser.get(url);
@@ -41,12 +40,9 @@ module.exports = function applyMembershipsEditorTests(provideConfig) {
   });
 
   it('should allow adding a new membership if both team and role are set', function() {
+    var teamDescription = makeTeamDescription(0);
     await(function() {
-      return client.createTeam({
-        name: 'team A',
-        url: 'http://example.org',
-        slogan: 'team A slogan'
-      });
+      return client.createTeam(teamDescription);
     });
 
     browser.get(url);
@@ -65,12 +61,9 @@ module.exports = function applyMembershipsEditorTests(provideConfig) {
   });
 
   it('should allow removing an existing membership', function() {
+    var teamDescription = makeTeamDescription(0);
     await(function() {
-      return client.createTeam({
-        name: 'team A',
-        url: 'http://example.org',
-        slogan: 'team A slogan'
-      });
+      return client.createTeam(teamDescription);
     });
 
     browser.get(url);
