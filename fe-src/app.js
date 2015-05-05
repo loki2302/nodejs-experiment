@@ -18,13 +18,13 @@ angular.module('tbApp', [
 
       var ApiErrors = $injector.get('ApiErrors');
       var showError = $injector.get('showError');
-      var $location = $injector.get('$location');
+      var $window = $injector.get('$window');
       if(exception instanceof ApiErrors.ConnectivityError) {
         showError('It looks like you are offline');
       } else {
         showError('Something very unexpected has happened. ' +
           'The best thing we can do is navigating you to lolcats.').then(function() {
-            $location.path('https://www.google.com/search?q=lolcats&tbm=isch');
+            $window.location.href = 'https://www.google.com/search?q=lolcats&tbm=isch';
           });
       }
     };
