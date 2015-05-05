@@ -1,5 +1,7 @@
 angular.module('tbSubmit', [])
 .directive('tbSubmit', function() {
+  var VALIDATION_ERROR_KEY = 'customValidator';
+
   return {
     restrict: 'A',
     require: 'form',
@@ -36,7 +38,7 @@ angular.module('tbSubmit', [])
             return;
           }
 
-          formController[fieldName].$setValidity('omg', true);
+          formController[fieldName].$setValidity(VALIDATION_ERROR_KEY, true);
         });
         errors = {};
       };
@@ -48,7 +50,7 @@ angular.module('tbSubmit', [])
             return;
           }
 
-          formController[fieldName].$setValidity('omg', false);
+          formController[fieldName].$setValidity(VALIDATION_ERROR_KEY, false);
           formController[fieldName].$setPristine();
         });
         errors = errorMap;
