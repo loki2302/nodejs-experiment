@@ -14,7 +14,8 @@ module.exports = {
     },
     baseUrl: 'http://localhost:3000/',
     onPrepare: function() {
-      global.client = new (require('./be-test/teambuildrClient'))('http://localhost:3000/api/');
+      var TeambuildrClient = require('./be-test/teambuildrClient');
+      global.client = new TeambuildrClient('http://localhost:3000/api/');
 
       global.describeTeambuildr = function(name, suiteFunction) {
         describe(name, function() {
