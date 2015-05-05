@@ -110,4 +110,8 @@ TeambuildrClient.prototype.getRandomAvatar = function() {
   return this.get('utils/randomAvatar');
 };
 
+TeambuildrClient.prototype.getStats = function() {
+  return this.get('utils/stats');
+};
+
 module.exports = TeambuildrClient;

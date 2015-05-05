@@ -902,5 +902,14 @@ describe('Teambuildr API', function() {
         expect(response.body.url).to.contain('://');
       });
     });
+
+    describe('GET /utils/stats', function() {
+      it('should provide the stats', function* () {
+        var response = yield client.getStats();
+        expect(response.statusCode).to.equal(200);
+        expect(response.body.people).to.equal(0);
+        expect(response.body.teams).to.equal(0);
+      });
+    });
   });
 });
