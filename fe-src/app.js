@@ -30,8 +30,6 @@ angular.module('tbApp', [
     };
   }]);
 }]).run(['$rootElement', function($rootElement) {
-  // $rootElement is <html>
-  // TODO: clean it up somehow
   $rootElement.find('span').remove();
   $rootElement.find('div').attr('style', '');
 }]);
