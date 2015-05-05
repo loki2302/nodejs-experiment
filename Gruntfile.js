@@ -131,8 +131,7 @@ module.exports = function(grunt) {
     protractor_webdriver: {
       options: {
         keepAlive: true
-      },
-      dummyTarget: {} // TODO: check if this dummy target is even needed
+      }
     },
     protractor: {
       options: {
