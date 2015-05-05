@@ -23,13 +23,12 @@ angular.module('tbSubmit', [])
         });
       });
 
-      // prevent form submission on enter
       $element.bind('keydown keypress', function(e) {
-        if(e.which === 13) {
+        var ENTER_KEY = 13;
+        if(e.which === ENTER_KEY) {
           e.preventDefault();
         }
       });
-      // TODO: should I unbind?
 
       var errors = {};
       function setAllFieldsValid() {
