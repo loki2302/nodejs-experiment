@@ -594,4 +594,90 @@ describe('tbApiService', function() {
       });
     });
   });
+
+  describe('Utils API', function() {
+    describe('getRandomAvatar()', function() {
+      function makeApiCall() {
+        apiService.getRandomAvatar().then(onSuccess, onError);
+      };
+
+      it('should do the GET /api/utils/randomAvatar', function() {
+        $httpBackend.expect('GET', '/api/utils/randomAvatar').respond(0);
+        makeApiCall();
+        $httpBackend.verifyNoOutstandingExpectation();
+      });
+
+      it('should return the response body when 200', function() {
+        $httpBackend.when('GET', '/api/utils/randomAvatar').respond(200, {});
+
+        makeApiCall();
+        $httpBackend.flush();
+
+        $httpBackend.verifyNoOutstandingRequest();
+        expect(onSuccess).toHaveBeenCalledWith({});
+      });
+
+      it('should throw the ConnectivityError when 0', function() {
+        $httpBackend.when('GET', '/api/utils/randomAvatar').respond(0);
+
+        makeApiCall();
+        $httpBackend.flush();
+
+        $httpBackend.verifyNoOutstandingRequest();
+        expect(onError).toHaveBeenCalledWith(jasmine.any(ApiErrors.ConnectivityError));
+      });
+
+      it('should throw the UnexpectedError when 418', function() {
+        $httpBackend.when('GET', '/api/utils/randomAvatar').respond(418);
+
+        makeApiCall();
+        $httpBackend.flush();
+
+        $httpBackend.verifyNoOutstandingRequest();
+        expect(onError).toHaveBeenCalledWith(jasmine.any(ApiErrors.UnexpectedError));
+      });
+    });
+
+    describe('getStats()', function() {
+      function makeApiCall() {
+        apiService.getStats().then(onSuccess, onError);
+      };
+
+      it('should do the GET /api/utils/stats', function() {
+        $httpBackend.expect('GET', '/api/utils/stats').respond(0);
+        makeApiCall();
+        $httpBackend.verifyNoOutstandingExpectation();
+      });
+
+      it('should return the response body when 200', function() {
+        $httpBackend.when('GET', '/api/utils/stats').respond(200, {});
+
+        makeApiCall();
+        $httpBackend.flush();
+
+        $httpBackend.verifyNoOutstandingRequest();
+        expect(onSuccess).toHaveBeenCalledWith({});
+      });
+
+      it('should throw the ConnectivityError when 0', function() {
+        $httpBackend.when('GET', '/api/utils/stats').respond(0);
+
+        makeApiCall();
+        $httpBackend.flush();
+
+        $httpBackend.verifyNoOutstandingRequest();
+        expect(onError).toHaveBeenCalledWith(jasmine.any(ApiErrors.ConnectivityError));
+      });
+
+      it('should throw the UnexpectedError when 418', function() {
+        $httpBackend.when('GET', '/api/utils/stats').respond(418);
+
+        makeApiCall();
+        $httpBackend.flush();
+
+        $httpBackend.verifyNoOutstandingRequest();
+        expect(onError).toHaveBeenCalledWith(jasmine.any(ApiErrors.UnexpectedError));
+      });
+    });
+  });
 });
