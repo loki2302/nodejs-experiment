@@ -40,38 +40,35 @@ module.exports = function(grunt) {
         }
       }
     },
-    feAmalgamatedJsFile: '<%= feTmpBuildDir %>/amalgamated.js',
+    feBuildDir: 'fe-build',
     feBowerComponentsDir: 'bower_components',
+    feAmalgamatedJsFile: '<%= feBuildDir %>/teambuildr.js',
     uglify: {
       all: {
-        src: ['<%= feSrcDir %>/**/*.js', '<%= feTemplatesJsFile %>'],
-        dest: '<%= feAmalgamatedJsFile %>'
-      }
-    },
-    feBuildDir: 'fe-build',
-    feAmalgamatedJsFileWithDependencies: '<%= feBuildDir %>/teambuildr.js',
-    feAmalgamatedCssFile: '<%= feBuildDir %>/teambuildr.css',
-    concat: {
-      allJs: {
         src: [
           '<%= feBowerComponentsDir %>/uri.js/src/URI.min.js',
           '<%= feBowerComponentsDir %>/angular/angular.min.js',
           '<%= feBowerComponentsDir %>/angular-route/angular-route.min.js',
           '<%= feBowerComponentsDir %>/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min.js',
           '<%= feBowerComponentsDir %>/angular-deckgrid/angular-deckgrid.js',
-          '<%= feAmalgamatedJsFile %>'
+          '<%= feSrcDir %>/**/*.js',
+          '<%= feTemplatesJsFile %>'
         ],
-        dest: '<%= feAmalgamatedJsFileWithDependencies %>'
-      },
-      allCss: {
-        src: [
-          '<%= feBowerComponentsDir %>/bootstrap/dist/css/bootstrap.min.css',
-          '<%= feSrcDir %>/home.css',
-          '<%= feSrcDir %>/commons/avatar.css',
-          '<%= feSrcDir %>/teams/teams.css',
-          '<%= feSrcDir %>/people/people.css'
-        ],
-        dest: '<%= feAmalgamatedCssFile %>'
+        dest: '<%= feAmalgamatedJsFile %>'
+      }
+    },
+    feAmalgamatedCssFile: '<%= feBuildDir %>/teambuildr.css',
+    cssmin: {
+      all: {
+        files: {
+          '<%= feAmalgamatedCssFile %>': [
+            '<%= feBowerComponentsDir %>/bootstrap/dist/css/bootstrap.min.css',
+            '<%= feSrcDir %>/home.css',
+            '<%= feSrcDir %>/commons/avatar.css',
+            '<%= feSrcDir %>/teams/teams.css',
+            '<%= feSrcDir %>/people/people.css'
+          ]
+        }
       }
     },
     feIndexHtmlFile: '<%= feSrcDir %>/index.html',
@@ -146,10 +143,10 @@ module.exports = function(grunt) {
 
   grunt.loadNpmTasks('grunt-run');
   grunt.loadNpmTasks('grunt-mocha-test');
+  grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-clean');
-  grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-angular-templates');
   grunt.loadNpmTasks('grunt-shell');
   grunt.loadNpmTasks('grunt-protractor-webdriver');
@@ -162,7 +159,7 @@ module.exports = function(grunt) {
     ['be-test', 'fe-test', 'e2e-test:all']);
 
   grunt.registerTask('fe-build', 'Build frontend',
-    ['clean', 'ngtemplates', 'uglify', 'copy', 'concat', 'clean:feTmpBuildDir']);
+    ['clean', 'ngtemplates', 'uglify', 'copy', /*'concat',*/ 'cssmin', 'clean:feTmpBuildDir']);
 
   grunt.registerTask('start', 'Build frontend and launch everything',
     ['fe-build', 'run']);
