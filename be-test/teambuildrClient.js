@@ -19,51 +19,39 @@ TeambuildrClient.prototype.makeUrl = function(resourceTemplateString, resourceVa
   return uriString;
 };
 
-TeambuildrClient.prototype.get = function(resourceTemplateString, resourceValues, queryParams) {
+TeambuildrClient.prototype.request = function(
+  method,
+  resourceTemplateString,
+  resourceValues,
+  queryParams,
+  body) {
+
   var url = this.makeUrl(resourceTemplateString, resourceValues);
   return rp({
     simple: false,
-    method: 'GET',
+    method: method,
     url: url,
     qs: queryParams,
     json: true,
+    body: body,
     resolveWithFullResponse: true
   });
+};
+
+TeambuildrClient.prototype.get = function(resourceTemplateString, resourceValues, queryParams) {
+  return this.request('GET', resourceTemplateString, resourceValues, queryParams);
 };
 
 TeambuildrClient.prototype.post = function(resourceTemplateString, resourceValues, body) {
-  var url = this.makeUrl(resourceTemplateString, resourceValues);
-  return rp({
-    simple: false,
-    method: 'POST',
-    url: url,
-    json: true,
-    body: body,
-    resolveWithFullResponse: true
-  });
+  return this.request('POST', resourceTemplateString, resourceValues, null, body);
 };
 
 TeambuildrClient.prototype.put = function(resourceTemplateString, resourceValues, body) {
-  var url = this.makeUrl(resourceTemplateString, resourceValues);
-  return rp({
-    simple: false,
-    method: 'PUT',
-    url: url,
-    json: true,
-    body: body,
-    resolveWithFullResponse: true
-  });
+  return this.request('PUT', resourceTemplateString, resourceValues, null, body);
 };
 
 TeambuildrClient.prototype.delete = function(resourceTemplateString, resourceValues) {
-  var url = this.makeUrl(resourceTemplateString, resourceValues);
-  return rp({
-    simple: false,
-    method: 'DELETE',
-    url: url,
-    json: true,
-    resolveWithFullResponse: true
-  });
+  return this.request('DELETE', resourceTemplateString, resourceValues);
 };
 
 TeambuildrClient.prototype.createPerson = function(person) {
