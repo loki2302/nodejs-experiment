@@ -76,4 +76,16 @@ describe('lodash', function() {
       twitter: '@loki2302'
     });
   });
+
+  it('should pairs', function() {
+    var person = {
+      name: 'loki2302',
+      age: 40
+    };
+    var pairs = _.pairs(person);
+    expect(pairs).to.deep.equal([
+      ['name', 'loki2302'],
+      ['age', 40]
+    ]);
+  });
 });
