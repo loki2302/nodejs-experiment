@@ -1,8 +1,7 @@
 module.exports = function(Sequelize, dataContext) {
   return function* (next) {
     var transaction = yield dataContext.transaction({
-      // TODO: why is it "read uncommitted"?
-      isolationLevel: Sequelize.Transaction.ISOLATION_LEVELS.READ_UNCOMMITTED
+      isolationLevel: Sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
     });
 
     this.tx = transaction;
@@ -18,7 +17,7 @@ module.exports = function(Sequelize, dataContext) {
       }
     } catch(operationException) {
       console.log('OperationException', operationException);
-      
+
       try {
         yield transaction.rollback();
         console.log('operation failed, rollback succeeded');
