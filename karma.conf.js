@@ -26,9 +26,8 @@ module.exports = function(config) {
       'karma-ng-html2js-preprocessor'
     ],
     ngHtml2JsPreprocessor: {
-      // TODO: do I need to put anything here?
       stripPrefix: 'fe-src/',
-      moduleName: 'tbTemplates' // TODO
+      moduleName: 'tbTemplates'
     },
     browsers: ['Chrome', 'Firefox']
   });
