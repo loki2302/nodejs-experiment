@@ -137,23 +137,10 @@ module.exports = function(grunt) {
       options: {
         configFile: 'protractor.conf.js'
       },
-      all: {
-      },
-      general: {
-        options: {
-          args: { suite: 'general' }
-        }
-      },
-      people: {
-        options: {
-          args: { suite: 'people' }
-        }
-      },
-      teams: {
-        options: {
-          args: { suite: 'teams' }
-        }
-      },
+      all: {},
+      general: { options: { args: { suite: 'general' } } },
+      people: { options: { args: { suite: 'people' } } },
+      teams: { options: { args: { suite: 'teams' } } }
     }
   });
 
@@ -183,23 +170,14 @@ module.exports = function(grunt) {
   grunt.registerTask('webdriver-update', 'Install/update WebDriver',
     ['shell:webDriver']);
 
+  grunt.registerTask('e2e-test', 'Run E2E tests', function(suite) {
+    var protractorTask = 'protractor:all';
+    if(suite) {
+      protractorTask = 'protractor:' + suite;
+    }
 
-  // TODO: how do I make it shorter?
-  grunt.registerTask('e2e-test', 'Run E2E tests',
-    ['fe-build', 'protractor_webdriver', 'protractor:all']);
-
-  // TODO: how do I make it shorter?
-  grunt.registerTask('e2e-test-general', 'Run E2E tests - general only',
-    ['fe-build', 'protractor_webdriver', 'protractor:general']);
-
-  // TODO: how do I make it shorter?
-  grunt.registerTask('e2e-test-people', 'Run E2E tests - people only',
-    ['fe-build', 'protractor_webdriver', 'protractor:people']);
-
-  // TODO: how do I make it shorter?
-  grunt.registerTask('e2e-test-teams', 'Run E2E tests - teams only',
-      ['fe-build', 'protractor_webdriver', 'protractor:teams']);
-
+    grunt.task.run(['fe-build', 'protractor_webdriver', protractorTask]);
+  });
 
   grunt.registerTask('fe-test', 'Run FE tests once', ['karma:runOnce']);
   grunt.registerTask('fe-watch', 'Run FE tests continuously', ['karma:watch']);
