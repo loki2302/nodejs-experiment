@@ -35,7 +35,6 @@ module.exports = function(grunt) {
           module: 'tbTemplates',
           standalone: true,
           url: function(url) {
-            // TODO: can I access feTemplatesSrcDir here?
             return url.replace('fe-src/', '');
           }
         }
