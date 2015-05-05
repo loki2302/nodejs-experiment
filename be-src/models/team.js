@@ -4,9 +4,8 @@ module.exports = function(sequelize, Sequelize) {
       type: Sequelize.STRING,
       allowNull: false,
       validate: {
-        len: {
-          args: [2, 50],
-          msg: 'Team name should be 2 to 50 characters long'
+        notEmpty: {
+          msg: 'Team name should not be empty'
         }
       }
     },
@@ -23,9 +22,8 @@ module.exports = function(sequelize, Sequelize) {
       type: Sequelize.STRING,
       allowNull: false,
       validate: {
-        len: {
-          args: [5, 50],
-          msg: 'Slogan should be 5 to 50 characters long'
+        notEmpty: {
+          msg: 'Slogan should not be empty'
         }
       }
     }

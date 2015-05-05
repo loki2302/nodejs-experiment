@@ -4,9 +4,8 @@ module.exports = function(sequelize, Sequelize) {
       type: Sequelize.STRING,
       allowNull: false,
       validate: {
-        len: {
-          args: [2, 50],
-          msg: 'Role should be 2 to 50 characters long'
+        notEmpty: {
+          msg: 'Role should not be empty'
         }
       }
     }

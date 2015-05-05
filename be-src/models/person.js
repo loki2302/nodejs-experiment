@@ -4,9 +4,8 @@ module.exports = function(sequelize, Sequelize) {
       type: Sequelize.STRING,
       allowNull: false,
       validate: {
-        len: {
-          args: [2, 50],
-          msg: 'Person name should be 2 to 50 characters long'
+        notEmpty: {
+          msg: 'Person name should not be empty'
         }
       }
     },
@@ -14,9 +13,8 @@ module.exports = function(sequelize, Sequelize) {
       type: Sequelize.STRING,
       allowNull: false,
       validate: {
-        len: {
-          args: [2, 50],
-          msg: 'Position should be 2 to 50 characters long'
+        notEmpty: {
+          msg: 'Position should not be empty'
         }
       }
     },
@@ -24,9 +22,8 @@ module.exports = function(sequelize, Sequelize) {
       type: Sequelize.STRING,
       allowNull: false,
       validate: {
-        len: {
-          args: [2, 50],
-          msg: 'City should be 2 to 50 characters long'
+        notEmpty: {
+          msg: 'City should not be empty'
         }
       }
     },
@@ -34,9 +31,8 @@ module.exports = function(sequelize, Sequelize) {
       type: Sequelize.STRING,
       allowNull: false,
       validate: {
-        len: {
-          args: [2, 50],
-          msg: 'State should be 2 to 50 characters long'
+        notEmpty: {
+          msg: 'State should not be empty'
         }
       }
     },
@@ -44,9 +40,8 @@ module.exports = function(sequelize, Sequelize) {
       type: Sequelize.STRING,
       allowNull: false,
       validate: {
-        len: {
-          args: [2, 50],
-          msg: 'Phone should be 2 to 50 characters long'
+        notEmpty: {
+          msg: 'Phone should not be empty'
         }
       }
     },
