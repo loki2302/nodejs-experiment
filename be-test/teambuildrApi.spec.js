@@ -893,4 +893,14 @@ describe('Teambuildr API', function() {
       });
     });
   });
+
+  describe('utils', function() {
+    describe('GET /utils/randomAvatar', function() {
+      it('should provide the random avatar', function* () {
+        var response = yield client.getRandomAvatar();
+        expect(response.statusCode).to.equal(200);
+        expect(response.body.url).to.contain('://');
+      });
+    });
+  });
 });

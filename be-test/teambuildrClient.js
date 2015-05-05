@@ -74,7 +74,6 @@ TeambuildrClient.prototype.getPerson = function(personId) {
   return this.get('people/{id}', { id: personId });
 };
 
-// queryParams: {nameContains, max}
 TeambuildrClient.prototype.getPeople = function(queryParams) {
   return this.get('people', null, queryParams);
 };
@@ -105,6 +104,10 @@ TeambuildrClient.prototype.updateTeam = function(team) {
 
 TeambuildrClient.prototype.deleteTeam = function(teamId) {
   return this.delete('teams/{id}', { id: teamId });
+};
+
+TeambuildrClient.prototype.getRandomAvatar = function() {
+  return this.get('utils/randomAvatar');
 };
 
 module.exports = TeambuildrClient;
