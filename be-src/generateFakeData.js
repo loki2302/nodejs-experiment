@@ -10,21 +10,31 @@ module.exports = function(Q, Person, Team, faker, gravatar) {
     'Developer',
     'QA',
     'Manager',
-    'Designer'
+    'Designer',
+    'DBA',
+    'Scrum Master',
+    'Product Manager',
+    'Architect'
   ];
 
   var POSITION_PREFIXES = [
+    '',
+    'Junior',
+    'Senior',
     'Experienced',
-    ''
+    'Independent'
   ];
 
   var POSITIONS = [
-    'web hacker',
-    'back-end developer',
-    'front-end developer',
-    'AngularJS fan',
-    'QA engineer',
-    'designer'
+    'Web Hacker',
+    'Back-end Developer',
+    'Front-end Developer',
+    'AngularJS Fan',
+    'QA Engineer',
+    'Designer',
+    'DBA',
+    'Project Manager',
+    'Business Analyst'
   ];
 
   return function() {
@@ -32,16 +42,15 @@ module.exports = function(Q, Person, Team, faker, gravatar) {
       var personIds = [];
       for(var i = 0; i < NUMBER_OF_PEOPLE; ++i) {
         var personName = faker.name.findName();
-        var e = makePersonEmail(personName);
-        console.log(e);
+        var position = (faker.random.array_element(POSITION_PREFIXES) + ' ' + faker.random.array_element(POSITIONS)).trim();
         var person = yield Person.create({
           name: personName,
-          city: faker.address.city(), // 'South Alycemouth'
-          state: faker.address.stateAbbr(), // 'NY'
-          phone: faker.phone.phoneNumber(), // '1-234-655-2694 x907'
-          avatar: faker.internet.avatar(), // 'https://s3.amazonaws.com/uifaces/faces/twitter/naupintos/128.jpg'
-          email: e,
-          position: faker.random.array_element(POSITION_PREFIXES) + ' ' + faker.random.array_element(POSITIONS)
+          city: faker.address.city(),
+          state: faker.address.stateAbbr(),
+          phone: faker.phone.phoneNumber(),
+          avatar: faker.internet.avatar(),
+          email: makePersonEmail(personName),
+          position: position
         });
         personIds.push(person.id);
       }
