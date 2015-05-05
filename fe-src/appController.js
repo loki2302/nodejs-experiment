@@ -22,11 +22,11 @@ angular.module('tbAppController', [
         return;
       }
 
-      $rootScope.error = null;
+      $rootScope.error = false;
     });
 
     $rootScope.$on('$routeChangeError', function(event, current, previous, rejection) {
-      $rootScope.error = "404 omg"; // TODO
+      $rootScope.error = true;
     });
   }]
 );
