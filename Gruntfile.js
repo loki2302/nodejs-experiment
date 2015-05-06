@@ -159,7 +159,7 @@ module.exports = function(grunt) {
     ['be-test', 'fe-test', 'e2e-test:all']);
 
   grunt.registerTask('fe-build', 'Build frontend',
-    ['clean', 'ngtemplates', 'uglify', 'copy', /*'concat',*/ 'cssmin', 'clean:feTmpBuildDir']);
+    ['clean', 'ngtemplates', 'uglify', 'copy', 'cssmin', 'clean:feTmpBuildDir']);
 
   grunt.registerTask('start', 'Build frontend and launch everything',
     ['fe-build', 'run']);
