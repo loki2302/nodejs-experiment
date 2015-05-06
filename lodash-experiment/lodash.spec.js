@@ -88,4 +88,17 @@ describe('lodash', function() {
       ['age', 40]
     ]);
   });
+
+  it('should defaults', function() {
+    var defaults = {
+      x: 123,
+      y: 'hello'
+    };
+    var o = { x: 222 };
+    o = _.defaults(o, defaults);
+    expect(o).to.deep.equal({
+      x: 222,
+      y: 'hello'
+    });
+  });
 });
