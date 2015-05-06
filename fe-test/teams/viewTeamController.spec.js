@@ -6,9 +6,9 @@ describe('tbViewTeamController', function() {
     scope = $rootScope.$new();
     $controller('ViewTeamController', {
       $scope: scope,
-      $location: null, // TODO
-      execute: null, // TODO
-      apiService: null, // TODO
+      $location: null,
+      execute: null,
+      apiService: null,
       team: {
         id: 123,
         name: 'the team'

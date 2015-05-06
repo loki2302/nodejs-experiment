@@ -1,5 +1,3 @@
-// TODO: check if exposeErrorsAs is published on the right scope
-
 describe('tbSubmit', function() {
   beforeEach(module('tbSubmit'));
 

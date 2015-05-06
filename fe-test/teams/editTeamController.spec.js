@@ -132,7 +132,5 @@ describe('tbEditTeam', function() {
     it('should be defined', function() {
       expect($scope.findPeopleByQuery).toBeDefined();
     });
-
-    // TODO: add more tests
   });
 });

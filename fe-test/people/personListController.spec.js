@@ -66,39 +66,4 @@ describe('PersonList', function() {
     expect(route.templateUrl).toBe('people/personList.html');
     expect(route.resolve.people).toBeDefined();
   }));
-
-  describe('routing', function() {
-    var $rootScope;
-    var onRouteChangeSuccess;
-    var onRouteChangeError;
-    var apiServiceGetPeopleDeferred;
-    beforeEach(inject(function(_$rootScope_, $location, $q, apiService, $route) {
-      $rootScope = _$rootScope_;
-
-      onRouteChangeSuccess = jasmine.createSpy('onRouteChangeSuccess');
-      onRouteChangeError = jasmine.createSpy('onRouteChangeError');
-
-      $rootScope.$on('$routeChangeSuccess', onRouteChangeSuccess);
-      $rootScope.$on('$routeChangeError', onRouteChangeError);
-
-      apiServiceGetPeopleDeferred = $q.defer();
-      spyOn(apiService, 'getPeople').and.callFake(function() {
-        return apiServiceGetPeopleDeferred.promise;
-      });
-
-      $location.path('/people');
-    }));
-
-    it('should load successfully when apiService.getPeople() does not fail', function() {
-      apiServiceGetPeopleDeferred.resolve([]);
-      $rootScope.$digest();
-      expect(onRouteChangeSuccess).toHaveBeenCalled();
-    });
-
-    it('should not load when apiService.getPeople() fails', function() {
-      apiServiceGetPeopleDeferred.reject(new Error('no data'));
-      $rootScope.$digest();
-      expect(onRouteChangeError).toHaveBeenCalled();
-    });
-  });
 });
