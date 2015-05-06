@@ -16,7 +16,11 @@ Use `./grunt start` to launch the application. It should be available at [http:/
 
 ## Running the tests
 
-Use `./grunt be-test` to run backend-only integration tests. Use `./grunt fe-test` to run frontend-only unit tests (Chrome + Firefox). Use `./grunt e2e-test` to run E2E tests (Chrome + Firefox).
+Use `./grunt be-test` to run backend-only integration tests. Use `./grunt fe-test` to run frontend-only unit tests (Chrome + Firefox). Use `./grunt e2e-test` to run E2E tests (Chrome + Firefox). Use `./grunt test` to run all tests.
+
+## Deploying to Heroku
+
+Use `./grunt heroku-deployment` to build and deploy the application to Heroku (this requires having a `heroku` remote configured with Heroku Toolbelt).
 
 ## Known issues
 
