@@ -101,4 +101,17 @@ describe('lodash', function() {
       y: 'hello'
     });
   });
+
+  it('should mapKeys', function() {
+    var o = {
+      x: 123,
+      y: 222
+    };
+    expect(_.mapKeys(o, function(value, key) {
+      return key + value;
+    })).to.deep.equal({
+      x123: 123,
+      y222: 222
+    });
+  });
 });
