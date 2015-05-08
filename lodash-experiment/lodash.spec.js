@@ -114,4 +114,17 @@ describe('lodash', function() {
       y222: 222
     });
   });
+
+  it('should mapValues', function() {
+    var o = {
+      x: 123,
+      y: 222
+    };
+    expect(_.mapValues(o, function(value, key) {
+      return key + value;
+    })).to.deep.equal({
+      x: 'x123',
+      y: 'y222'
+    });
+  });
 });
