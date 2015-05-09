@@ -127,4 +127,15 @@ describe('lodash', function() {
       y: 'y222'
     });
   });
+
+  it('should invert', function() {
+    var o = {
+      x: 123,
+      y: 222
+    };
+    expect(_.invert(o)).to.deep.equal({
+      '123': 'x',
+      '222': 'y'
+    });
+  });
 });
