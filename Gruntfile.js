@@ -63,6 +63,7 @@ module.exports = function(grunt) {
         files: {
           '<%= feAmalgamatedCssFile %>': [
             '<%= feBowerComponentsDir %>/bootstrap/dist/css/bootstrap.min.css',
+            '<%= feBowerComponentsDir %>/angular/angular-csp.css',
             '<%= feSrcDir %>/home.css',
             '<%= feSrcDir %>/commons/avatar.css',
             '<%= feSrcDir %>/teams/teams.css',

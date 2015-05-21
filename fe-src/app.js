@@ -29,7 +29,4 @@ angular.module('tbApp', [
       }
     };
   }]);
-}]).run(['$rootElement', function($rootElement) {
-  $rootElement.find('span').remove();
-  $rootElement.find('div').attr('style', '');
 }]);
