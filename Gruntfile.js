@@ -129,7 +129,8 @@ module.exports = function(grunt) {
     protractor_webdriver: {
       options: {
         keepAlive: true
-      }
+      },
+      dummy: {}
     },
     protractor: {
       options: {
@@ -174,7 +175,7 @@ module.exports = function(grunt) {
       protractorTask = 'protractor:' + suite;
     }
 
-    grunt.task.run(['fe-build', 'protractor_webdriver', protractorTask]);
+    grunt.task.run(['fe-build', 'protractor_webdriver:dummy', protractorTask]);
   });
 
   grunt.registerTask('fe-test', 'Run FE tests once', ['karma:runOnce']);
