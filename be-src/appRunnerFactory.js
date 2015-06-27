@@ -83,5 +83,5 @@ module.exports = function(settings) {
     }
   };
 
-  return require('hinoki')(container, 'appRunner');
+  return require('hinoki')(container.factories, container.values, 'appRunner');
 };
