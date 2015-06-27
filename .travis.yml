@@ -10,3 +10,4 @@ before_script:
 script:
  - ./grunt be-test
  - ./grunt fe-test
+ - ./grunt e2e-test
