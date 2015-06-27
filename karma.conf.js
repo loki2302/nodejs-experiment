@@ -1,5 +1,5 @@
 module.exports = function(config) {
-  config.set({
+  var c = {
     basePath: './',
     files: [
       'bower_components/jquery/dist/jquery.js',
@@ -28,7 +28,14 @@ module.exports = function(config) {
     ngHtml2JsPreprocessor: {
       stripPrefix: 'fe-src/',
       moduleName: 'tbTemplates'
-    },
-    browsers: ['Chrome', 'Firefox']
-  });
+    }
+  };
+
+  if(process.env.TRAVIS) {
+    c.browsers = ['Firefox'];
+  } else {
+    c.browsers = ['Firefox', 'Chrome'];
+  }
+
+  config.set(c);
 };

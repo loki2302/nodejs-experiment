@@ -3,8 +3,10 @@ node_js:
  - '0.11'
 before_script:
  - npm install -g grunt-cli
+ - bower install
  - ./grunt webdriver-update
  - export DISPLAY=:99.0
  - sh -e /etc/init.d/xvfb start
 script:
  - ./grunt be-test
+ - ./grunt fe-test
