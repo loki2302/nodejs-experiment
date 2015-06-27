@@ -1,5 +1,7 @@
 # nodejs-angular-app
 
+[![Build Status](https://travis-ci.org/loki2302/nodejs-angular-app.svg?branch=master)](https://travis-ci.org/loki2302/nodejs-angular-app)
+
 Available live at [https://powerful-beach-8366.herokuapp.com/](https://powerful-beach-8366.herokuapp.com/).
 
 This application has only be tested against Node v0.11.14. It is likely to work with v0.12.x, but it's not guaranteed. This application has only been tested against Ubuntu 14.10.
