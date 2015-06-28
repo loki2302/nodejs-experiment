@@ -1,11 +1,18 @@
 language: node_js
 node_js:
- - '0.11'
+- '0.11'
 before_script:
- - npm install -g grunt-cli bower
- - bower install
- - ./grunt webdriver-update
- - export DISPLAY=:99.0
- - sh -e /etc/init.d/xvfb start
+- npm install -g grunt-cli bower
+- bower install
+- "./grunt webdriver-update"
+- export DISPLAY=:99.0
+- sh -e /etc/init.d/xvfb start
 script:
- - ./grunt test
+- "./grunt test"
+after_success:
+- heroku keys:clear
+- yes | heroku keys:add
+- "./grunt heroku-deployment"
+env:
+  global:
+    secure: gtLD4dlXI01fRPJPnWi54FZLnSjWBKzpyBxPf//zBR1yeC5TeBWTn+13EWzgtxFjLHWW+Oh2P5Xt0jMX6aR/8vn+BflFsiSOLnP0gCVM7Hq+EqumNwK7NySH2Yd0lqPnWKVYmWq0yKLIfP+9nLCAkJ+6DP2Blqqk/T6LnDKyCa0zpwJNyT/Qq7zHkY980EQhklXyFO5gzBgAGWMrFu0FK5PGPKISj7gvlagZCfDE5w3nl6yYtxZxGFxHjjyaikxyutNy+xKipr2ihOct+VUSyAnpoaj2etzpTP8D6hwPo3+A0HVIJ+VMq6xTs96DNEgWIZONBuA6yYO7G96vROigWK5CdIu902CUWnLXzmGpP9yyv4dGqzpmRszM2XXB9D3YtprVJrmgPdxaeIkGi5oHnGkruK7H5ZvHZemyEqsO64tuQL0bKIe9wvqYop27RR3ft2npA01EZrrulHzmbDFj+Xjy1UAVSGiUHfe7tyQRla8OIRDBIbvy6QlZR5zq4ogptbhNECvCIQYlc0xr/3oCGATjyTsf7zSsErhLX3ACEvQNQBSDfnPTJxQv4HxWWFVs7NFI6H7CijaCeStvSOpytN1LtvtbHxzv5KMBdTQjp88E1iMMt1/0ko1F5iNINPWagP6FVaOAJmJP19ESYE6B2+W9R3tJWTy4NqcMZGd/jMk=
