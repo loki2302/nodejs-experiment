@@ -11,6 +11,8 @@ script:
 - "./grunt test"
 after_success:
 - wget -O- https://toolbelt.heroku.com/install-ubuntu.sh | sh
+- git config --global user.name "loki2302"
+- git config --global user.email "loki2302@loki2302.me"
 - "./grunt heroku-deployment"
 env:
   global:
