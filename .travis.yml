@@ -10,8 +10,7 @@ before_script:
 script:
 - "./grunt test"
 after_success:
-- heroku keys:clear
-- yes | heroku keys:add
+- wget -O- https://toolbelt.heroku.com/install-ubuntu.sh | sh
 - "./grunt heroku-deployment"
 env:
   global:
