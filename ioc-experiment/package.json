@@ -10,7 +10,7 @@
   "license": "BSD-2-Clause",
   "dependencies": {
     "amend": "^0.3.0-beta-5",
-    "hinoki": "^0.3.0-beta.16",
+    "hinoki": "1.0.0-rc.2",
     "intravenous": "~0.1.4-beta",
     "q": "^1.2.0",
     "simple-ioc": "^3.0.13"

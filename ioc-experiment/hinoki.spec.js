@@ -4,187 +4,126 @@ var Q = require('q');
 
 describe('hinoki', function() {
   it('should let me register and resolve a value', function(done) {
-    var container = {
-      values: {
-        a: 123
-      }
+    var lifetime = {
+      a: 123
     };
 
-    hinoki.get(container, 'a').then(function(a) {
+    hinoki(function() {}, lifetime, 'a').then(function(a) {
       expect(a).to.equal(123);
       done();
     });
   });
 
   it('should fail when the value is impossible to resolve', function(done) {
-    var container = {
-      values: {
-        // empty
-      }
+    var lifetime = {
+      /* empty */
     };
 
-    hinoki.get(container, 'a').then(null, function(error) {
-      expect(error).to.be.instanceof(hinoki.UnresolvableError);
+    hinoki(function() {}, lifetime, 'a').then(null, function(error) {
+      expect(error).to.be.instanceof(hinoki.NotFoundError);
       expect(error.path[0]).to.equal('a');
       done();
     });
   });
 
-  it('should let me register a factory', function(done) {
-    var container = {
-      factories: {
-        a: function() {
-          return 123;
-        }
+  it('should let me register a factory via source', function(done) {
+    var mySource = function(key) {
+      if(key === 'x') {
+        return function() {
+          return 11;
+        };
+      }
+
+      if(key === 'y') {
+        return function() {
+          return 22;
+        };
+      }
+
+      if(key === 'z') {
+        return function(x, y) {
+          return x + y;
+        };
       }
     };
 
-    hinoki.get(container, 'a').then(function(a) {
-      expect(a).to.equal(123);
-      expect(container.values.a).to.equal(123);
+    hinoki(mySource, {}, 'z').then(function(z) {
+      expect(z).to.equal(33);
       done();
     });
+  });
+
+  it('should fail when the source throws', function() {
+    expect(function() {
+      hinoki(function(key) {
+        throw new Error('everything is bad!');
+      }, {}, 'x');
+    }).to.throw(Error, /everything is bad!/);
   });
 
   it('should fail when the factory throws', function(done) {
-    var container = {
-      factories: {
-        a: function() {
-          throw new Error('everything is bad');
-        }
-      }
-    };
+    hinoki(function() {
+      return function() {
+        throw new Error('everything is bad!');
+      };
+    }, {}, 'x').then(null, function(error) {
+      expect(error).to.be.instanceof(hinoki.ErrorInFactory);
+      expect(error.path[0]).to.equal('x');
+      expect(error.error.message).to.equal('everything is bad!');
+      done();
+    });
+  });
 
-    hinoki.get(container, 'a').then(null, function(error) {
-      expect(error).to.be.instanceof(hinoki.ThrowInFactoryError);
-      expect(error.path[0]).to.equal('a');
-      expect(error.error).to.be.instanceof(Error);
-      expect(error.error.message).to.equal('everything is bad');
+  it('should let me register a factory via object', function(done) {
+    hinoki({
+      x: function() {
+        return 11;
+      },
+      y: function() {
+        return 22;
+      },
+      z: function(x, y) {
+        return x + y;
+      }
+    }, {}, 'z').then(function(z) {
+      expect(z).to.equal(33);
       done();
     });
   });
 
   it('should let me register an async factory', function(done) {
-    var container = {
-      factories: {
-        a: function() {
+    hinoki(function(key) {
+      if(key === 'a') {
+        return function() {
           var deferred = Q.defer();
           setTimeout(function() {
             deferred.resolve(123);
           }, 10);
           return deferred.promise;
-        }
+        };
       }
-    };
-
-    hinoki.get(container, 'a').then(function(a) {
+    }, {}, 'a').then(function(a) {
       expect(a).to.equal(123);
-      expect(container.values.a).to.equal(123);
       done();
     });
   });
 
   it('should fail when async factory rejects', function(done) {
-    var container = {
-      factories: {
-        a: function() {
+    hinoki(function(key) {
+      if(key === 'a') {
+        return function() {
           var deferred = Q.defer();
           setTimeout(function() {
-            deferred.reject(new Error('everything is bad'));
+            deferred.reject(new Error('everything is bad!'));
           }, 10);
           return deferred.promise;
-        }
+        };
       }
-    };
-
-    hinoki.get(container, 'a').then(null, function(error) {
+    }, {}, 'a').then(null, function(error) {
       expect(error).to.be.instanceof(hinoki.PromiseRejectedError);
       expect(error.path[0]).to.equal('a');
-      expect(error.error).to.be.instanceof(Error);
-      expect(error.error.message).to.equal('everything is bad');
+      expect(error.error.message).to.equal('everything is bad!');
       done();
     });
-  });
-
-  it('should let me inject the dependencies', function(done) {
-    var container = {
-      factories: {
-        a: function() {
-          var deferred = Q.defer();
-          setTimeout(function() {
-            deferred.resolve(2);
-          }, 10);
-          return deferred.promise;
-        },
-        b: function() {
-          var deferred = Q.defer();
-          setTimeout(function() {
-            deferred.resolve(3);
-          }, 10);
-          return deferred.promise;
-        },
-        sum: function(a, b) {
-          var deferred = Q.defer();
-          setTimeout(function() {
-            deferred.resolve(a + b);
-          }, 10);
-          return deferred.promise;
-        }
-      }
-    };
-
-    hinoki.get(container, 'sum').then(function(sum) {
-      expect(sum).to.equal(5);
-      expect(container.values.a).to.equal(2);
-      expect(container.values.b).to.equal(3);
-      expect(container.values.sum).to.equal(5);
-      done();
-    });
-  });
-
-  it('should let me emulate multibindings', function(done) {
-    var appBuilder = new AppBuilder();
-    appBuilder.registerRoute(function() { return 11; });
-    appBuilder.registerRoute(function() { return 22; });
-    appBuilder.registerRoute(function() { return 33; });
-
-    var container = appBuilder.buildContainer();
-    hinoki.get(container, 'allRoutes').then(function(allRoutes) {
-      expect(allRoutes.length).to.equal(3);
-      done();
-    });
-
-    function AppBuilder() {
-      this.routes = [];
-
-      this.registerRoute = function(routeCtorFunc) {
-        this.routes.push(routeCtorFunc);
-      };
-
-      this.buildContainer = function() {
-        var factories = {};
-
-        var routeNames = [];
-        this.routes.forEach(function(routeCtorFunc, routeIndex) {
-          var routeName = 'route-' + routeIndex;
-          factories[routeName] = routeCtorFunc;
-          routeNames.push(routeName);
-        });
-
-        factories.allRoutes = (function() {
-          function RouteCollectionFactory() {
-            return arguments;
-          };
-
-          RouteCollectionFactory.$inject = routeNames;
-          return RouteCollectionFactory;
-        })();
-
-        return {
-          values: {},
-          factories: factories
-        };
-      };
-    };
   });
 });
