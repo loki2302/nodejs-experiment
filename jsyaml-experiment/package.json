@@ -1,0 +1,22 @@
+{
+  "name": "jsyaml-experiment",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^3.4.0",
+    "grunt": "^0.4.5",
+    "grunt-execute": "^0.2.2",
+    "grunt-mocha-test": "^0.12.7",
+    "mocha": "^2.3.3"
+  },
+  "dependencies": {
+    "js-yaml": "^3.4.3",
+    "lodash": "^3.10.1"
+  }
+}
