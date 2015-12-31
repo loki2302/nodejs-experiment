@@ -11,7 +11,9 @@ describe('validate.js', function() {
       }
     };
 
-    var result = validate({}, constraints);
-    expect(result.username[0]).to.equal('Username should not be empty');
+    var result = validate({}, constraints, {
+      fullMessages: false // otherwise it will prepend field name to validation error message
+    });
+    expect(result.username[0]).to.equal('should not be empty');
   });
 });
