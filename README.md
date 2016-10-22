@@ -1,5 +1,4 @@
 # typescript-experiment
 
-Install TypeScript with `npm install -g typescript` and tsd with `npm install -g tsd`. Then `npm install` to install npm dependencies and `grunt install` to install TypeScript definitions.
-
-Then, `grunt` (or `grunt test`) runs the test and `grunt run` runs the app.
+* `npm test` to run tests
+* `npm run-script run` to run the app

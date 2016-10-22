@@ -1,34 +1,16 @@
-/// <reference path="typings/node/node.d.ts" />
-/// <reference path="typings/mocha/mocha.d.ts" />
+import { expect } from "chai";
+import { FileModel, ClassModel, MethodModel, ParameterModel, readCode } from "./code-model-reader";
 
-import assert = require('assert');
+describe('code-model-reader', () => {
+    it('should work', () => {
+        const fileModels: FileModel[] = readCode(["dummy.ts"]);
+        expect(fileModels.length).to.equal(1);
 
-interface HelloWorlder {
-  makeMessage(): string;
-}
+        const dummyFileModel: FileModel = fileModels[0];
+        expect(dummyFileModel.classes.length).to.equal(2);
 
-class HelloWorlderImpl implements HelloWorlder {
-  makeMessage(): string {
-    return "Hello World!";
-  }
-}
-
-class Calculator {
-  addNumbers(a: number, b: number): number {
-    return a + b;
-  }
-}
-
-describe('Hello Worlder', () => {
-  it('should work', () => {
-    var helloWorlder: HelloWorlder = new HelloWorlderImpl();
-    var message: string = helloWorlder.makeMessage();
-    assert.equal(message, 'Hello World!');
-  });
-});
-
-describe('Calculator', () => {
-  it('should add numbers', function() {
-    assert.equal(5, new Calculator().addNumbers(2, 3))
-  });
+        const classModel: ClassModel = dummyFileModel.classes.filter((c: ClassModel) => c.name == 'Calculator')[0];
+        expect(classModel.comment).to.contain('Provides functionality to add an subtract numbers');
+        expect(classModel.methods.length).to.equal(2);
+    });
 });
