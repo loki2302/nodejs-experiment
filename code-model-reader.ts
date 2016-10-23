@@ -8,7 +8,12 @@ export interface FileModel {
 export interface ClassModel {
     name: string;
     comment: string;
+    ctor: ConstructorModel;
     methods: MethodModel[];
+}
+
+export interface ConstructorModel {
+    parameters: ParameterModel[];
 }
 
 export interface MethodModel {
@@ -50,12 +55,31 @@ function readClass(classDeclaration: ts.ClassDeclaration, typeChecker: ts.TypeCh
     const classSymbol: ts.Symbol = typeChecker.getSymbolAtLocation(classId);
     const className: string = classSymbol.getName();
     const classComment: string = ts.displayPartsToString(classSymbol.getDocumentationComment());
+    const constructorModel: ConstructorModel = readConstructor(classSymbol, typeChecker);
+
     return {
         name: className,
         comment: classComment,
+        ctor: constructorModel,
         methods: getChildNodes(classDeclaration, ts.SyntaxKind.MethodDeclaration)
             .map(n => <ts.MethodDeclaration>n)
             .map((methodDeclaration: ts.MethodDeclaration) => readMethod(methodDeclaration, typeChecker))
+    };
+}
+
+function readConstructor(classSymbol: ts.Symbol, typeChecker: ts.TypeChecker): ConstructorModel {
+    const constructorType: ts.Type = typeChecker.getTypeOfSymbolAtLocation(classSymbol, classSymbol.valueDeclaration);
+    const constructSignatures: ts.Signature[] = constructorType.getConstructSignatures();
+    if(constructSignatures.length !== 1) {
+        throw new Error();
+    }
+
+    const constructSignature: ts.Signature = constructSignatures[0];
+    const parameters: ParameterModel[] = constructSignature.getParameters()
+        .map((parameterSymbol: ts.Symbol) => readMethodParameter(parameterSymbol, typeChecker));
+
+    return {
+        parameters: parameters
     };
 }
 

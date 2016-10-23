@@ -28,9 +28,16 @@ class Calculator {
  */
 class HelloWorlder {
     /**
+     *
+     * @param name a name of someone to say "hello" to
+     */
+    constructor(private name: string) {
+    }
+
+    /**
      * Say "hello world".
      */
     sayIt(): void {
-        console.log('hello world');
+        console.log(`hello ${this.name}`);
     }
 }
