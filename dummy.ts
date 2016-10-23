@@ -24,11 +24,11 @@ class Calculator {
 }
 
 /**
- * Provides functionality to say "hello world"
+ * Provides functionality to say "hello world".
  */
 class HelloWorlder {
     /**
-     * Say "hello world"
+     * Say "hello world".
      */
     sayIt(): void {
         console.log('hello world');
