@@ -2,8 +2,8 @@ var expect = require('chai').expect;
 var moment = require('moment');
 
 describe('moment', function() {
-  it('should let me format time as ISO 8601', function() {
-    expect(moment('2015-07-27T12:34:56Z').utc().format()).to.equal('2015-07-27T12:34:56+00:00')
+  it('should let me format time as ISO-8601', function() {
+    expect(moment('2015-07-27T12:34:56Z').utc().format()).to.equal('2015-07-27T12:34:56Z')
   });
 
   it('should let me format time as a human-readable string', function() {
