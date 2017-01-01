@@ -53,7 +53,7 @@ describe('moment', function() {
       const start = moment('2013-03-15');
       const today = moment('2016-05-12');
 
-      const years = datesBetween(start, today, 'year', 'YYYY')
+      const years = datesBetween(start, today, 'year', 'YYYY');
       expect(years).to.deep.equal(['2013', '2014', '2015', '2016']);
     });
 
@@ -61,7 +61,7 @@ describe('moment', function() {
       const start = moment('2013-03-15');
       const today = moment('2016-05-12');
 
-      const months = datesBetween(start, today, 'month', 'YYYY-MM')
+      const months = datesBetween(start, today, 'month', 'YYYY-MM');
 
       expect(months[0]).to.equal('2013-03');
       expect(months[months.length - 1]).to.equal('2016-05');
