@@ -33,4 +33,38 @@ describe('moment', function() {
   function zeroTime() {
     return moment('2015-07-27T12:34:56Z').utc();
   };
+
+  describe('periods', () => {
+    function datesBetween(start, end, step, format) {
+      const startStepMoment = start.startOf(step);
+      const endStepMoment = end.startOf(step);
+
+      let stepMoment = startStepMoment;
+      const dates = [];
+      while(stepMoment.isSameOrBefore(endStepMoment)) {
+        dates.push(stepMoment.format(format));
+        stepMoment = stepMoment.add(1, step);
+      }
+
+      return dates;
+    }
+
+    it('should give me a list of years between 2 moments', () => {
+      const start = moment('2013-03-15');
+      const today = moment('2016-05-12');
+
+      const years = datesBetween(start, today, 'year', 'YYYY')
+      expect(years).to.deep.equal(['2013', '2014', '2015', '2016']);
+    });
+
+    it('should give me a list of months between 2 moments', () => {
+      const start = moment('2013-03-15');
+      const today = moment('2016-05-12');
+
+      const months = datesBetween(start, today, 'month', 'YYYY-MM')
+
+      expect(months[0]).to.equal('2013-03');
+      expect(months[months.length - 1]).to.equal('2016-05');
+    });
+  });
 });
