@@ -1,0 +1,24 @@
+{
+  "name": "typeorm-experiment",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --compilers ts:ts-node/register *.spec.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/chai": "^3.4.34",
+    "@types/mocha": "^2.2.39",
+    "@types/node": "^7.0.5",
+    "chai": "^3.5.0",
+    "mocha": "^3.2.0",
+    "mocha-cli": "^1.0.1",
+    "reflect-metadata": "^0.1.9",
+    "sqlite3": "^3.1.8",
+    "ts-node": "^2.0.0",
+    "typeorm": "0.0.8",
+    "typescript": "^2.1.5"
+  }
+}
