@@ -1,5 +1,6 @@
 import { expect } from "chai";
-import {IsNotEmpty, validateSync} from "class-validator";
+import { IsNotEmpty, validateSync } from "class-validator";
+import { Trim, sanitize } from "class-sanitizer";
 
 describe('class-validator', () => {
     class Note {
@@ -24,5 +25,21 @@ describe('class-validator', () => {
         expect(error.value).to.equal('');
         expect(error.children.length).to.equal(0);
         expect(error.constraints['isNotEmpty']).to.equal('text should not be empty');
+    });
+});
+
+describe('class-sanitizer', () => {
+    class Note {
+        @Trim()
+        title: string;
+    }
+
+    it('should work', () => {
+        const note = new Note();
+        note.title = '   Hello there!!! ';
+
+        sanitize(note);
+
+        expect(note.title).to.equal('Hello there!!!');
     });
 });
