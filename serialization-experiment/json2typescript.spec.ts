@@ -42,7 +42,6 @@ describe('json2typescript', () => {
             Id: 123,
             Name: 'John Smith'
         }, Person);
-        console.log(person);
         expect(person instanceof Person).to.be.true;
         expect(person.id).to.equal(123);
         expect(person.name).to.equal('John Smith');
