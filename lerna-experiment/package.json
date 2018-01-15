@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "bootstrap": "lerna bootstrap",
+    "test": "lerna run test",
+    "clean": "lerna clean --yes",
+    "dummy": "lerna run dummy",
+    "start": "lerna run start"
+  },
+  "devDependencies": {
+    "lerna": "^2.7.0"
+  }
+}
