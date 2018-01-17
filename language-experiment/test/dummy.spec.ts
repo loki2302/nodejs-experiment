@@ -20,7 +20,9 @@ interface CommandHandler<TResult> {
 }
 
 class AddNumbersCommandHandler implements CommandHandler<number> {
-    commandType = AddNumbersCommand;
+    get commandType() {
+        return AddNumbersCommand;
+    }
 
     handle(command: AddNumbersCommand): number {
         return command.a + command.b;
@@ -28,7 +30,9 @@ class AddNumbersCommandHandler implements CommandHandler<number> {
 }
 
 class SubtractNumbersCommandHandler implements CommandHandler<number> {
-    commandType = SubtractNumbersCommand;
+    get commandType() {
+        return SubtractNumbersCommand;
+    }
 
     handle(command: SubtractNumbersCommand): number {
         return command.a - command.b;
