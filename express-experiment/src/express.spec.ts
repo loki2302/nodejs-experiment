@@ -324,4 +324,44 @@ describe('express', () => {
             expect(response.status).to.equal(404);
         });
     });
+
+    describe('express.Router()', () => {
+        let server: http.Server;
+        let client: AxiosInstance;
+        before((done) => {
+            const app = express();
+
+            const routerA = express.Router();
+            routerA.get('/', (req, res) => res.send('routerA GET /'));
+            routerA.get('/:id', (req, res) => res.send('routerA GET /:id'));
+
+            const routerB = express.Router();
+            routerB.get('/', (req, res) => res.send('routerB GET /'));
+            routerB.get('/:id', (req, res) => res.send('routerB GET /:id'));
+
+            app.use('/a', routerA);
+            app.use('/b', routerB);
+
+            server = app.listen(3000, () => {
+                done();
+            });
+
+            client = axios.create({
+                baseURL: 'http://localhost:3000'
+            });
+        });
+
+        after((done) => {
+            server.close(() => {
+                done();
+            });
+        });
+
+        it('should work', async () => {
+            expect((await client.get('/a')).data).to.equal('routerA GET /');
+            expect((await client.get('/a/123')).data).to.equal('routerA GET /:id');
+            expect((await client.get('/b')).data).to.equal('routerB GET /');
+            expect((await client.get('/b/123')).data).to.equal('routerB GET /:id');
+        });
+    });
 });
