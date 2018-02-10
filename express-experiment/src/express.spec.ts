@@ -255,8 +255,6 @@ describe('express', () => {
         before((done) => {
             const app = express();
 
-            app.use(express.json());
-
             app.get('/:a', (req, res) => {
                 const a = parseInt(req.params.a, 10);
                 const b = parseInt(req.query.b, 10);
@@ -288,6 +286,42 @@ describe('express', () => {
                 sum: 5,
                 difference: -1
             });
+        });
+    });
+
+    describe('express.static()', () => {
+        let server: http.Server;
+        let client: AxiosInstance;
+        before((done) => {
+            const app = express();
+
+            app.use(express.static(__dirname + '/static'));
+
+            server = app.listen(3000, () => {
+                done();
+            });
+
+            client = axios.create({
+                baseURL: 'http://localhost:3000',
+                validateStatus: status => true
+            });
+        });
+
+        after((done) => {
+            server.close(() => {
+                done();
+            });
+        });
+
+        it('should provide the file contents if that file exists', async () => {
+            const response = await client.get('/1.txt');
+            expect(response.status).to.equal(200);
+            expect(response.data).to.equal('hello there');
+        });
+
+        it('should say 404 if the file does not exist', async () => {
+            const response = await client.get('/2.txt');
+            expect(response.status).to.equal(404);
         });
     });
 });
