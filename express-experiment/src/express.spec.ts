@@ -204,4 +204,48 @@ describe('express', () => {
             expect(response.data).to.equal('user is user-222');
         });
     });
+
+    describe('JSON body', () => {
+        let server: http.Server;
+        let client: AxiosInstance;
+        before((done) => {
+            const app = express();
+
+            app.use(express.json());
+
+            app.post('/', (req, res) => {
+                const { a, b } = req.body;
+                res.json({
+                    sum: a + b,
+                    difference: a - b
+                });
+            });
+
+            server = app.listen(3000, () => {
+                done();
+            });
+
+            client = axios.create({
+                baseURL: 'http://localhost:3000'
+            });
+        });
+
+        after((done) => {
+            server.close(() => {
+                done();
+            });
+        });
+
+        it('should work', async () => {
+            const response = await client.post('/', {
+                a: 2,
+                b: 3
+            });
+            expect(response.status).to.equal(200);
+            expect(response.data).to.deep.equal({
+                sum: 5,
+                difference: -1
+            });
+        });
+    });
 });
