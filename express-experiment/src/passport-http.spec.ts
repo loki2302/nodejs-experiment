@@ -1,29 +1,26 @@
 import {expect} from 'chai';
 
 import * as express from "express";
-import {Strategy as JwtStrategy, ExtractJwt, VerifiedCallback} from "passport-jwt";
+import {BasicStrategy} from "passport-http";
 import * as http from "http";
 import axios, {AxiosInstance} from "axios";
-import * as jwt from "jsonwebtoken";
 import * as passport from "passport";
 
-describe('passport-jwt', () => {
-    const JWT_SECRET = 'i like kefir';
-
+describe('passport-http', () => {
     let server: http.Server;
     let client: AxiosInstance;
     before((done) => {
         const app = express();
 
-        passport.use(new JwtStrategy({
-            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-            secretOrKey: JWT_SECRET
-        }, (payload: any, done: VerifiedCallback) => {
-            done(null, payload.name);
-        }));
+        passport.use(new BasicStrategy(((username, password, done2) => {
+            if(username != 'medved' && password != 'qwerty') {
+                return done2(null, false);
+            }
+            return done2(null, username);
+        })));
 
         app.use(passport.initialize());
-        app.use(passport.authenticate('jwt', { session: false }));
+        app.use(passport.authenticate('basic', { session: false }));
 
         app.get('/', (req, res) => {
             res.send('hello world! ' + req.user);
@@ -52,10 +49,10 @@ describe('passport-jwt', () => {
     });
 
     it('should respond with 200 when there is token', async () => {
-        const token = jwt.sign({ name: 'medved' }, JWT_SECRET);
         const response = await client.get('/', {
-            headers: {
-                authorization: 'Bearer ' + token
+            auth: {
+                username: 'medved',
+                password: 'qwerty'
             }
         });
         expect(response.status).to.equal(200);
