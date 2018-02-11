@@ -1,3 +1,4 @@
 # express-experiment
 
-Run with `npm test`
+* Run all tests with `npm test`
+* Run nodemon demo with `npm start`
