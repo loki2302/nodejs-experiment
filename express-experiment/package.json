@@ -44,6 +44,7 @@
     "passport-jwt": "^3.0.1",
     "passport-local": "^1.0.0",
     "reflect-metadata": "^0.1.12",
-    "routing-controllers": "^0.7.6"
+    "routing-controllers": "^0.7.6",
+    "typedi": "^0.6.1"
   }
 }

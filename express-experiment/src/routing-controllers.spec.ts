@@ -4,8 +4,12 @@ import {expect} from 'chai';
 
 import * as http from "http";
 import axios, {AxiosInstance} from "axios";
-import {Body, Controller, createExpressServer, Get, JsonController, Param, Post} from "routing-controllers";
-import {IsNotEmpty, Max, Min} from "class-validator";
+import {
+    Body, createExpressServer, Get, JsonController, Param, Post,
+    useContainer
+} from "routing-controllers";
+import {Max, Min} from "class-validator";
+import {Container} from "typedi";
 
 interface ResultDto {
     result: number;
@@ -24,12 +28,24 @@ class SubtractRequestDto {
     }
 }
 
+class CalculatorService {
+    addNumbers(a: number, b: number): number {
+        return a + b;
+    }
+
+    subtractNumbers(a: number, b: number): number {
+        return a - b;
+    }
+}
+
 @JsonController('/api')
 class CalculatorController {
+    constructor(private calculatorService: CalculatorService) {}
+
     @Get("/add/:a/:b")
     add(@Param("a") a: number, @Param("b") b: number): ResultDto {
         return {
-            result: a + b
+            result: this.calculatorService.addNumbers(a, b)
         };
     }
 
@@ -39,7 +55,7 @@ class CalculatorController {
             setTimeout(() => resolve(), 50);
         });
         return {
-            result: requestBody.a - requestBody.b
+            result: this.calculatorService.subtractNumbers(requestBody.a, requestBody.b)
         };
     }
 }
@@ -49,9 +65,11 @@ describe('routing-controllers', () => {
         let server: http.Server;
         let client: AxiosInstance;
         before((done) => {
+            useContainer(Container);
+
             const app = createExpressServer({
-                validation: true,
-                controllers: [ CalculatorController ]
+                validation: true/*,
+                controllers: [ CalculatorController ]*/
             });
 
             server = app.listen(3000, () => {
