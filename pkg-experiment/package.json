@@ -1,0 +1,25 @@
+{
+  "name": "pkg-experiment",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "clean": "rm -rf build",
+    "build": "pkg --out-path build .",
+    "start": "node src/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "pkg": "^4.3.0"
+  },
+  "dependencies": {
+    "express": "^4.16.2"
+  },
+  "bin": "src/index.js",
+  "pkg": {
+    "assets": [
+      "src/public/**/*"
+    ]
+  }
+}
