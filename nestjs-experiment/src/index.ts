@@ -2,11 +2,15 @@ import "reflect-metadata";
 import {NestFactory} from "@nestjs/core";
 import {Body, Controller, Get, Module, Param, Post} from "@nestjs/common";
 import {ApiModelProperty, ApiOperation, ApiResponse, DocumentBuilder, SwaggerModule} from "@nestjs/swagger";
+import {IsNotEmpty, IsString} from "class-validator";
+import {MyValidationPipe} from "./my-validation.pipe";
 
 export class EditableNoteAttributesDto {
     @ApiModelProperty({
         description: 'Note text'
     })
+    @IsString()
+    @IsNotEmpty()
     readonly text: string;
 }
 
@@ -76,6 +80,8 @@ export class AppModule {
         .build();
     const document = SwaggerModule.createDocument(app, options);
     SwaggerModule.setup('/docs', app, document);
+
+    app.useGlobalPipes(new MyValidationPipe());
 
     await app.listen(3000);
 })();
