@@ -44,8 +44,8 @@ class CalculatorController {
     @httpGet('/add/:a/:b')
     add(@requestParam('a') a: number, @requestParam('b') b: number): ResultDto {
         // TODO: how do I convert these more nicely?
-        a = parseInt(a, 10);
-        b = parseInt(b, 10);
+        a = parseInt(<any>a, 10);
+        b = parseInt(<any>b, 10);
         return {
             result: this.calculatorService.addNumbers(a, b)
         };
