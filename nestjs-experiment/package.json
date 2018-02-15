@@ -4,12 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts"
+    "start": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
+    "test": "jest"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/jest": "^22.1.2",
     "@types/node": "^9.4.6",
+    "axios": "^0.17.1",
+    "jest": "^22.3.0",
     "nodemon": "^1.14.12",
     "ts-node": "^4.1.0",
     "typescript": "^2.7.1"
@@ -26,5 +30,18 @@
     "rxjs": "^5.5.6",
     "sqlite3": "^3.1.13",
     "typeorm": "^0.1.12"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "transform": {
+      "^.+\\.ts$": "./preprocessor.js"
+    },
+    "testMatch": [
+      "**/*.spec.ts"
+    ],
+    "testEnvironment": "node"
   }
 }
