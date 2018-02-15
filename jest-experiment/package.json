@@ -1,0 +1,31 @@
+{
+  "name": "jest-experiment",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/jest": "^22.1.2",
+    "jest": "^22.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^9.4.6",
+    "typescript": "^2.7.1"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "transform": {
+      "^.+\\.ts$": "./preprocessor.js"
+    },
+    "testMatch": [
+      "**/*.spec.ts"
+    ]
+  }
+}
