@@ -24,3 +24,14 @@ describe('promises', () => {
         expect(1).toBeGreaterThan(0);
     });
 });
+
+describe('mocks', () => {
+    it('should work', () => {
+        const doSomething = jest.fn();
+        doSomething(2, 'hello');
+        expect(doSomething).toHaveBeenCalled();
+
+        const call = doSomething.mock.calls[0];
+        expect(call).toEqual([2, 'hello']);
+    });
+});
