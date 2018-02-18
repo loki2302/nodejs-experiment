@@ -4,6 +4,7 @@ import {MyValidationPipe} from "./my-validation.pipe";
 import {AppModule} from "./app.module";
 import * as express from "express";
 import * as http from "http";
+import {MyHttpExceptionFilter} from "./my-http-exception.filter";
 
 export async function startApp(): Promise<http.Server> {
     const app = express();
@@ -19,6 +20,7 @@ export async function startApp(): Promise<http.Server> {
     const document = SwaggerModule.createDocument(nestApp, options);
     SwaggerModule.setup('/docs', nestApp, document);
     nestApp.useGlobalPipes(new MyValidationPipe());
+    nestApp.useGlobalFilters(new MyHttpExceptionFilter());
 
     const port = 3000;
     const server = await nestApp.listen(port, () => {
