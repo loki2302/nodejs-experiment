@@ -1,0 +1,79 @@
+swagger: "2.0"
+info:
+  version: "0.0.1"
+  title: Hello World App
+# during dev, should point to your local machine
+host: localhost:10010
+# basePath prefixes all resource paths 
+basePath: /
+# 
+schemes:
+  # tip: remove http to make production-grade
+  - http
+  - https
+# format of bodies a client can send (Content-Type)
+consumes:
+  - application/json
+# format of the responses to the client (Accepts)
+produces:
+  - application/json
+paths:
+  /api/add:
+    x-swagger-router-controller: calculator
+    post:
+      description: Add two numbers
+      operationId: add
+      parameters:
+        - name: addNumbersRequest
+          in: body
+          description: The add numbers request object
+          schema:
+            $ref: "#/definitions/AddNumbersRequest"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/MathResponse"
+            
+  /api/sub:
+    x-swagger-router-controller: calculator
+    get:
+      description: Subtract two numbers
+      operationId: sub
+      parameters:
+        - name: a
+          in: query
+          description: Number A
+          required: true
+          type: number
+        - name: b
+          in: query
+          description: Number B
+          required: true
+          type: number
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/MathResponse"
+          
+  /swagger:
+    x-swagger-pipe: swagger_raw
+
+definitions:
+  AddNumbersRequest:
+    title: AddNumbersRequestDto
+    properties:
+      a:
+        type: number
+        description: Number A
+      b:
+        type: number
+        description: Number B
+    required: [ a, b ]
+
+  MathResponse:
+    properties:
+      result:
+        type: number
+    required: [ result ]
