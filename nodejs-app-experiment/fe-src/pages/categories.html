@@ -1,0 +1,18 @@
+<div id="no-categories-alert" class="alert alert-info" ng-if="categories.length === 0">
+  There are no categories so far.
+</div>
+
+<ul id="category-list" class="list-unstyled" ng-if="categories.length > 0">
+  <li ng-class="'category-' + {{$index}}" ng-repeat="category in categories">
+    <category-item 
+      category="category" 
+      busy="busy" 
+      on-delete="deleteCategory(category)" 
+      on-update="updateCategory(updatedCategory)"></category-item>
+  </li>
+</ul>
+
+<new-category-editor
+  id="new-category-editor"
+  busy="busy"
+  on-create="createCategory(category)"></new-category-editor>

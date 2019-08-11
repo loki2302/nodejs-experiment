@@ -1,0 +1,20 @@
+<div id="no-notes-alert" class="alert alert-info" ng-if="notes.length === 0">
+  There are no notes so far.
+</div>
+
+<ul id="note-list" class="list-unstyled" ng-if="notes.length > 0">
+  <li ng-class="'note-' + {{$index}}" ng-repeat="note in notes">
+    <note-item 
+      note="note"
+      busy="busy" 
+      on-delete="deleteNote(note)" 
+      on-update="updateNote(updatedNote)"
+      on-search-categories="searchCategoriesStartingWith($query)"></note-item>
+  </li>
+</ul>
+
+<new-note-editor
+  id="new-note-editor"
+  busy="busy"
+  on-create="createNote(note)"
+  on-search-categories="searchCategoriesStartingWith($query)"></new-note-editor>

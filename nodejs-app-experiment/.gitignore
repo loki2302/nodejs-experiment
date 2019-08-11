@@ -1,0 +1,6 @@
+bower_components
+node_modules
+fe-build
+my.db
+coverage
+fe-tmp

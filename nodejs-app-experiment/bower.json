@@ -1,0 +1,30 @@
+{
+  "name": "nodejs-app-experiment-fe",
+  "version": "0.0.0",
+  "homepage": "https://github.com/loki2302/nodejs-app-experiment",
+  "authors": [
+    "loki2302 <loki2302@loki2302.me>"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.3.15",
+    "angular-resource": "~1.3.15",
+    "angular-mocks": "~1.3.15",
+    "bootstrap": "~3.3.2",
+    "angular-route": "~1.3.15",
+    "angular-bootstrap": "~0.12.1",
+    "ng-tags-input": "~2.2.0",
+    "uri.js": "~1.14.2"
+  },
+  "resolutions": {
+    "angular": "~1.3.15"
+  }
+}
