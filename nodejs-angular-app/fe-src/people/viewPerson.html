@@ -1,0 +1,40 @@
+<a ng-href="/people/{{person.id}}/edit" class="btn btn-default edit"><i class="fa fa-pencil"></i> Edit</a>
+<button type="button" class="btn btn-danger delete" ng-click="deletePerson()"><i class="fa fa-trash-o"></i> Delete</button>
+
+<div class="row">
+  <div class="col-md-6">
+    <h4 class="page-header name">{{person.name}}</h4>
+    <div class="media">
+      <div class="media-left avatar">
+        <img ng-src="{{person.avatar}}" class="media-object avatar128">
+      </div>
+      <div class="media-body">
+        <strong>{{person.name}}</strong> <span class="text-muted">is a full-time</span>
+        {{person.position}}<span class="text-muted">, who lives in</span>
+        {{person.city}}, {{person.state}}<span class="text-muted">. You can contact them by calling</span>
+        {{person.phone}}
+        <span class="text-muted"> or by sending an email to</span>
+        <a ng-href="mailto:{{person.email}}">{{person.email}}</a>.
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <h4 class="page-header">Team memberships</h4>
+    <div id="no-memberships-alert" class="alert alert-info" ng-if="person.memberships.length === 0">
+      This person does not belong to any teams so far.
+    </div>
+    <div id="got-memberships-container" ng-if="person.memberships.length > 0">
+      <div class="media membership" ng-class="'membership-' + {{$index}}" ng-repeat="membership in person.memberships | orderBy:'team.id'">
+        <div class="media-left">
+          <a ng-href="/teams/{{membership.team.id}}">
+            <img class="media-object avatar64" ng-src="{{membership.team.avatar}}">
+          </a>
+        </div>
+        <div class="media-body">
+          <h4 class="media-heading"><span class="role">{{membership.role}}</span> at <a href="/teams/{{membership.team.id}}" class="team-name">{{membership.team.name}}</a></h4>
+          <p class="text-muted team-slogan">{{membership.team.slogan}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

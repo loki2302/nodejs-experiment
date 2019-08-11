@@ -1,0 +1,11 @@
+<a>
+  <div class="media person-lookup-item">
+    <div class="media-left">
+      <img ng-src="{{match.model.avatar}}" class="media-object avatar48">
+    </div>
+    <div class="media-body">
+      <h4 style="margin: 0" bind-html-unsafe="match.label | typeaheadHighlight:query"></h4>
+      <p>{{match.model.position}}</p>
+    </div>
+  </div>
+</a>

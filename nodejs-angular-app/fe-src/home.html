@@ -1,0 +1,60 @@
+<div class="jumbotron">
+  <h2>Teambuildr <small>Build your team today!</small></h2>
+  <p>We have <a href="/teams" id="teamCount"><ng-pluralize count="stats.teams" when="{
+    '0': 'no teams',
+    'one': 'one team',
+    'other': '{} teams'
+  }"></ng-pluralize></a> and <a href="/people" id="personCount"><ng-pluralize count="stats.people" when="{
+    '0': 'no people',
+    'one': 'one person',
+    'other': '{} people'
+  }"></ng-pluralize></a>.</p>
+</div>
+<div class="row">
+  <div class="col-md-6">
+    <div class="media">
+      <div class="media-left">
+        <h1 class="point"><i class="fa fa-user fa-2x"></i></h1>
+      </div>
+      <div class="media-body">
+        <h3>Want to build a team?</h3>
+        <p>We have a plenty of professions software developers, QA engineers and designers. Take a look at <a href="/people">our database</a> and create your own <a href="/teams/create">team</a>!</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="media">
+      <div class="media-left">
+        <h1 class="point"><i class="fa fa-users fa-2x"></i></h1>
+      </div>
+      <div class="media-body">
+        <h3>Looking for a team to join?</h3>
+        <p>There's a <a href="/teams">large number of teams</a> waiting for someone to join them. Promote yourself by <a href="/people/create">telling us about yourself!</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-6">
+    <div class="media">
+      <div class="media-left">
+        <h1 class="point"><i class="fa fa-bullhorn fa-2x"></i></h1>
+      </div>
+      <div class="media-body">
+        <h3>Tell us how we're doing!</h3>
+        <p>We <em>do</em> care about the quality of service we provide. If you're not satisfied or just want to thank us for <strong>Teambuildr</strong>, feel free to contact us!</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="media">
+      <div class="media-left">
+        <h1 class="point"><i class="fa fa-umbrella fa-2x"></i></h1>
+      </div>
+      <div class="media-body">
+        <h3>Desperately need an umbrella?</h3>
+        <p>We're very sorry, but Teambuildr has nothing to do with umbrellas. We suggest that you try <a href="http://google.com/search?q=umbrella">google</a>.</p>
+      </div>
+    </div>
+  </div>
+</div>

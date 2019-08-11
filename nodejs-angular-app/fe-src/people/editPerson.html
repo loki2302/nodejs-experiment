@@ -1,0 +1,114 @@
+<form tb-submit="submitPerson(person)" novalidate expose-errors-as="vf">
+  <fieldset ng-disabled="busy">
+    <div class="row">
+      <div class="col-md-6">
+        <h4 class="page-header">{{pageTitle}}</h4>
+        <div class="form-group form-group-lg name" ng-class="{'has-error': vf.isError('name')}">
+          <input type="text" class="form-control" id="name" name="name" ng-model="person.name">
+          <p class="help-block" ng-if="vf.isError('name')">{{vf.getFieldError('name')}}</p>
+        </div>
+
+        <div class="media avatar">
+          <div class="media-left">
+            <img ng-src="{{person.avatar}}" class="media-object avatar128">
+          </div>
+          <div class="media-body">
+            <button type="button" class="btn btn-default btn-xs" ng-click="randomizeAvatar()"><i class="fa fa-refresh"></i> Randomize!</button>
+          </div>
+        </div>
+
+        <div class="form-group form-group-sm position" ng-class="{'has-error': vf.isError('position')}">
+          <label for="position" class="control-label">Position</label>
+          <input type="text" class="form-control" id="position" name="position" ng-model="person.position">
+          <p class="help-block" ng-if="vf.isError('position')">{{vf.getFieldError('position')}}</p>
+        </div>
+
+        <div class="form-group form-group-sm city" ng-class="{'has-error': vf.isError('city')}">
+          <label for="city" class="control-label">City</label>
+          <input type="text" class="form-control" id="city" name="city" ng-model="person.city">
+          <p class="help-block" ng-if="vf.isError('city')">{{vf.getFieldError('city')}}</p>
+        </div>
+
+        <div class="form-group form-group-sm state" ng-class="{'has-error': vf.isError('state')}">
+          <label for="state" class="control-label">State</label>
+          <input type="text" class="form-control" id="state" name="state" ng-model="person.state">
+          <p class="help-block" ng-if="vf.isError('state')">{{vf.getFieldError('state')}}</p>
+        </div>
+
+        <div class="form-group form-group-sm phone" ng-class="{'has-error': vf.isError('phone')}">
+          <label for="phone" class="control-label">Phone</label>
+          <input type="text" class="form-control" id="phone" name="state" ng-model="person.phone">
+          <p class="help-block" ng-if="vf.isError('phone')">{{vf.getFieldError('phone')}}</p>
+        </div>
+
+        <div class="form-group form-group-sm email" ng-class="{'has-error': vf.isError('email')}">
+          <label for="email" class="control-label">Email</label>
+          <input type="text" class="form-control" id="email" name="email" ng-model="person.email">
+          <p class="help-block" ng-if="vf.isError('email')">{{vf.getFieldError('email')}}</p>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <h4 class="page-header">Team memberships</h4>
+        <tb-list-editor for="person.memberships" as="membershipsEditor">
+          <div id="no-memberships-alert" class="alert alert-info" ng-if="person.memberships.length === 0">
+            This person does not have any memberships so far.
+          </div>
+          <div id="got-memberships-container" class="form-group" ng-class="{'has-error': vf.isError('memberships')}" ng-if="person.memberships.length > 0">
+            <div class="media form-group membership" ng-class="'membership-' + {{$index}}" ng-repeat="membership in person.memberships | orderBy:'team.id'">
+              <div class="media-left">
+                <a ng-href="/teams/{{membership.team.id}}">
+                  <img class="media-object avatar64" ng-src="{{membership.team.avatar}}">
+                </a>
+              </div>
+              <div class="media-body">
+                <a href="/teams/{{membership.team.id}}"><h4 class="media-heading">{{membership.team.name}}</h4></a>
+                <div class="form-inline">
+                  <div class="form-group">
+                    <input type="text" ng-model="membership.role" class="form-control input-sm membership-role">
+                  </div>
+                  <div class="form-group">
+                    <button type="button" ng-click="membershipsEditor.removeItem(membership)" class="btn btn-danger btn-sm remove-membership-button"><i class="fa fa-times"></i> Remove</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p class="help-block" ng-if="vf.isError('memberships')">{{vf.getFieldError('memberships')}}</p>
+          </div>
+
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h4 class="panel-title">Add a new membership</h4>
+            </div>
+            <div class="panel-body">
+              <ng-form name="addMembershipForm">
+                <div class="form-group form-group-sm">
+                  <label for="new-membership-name">Team</label>
+                  <input type="text"
+                    ng-required="true"
+                    id="new-membership-name"
+                    ng-model="membershipsEditor.newItem.team"
+                    typeahead="team as team.name for team in findTeamsByQuery($viewValue)"
+                    typeahead-editable="false"
+                    typeahead-template-url="people/teamLookupItem.html"
+                    class="form-control">
+                </div>
+                <div class="form-group form-group-sm">
+                  <label for="new-membership-role">Role</label>
+                  <input type="text" ng-required="true" id="new-membership-role" ng-model="membershipsEditor.newItem.role" class="form-control">
+                </div>
+                <button type="button" ng-click="membershipsEditor.addItem()" ng-disabled="addMembershipForm.$invalid" id="add-membership-button" class="btn btn-success"><i class="fa fa-plus"></i> Add</button>
+              </ng-form>
+            </div>
+          </div>
+        </tb-list-editor>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="form-group">
+          <button type="submit" id="submit-person-button" class="btn btn-success btn-lg"><i class="fa fa-check"></i> {{submitTitle}}</button>
+        </div>
+      </div>
+    </div>
+  </fieldset>
+</form>

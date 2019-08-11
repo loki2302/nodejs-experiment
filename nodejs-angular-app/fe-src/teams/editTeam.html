@@ -1,0 +1,87 @@
+<h3 class="page-header">{{pageTitle}}</h3>
+<form tb-submit="submitTeam(team)" novalidate expose-errors-as="vf">
+  <fieldset ng-disabled="busy">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-group form-group-lg name" ng-class="{'has-error': vf.isError('name')}">
+          <input type="text" class="form-control" id="name" name="name" ng-model="team.name">
+          <p class="help-block" ng-if="vf.isError('name')">{{vf.getFieldError('name')}}</p>
+        </div>
+
+        <div class="form-group form-group-sm slogan" ng-class="{'has-error': vf.isError('slogan')}">
+          <label for="slogan" class="control-label">Slogan</label>
+          <input type="text" class="form-control" id="slogan" name="slogan" ng-model="team.slogan">
+          <p class="help-block" ng-if="vf.isError('slogan')">{{vf.getFieldError('slogan')}}</p>
+        </div>
+
+        <div class="form-group form-group-sm url" ng-class="{'has-error': vf.isError('url')}">
+          <label for="url" class="control-label">URL</label>
+          <input type="text" class="form-control" id="url" name="url" ng-model="team.url">
+          <p class="help-block" ng-if="vf.isError('url')">{{vf.getFieldError('url')}}</p>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <tb-list-editor for="team.members" as="membersEditor">
+          <div id="no-members-alert" class="alert alert-info" ng-if="team.members.length === 0">
+            There are no members in this team so far.
+          </div>
+          <div id="got-members-container" class="form-group" ng-class="{'has-error': vf.isError('members')}" ng-if="team.members.length > 0">
+            <div class="media form-group member" ng-class="'member-' + {{$index}}" ng-repeat="member in team.members | orderBy:'person.id'">
+              <div class="media-left">
+                <a ng-href="/people/{{member.person.id}}">
+                  <img class="media-object avatar64" ng-src="{{member.person.avatar}}">
+                </a>
+              </div>
+              <div class="media-body">
+                <a href="/people/{{member.person.id}}"><h4 class="media-heading">{{member.person.name}} <small>{{member.person.position}}</small></h4></a>
+                <div class="form-inline">
+                  <div class="form-group">
+                    <input type="text" ng-model="member.role" class="form-control input-sm member-role">
+                  </div>
+                  <div class="form-group">
+                    <button type="button" ng-click="membersEditor.removeItem(member)" class="btn btn-danger btn-sm remove-member-button"><i class="fa fa-times"></i> Remove</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p class="help-block" ng-if="vf.isError('members')">{{vf.getFieldError('members')}}</p>
+          </div>
+
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h4 class="panel-title">Add a new member</h4>
+            </div>
+            <div class="panel-body">
+              <ng-form name="addMemberForm">
+                <div class="form-group form-group-sm">
+                  <label for="new-member-name">Person</label>
+                  <input type="text"
+                    ng-required="true"
+                    id="new-member-name"
+                    ng-model="membersEditor.newItem.person"
+                    typeahead="person as person.name for person in findPeopleByQuery($viewValue)"
+                    typeahead-editable="false"
+                    typeahead-template-url="teams/personLookupItem.html"
+                    class="form-control">
+                </div>
+                <div class="form-group form-group-sm">
+                  <label for="new-member-role">Role</label>
+                  <input type="text" ng-required="true" id="new-member-role" ng-model="membersEditor.newItem.role" class="form-control">
+                </div>
+                <button type="button" ng-click="membersEditor.addItem()" ng-disabled="addMemberForm.$invalid" id="add-member-button" class="btn btn-success"><i class="fa fa-plus"></i> Add</button>
+              </ng-form>
+            </div>
+          </div>
+        </tb-list-editor>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="form-group">
+          <button type="submit" id="submit-team-button" class="btn btn-success btn-lg"><i class="fa fa-check"></i> {{submitTitle}}</button>
+        </div>
+      </div>
+    </div>
+  </fieldset>
+</form>
