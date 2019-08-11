@@ -1,0 +1,24 @@
+{
+  "name": "serialization-experiment",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --require ts-node/register *.spec.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/chai": "^4.0.10",
+    "@types/mocha": "^2.2.45",
+    "@types/node": "^8.5.2",
+    "chai": "^4.1.2",
+    "class-transformer": "^0.1.8",
+    "json2typescript": "^1.0.5",
+    "mocha": "^4.1.0",
+    "reflect-metadata": "^0.1.10",
+    "ta-json": "^2.3.1",
+    "ts-node": "^4.1.0",
+    "typescript": "^2.6.2"
+  }
+}

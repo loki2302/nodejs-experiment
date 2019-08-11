@@ -1,0 +1,21 @@
+{
+  "name": "code-model-experiment",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --compilers ts:ts-node/register *.spec.ts",
+    "start": "ts-node app.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/chai": "^3.4.34",
+    "@types/mocha": "^2.2.39",
+    "chai": "^3.5.0",
+    "mocha": "^3.2.0",
+    "mocha-cli": "^1.0.1",
+    "ts-node": "^2.0.0",
+    "typescript": "^2.1.5"
+  }
+}
