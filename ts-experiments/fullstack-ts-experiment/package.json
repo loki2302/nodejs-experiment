@@ -6,13 +6,14 @@
   "scripts": {
     "fe:build": "webpack --mode=production",
     "fe:watch": "webpack-dev-server",
-    "be:start": "ts-node src/backend/index.ts",
-    "be:watch": "nodemon --watch 'src/backend/**/*.ts' --watch 'src/shared/**/*.ts' --exec 'ts-node' src/backend/index.ts",
+    "be:start": "ts-node --project src/backend/tsconfig.json src/backend/index.ts",
+    "be:watch": "nodemon --watch 'src/backend/**/*.ts' --watch 'src/shared/**/*.ts' --exec 'ts-node' --project src/backend/tsconfig.json src/backend/index.ts",
     "watch": "concurrently \"yarn fe:watch\" \"yarn be:watch\"",
-    "lint": "tslint --project tsconfig.json"
+    "lint": "tslint --project src/backend/tsconfig.json && tslint --project src/frontend/tsconfig.json"
   },
   "devDependencies": {
     "@types/express": "^4.17.0",
+    "@types/node": "^12.7.1",
     "@types/react": "^16.9.1",
     "@types/react-dom": "^16.8.5",
     "concurrently": "^4.1.1",

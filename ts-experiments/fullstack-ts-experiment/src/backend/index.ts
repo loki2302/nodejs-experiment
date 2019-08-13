@@ -1,4 +1,4 @@
-import express = require('express');
+import * as express from 'express';
 import * as path from 'path';
 import { PutTodoDto, TodoDto } from '../shared/dtos';
 
