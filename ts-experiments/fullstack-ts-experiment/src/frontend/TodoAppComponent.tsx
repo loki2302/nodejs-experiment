@@ -3,7 +3,6 @@ import * as React from 'react';
 import { TodoComponent } from './TodoComponent';
 import { Store } from './Store';
 import { FormEvent } from 'react';
-import { makeMessage } from '../shared/message';
 
 export interface TodoAppProps {
     store: Store;
@@ -25,7 +24,6 @@ export class TodoAppComponent extends React.Component<TodoAppProps> {
         return (
             <div>
                 <h1>Todo App ({this.props.store.todos.length} todos)</h1>
-                <p>Message: {makeMessage()}</p>
                 <form onSubmit={e => this.addTodo(e)}>
                     <input type='text' ref={this.newTodoTextRef} />
                     <button type='submit'>Add</button>
@@ -44,6 +42,10 @@ export class TodoAppComponent extends React.Component<TodoAppProps> {
     private addTodo(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
         const text = this.newTodoTextRef.current.value;
+        if (text === '') {
+            return;
+        }
+
         this.props.store.addTodo(text);
         this.newTodoTextRef.current.value = '';
     }
