@@ -47,9 +47,9 @@ class NoCommandHandlerError extends Error {
 }
 
 class CommandService {
-    private commandHandlersByCommandTypes: Map<Function, CommandHandler> = new Map();
+    private commandHandlersByCommandTypes: Map<Function, CommandHandler<any>> = new Map();
 
-    constructor(commandHandlers: CommandHandler[]) {
+    constructor(commandHandlers: CommandHandler<any>[]) {
         commandHandlers.forEach(commandHandler => {
             this.commandHandlersByCommandTypes.set(commandHandler.commandType, commandHandler);
         });

@@ -4,17 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --require ts-node/register test/*.spec.ts"
+    "test": "mocha --require ts-node/register test/*.spec.ts --slow 10000"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/chai": "^4.1.0",
-    "@types/mocha": "^2.2.46",
-    "@types/node": "^9.3.0",
-    "chai": "^4.1.2",
-    "mocha": "^4.1.0",
-    "ts-node": "^4.1.0",
-    "typescript": "^2.6.2"
+    "@types/chai": "^4.2.0",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.7.2",
+    "chai": "^4.2.0",
+    "mocha": "^6.2.0",
+    "ts-node": "^8.3.0",
+    "typescript": "^3.5.3"
   }
 }

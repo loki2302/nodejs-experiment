@@ -1,1 +1,3 @@
 # language-experiment
+
+* `yarn test`
