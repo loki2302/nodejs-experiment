@@ -1,0 +1,3 @@
+# typeorm-experiment
+
+`yarn test`

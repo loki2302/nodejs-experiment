@@ -16,20 +16,13 @@ describe('typeorm', () => {
 
     beforeEach(async () => {
         connection = await createConnection({
-            driver: {
-                type: 'sqlite',
-                storage: 'db'
-            },
+            type: 'sqlite',
+            database: 'db',
             entities: [
                 Note
             ],
-            logging: {
-                logQueries: true,
-                logFailedQueryError: true,
-                logSchemaCreation: true
-            },
-            dropSchemaOnConnection: true,
-            autoSchemaSync: true
+            synchronize: true,
+            logging: 'all'
         });
     });
 
@@ -43,11 +36,11 @@ describe('typeorm', () => {
         const note = new Note();
         note.text = 'hello there';
 
-        const savedNote = await connection.entityManager.persist(note);
+        const savedNote = await connection.manager.save(note);
         expect(savedNote.id).to.not.be.null;
         expect(note.id).to.not.be.null;
 
-        const foundNote = await connection.entityManager.findOneById(Note, note.id);
+        const foundNote = await connection.manager.findOne(Note, note.id);
         expect(foundNote.id).to.equal(note.id);
         expect(foundNote.text).to.equal(note.text);
     });

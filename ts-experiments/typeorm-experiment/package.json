@@ -4,21 +4,21 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --compilers ts:ts-node/register *.spec.ts"
+    "test": "mocha -r ts-node/register *.spec.ts"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/chai": "^3.4.34",
-    "@types/mocha": "^2.2.39",
-    "@types/node": "^7.0.5",
-    "chai": "^3.5.0",
-    "mocha": "^3.2.0",
+    "@types/chai": "^4.2.0",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.7.2",
+    "chai": "^4.2.0",
+    "mocha": "^6.2.0",
     "mocha-cli": "^1.0.1",
-    "reflect-metadata": "^0.1.9",
-    "sqlite3": "^3.1.8",
-    "ts-node": "^2.0.0",
-    "typeorm": "0.0.8",
-    "typescript": "^2.1.5"
+    "reflect-metadata": "^0.1.13",
+    "sqlite3": "^4.1.0",
+    "ts-node": "^8.3.0",
+    "typeorm": "^0.2.18",
+    "typescript": "^3.5.3"
   }
 }
