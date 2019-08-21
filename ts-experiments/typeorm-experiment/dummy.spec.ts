@@ -1,15 +1,30 @@
 import "reflect-metadata";
 import { expect } from "chai";
-import {Entity, PrimaryGeneratedColumn, Column, createConnection, Connection} from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, createConnection, Connection, MigrationInterface, QueryRunner } from "typeorm";
 
-describe('typeorm', () => {
-    @Entity()
+describe('TypeORM', () => {
+    @Entity('Note')
     class Note {
         @PrimaryGeneratedColumn()
         id: number;
 
         @Column()
         text: string;
+    }
+
+    class InitialMigration1566355129494 implements MigrationInterface {
+        up(queryRunner: QueryRunner): Promise<any> {
+            return queryRunner.query(`
+                create table Note(
+                    id integer primary key autoincrement not null,
+                    text varchar(100) not null
+                )
+            `);
+        }
+
+        down(queryRunner: QueryRunner): Promise<any> {
+            return undefined;
+        }
     }
 
     let connection: Connection;
@@ -21,7 +36,10 @@ describe('typeorm', () => {
             entities: [
                 Note
             ],
-            synchronize: true,
+            migrations: [
+                InitialMigration1566355129494
+            ],
+            migrationsRun: true,
             logging: 'all'
         });
     });
@@ -30,7 +48,6 @@ describe('typeorm', () => {
         await connection.close();
         connection = null;
     });
-
 
     it('should work', async () => {
         const note = new Note();
