@@ -39,6 +39,7 @@ describe('TypeORM', () => {
             migrations: [
                 InitialMigration1566355129494
             ],
+            dropSchema: true,
             migrationsRun: true,
             logging: 'all'
         });
@@ -60,5 +61,17 @@ describe('TypeORM', () => {
         const foundNote = await connection.manager.findOne(Note, note.id);
         expect(foundNote.id).to.equal(note.id);
         expect(foundNote.text).to.equal(note.text);
+    });
+
+    it('should handle raw sql', async () => {
+        await connection.query('insert into Note(text) values(?)', ['qwerty1']);
+        await connection.query('insert into Note(text) values(?)', ['qwerty2']);
+        await connection.query('insert into Note(text) values(?)', ['qwerty3']);
+        const rows = await connection.query('select id, text from Note');
+        expect(rows).to.deep.equal([
+            { id: 1, text: 'qwerty1' },
+            { id: 2, text: 'qwerty2' },
+            { id: 3, text: 'qwerty3' }
+        ]);
     });
 });
