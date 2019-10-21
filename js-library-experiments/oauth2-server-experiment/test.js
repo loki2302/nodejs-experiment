@@ -8,10 +8,13 @@ const bodyParser = require('body-parser');
 
 class OAuthModel {
     constructor() {
-        const ALL_GRANTS = ['refresh_token', 'password'];
-
         this.clients = [
-            { clientId: 'client1', clientSecret: 'client1Secret', redirectUris: [], grants: ALL_GRANTS }
+            {
+                clientId: 'client1',
+                clientSecret: 'client1Secret',
+                redirectUris: [],
+                grants: ['refresh_token', 'password']
+            }
         ];
 
         this.users = [
