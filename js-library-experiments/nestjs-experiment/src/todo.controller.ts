@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Put, Query, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, Put, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TodoEntity } from './todo.entity';
 import { Repository } from 'typeorm';
@@ -44,11 +44,46 @@ export class TodoController {
         @InjectRepository(TodoEntity) private readonly todoEntityRepository: Repository<TodoEntity>) {
     }
 
+    @ApiOperation({ title: 'Get a todo', description: 'Gets a todo' })
+    @ApiImplicitParam({ name: 'id', description: 'Todo ID' })
+    @ApiResponse({ status: HttpStatus.OK, description: 'Found a todo' })
+    @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'No such todo' })
+    @Get(':id')
+    @HttpCode(HttpStatus.OK)
+    async getTodo(@Param('id') id: number): Promise<Todo> {
+        const todoEntity = await this.todoEntityRepository.findOne(id);
+        if (todoEntity === undefined) {
+            throw new HttpException('no such todo', HttpStatus.NOT_FOUND);
+        }
+
+        const todo = new Todo();
+        todo.id = todoEntity.id;
+        todo.text = todoEntity.text;
+
+        return todo;
+    }
+
+    @ApiOperation({ title: 'Delete a todo', description: 'Deletes a todo' })
+    @ApiImplicitParam({ name: 'id', description: 'Todo ID' })
+    @ApiResponse({ status: HttpStatus.NO_CONTENT, description: 'Deleted a todo' })
+    @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'No such todo' })
+    @Delete(':id')
+    @HttpCode(HttpStatus.NO_CONTENT)
+    async deleteTodo(@Param('id') id: number): Promise<void> {
+        const todoEntity = await this.todoEntityRepository.findOne(id);
+        if (todoEntity === undefined) {
+            throw new HttpException('no such todo', HttpStatus.NOT_FOUND);
+        }
+
+        await this.todoEntityRepository.delete(todoEntity);
+    }
+
     @ApiOperation({ title: 'Create or update a todo', description: 'Creates or updates a todo' })
     @ApiImplicitParam({ name: 'id', description: 'Todo ID' })
     @ApiImplicitBody({ name: 'PutTodoBody', type: PutTodoBody, description: 'Todo details' })
-    @ApiResponse({ status: 200, description: 'Successfully created or updated a todo' })
+    @ApiResponse({ status: HttpStatus.OK, description: 'Successfully created or updated a todo' })
     @Put(':id')
+    @HttpCode(HttpStatus.OK)
     async putTodo(
         @Param('id') id: number,
         @Body() body: PutTodoBody): Promise<void> {
@@ -66,8 +101,9 @@ export class TodoController {
     @ApiOperation({ title: 'Get all todos', description: 'Gets all todos with pagination' })
     @ApiImplicitQuery({ name: 'skip', required: false, description: 'Number of todos to skip' })
     @ApiImplicitQuery({ name: 'take', required: false, description: 'Number of todos to take' })
-    @ApiResponse({ status: 200, description: 'A collection of todos', type: TodosPage })
+    @ApiResponse({ status: HttpStatus.OK, description: 'A collection of todos', type: TodosPage })
     @Get()
+    @HttpCode(HttpStatus.OK)
     async getTodos(
         @Query('skip') skip: number = 0,
         @Query('take') take: number = 10): Promise<TodosPage> {
