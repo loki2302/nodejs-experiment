@@ -1,11 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
-import { PutTodoBody, TodosPage } from '../src/todo.controller';
+import { PutTodoBody, TodosPage, TodoStatus } from '../src/todo.controller';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { unlinkSync } from 'fs';
 import { EntityManager } from 'typeorm';
-import { TodoEntity } from '../src/todo.entity';
+import { TodoEntity, TodoEntityStatus } from '../src/todo.entity';
+import arrayContaining = jasmine.arrayContaining;
 
 describe('the app', () => {
     let app: INestApplication;
@@ -55,13 +56,15 @@ describe('the app', () => {
             const todo = new TodoEntity();
             todo.id = 111;
             todo.text = 'one one one';
+            todo.status = TodoEntityStatus.NOT_STARTED;
             await entityManager.save(todo);
 
             const response = await request(app.getHttpServer()).get('/todos/111');
             expect(response.status).toStrictEqual(HttpStatus.OK);
             expect(response.body).toStrictEqual({
                 id: 111,
-                text: 'one one one'
+                text: 'one one one',
+                status: TodoStatus.NOT_STARTED
             });
         });
     });
@@ -76,6 +79,7 @@ describe('the app', () => {
             const todo = new TodoEntity();
             todo.id = 111;
             todo.text = 'one one one';
+            todo.status = TodoEntityStatus.NOT_STARTED;
             await entityManager.save(todo);
 
             const response = await request(app.getHttpServer()).delete('/todos/111');
@@ -99,10 +103,12 @@ describe('the app', () => {
             const todo1 = new TodoEntity();
             todo1.id = 111;
             todo1.text = 'one one one';
+            todo1.status = TodoEntityStatus.NOT_STARTED;
 
             const todo2 = new TodoEntity();
             todo2.id = 222;
             todo2.text = 'two two two';
+            todo2.status = TodoEntityStatus.NOT_STARTED;
 
             await entityManager.save([todo1, todo2]);
 
@@ -112,8 +118,8 @@ describe('the app', () => {
             expect(body.skip).toStrictEqual(0);
             expect(body.take).toStrictEqual(10);
             expect(body.items).toStrictEqual([
-                { id: 111, text: 'one one one' },
-                { id: 222, text: 'two two two' }
+                { id: 111, text: 'one one one', status: TodoStatus.NOT_STARTED },
+                { id: 222, text: 'two two two', status: TodoStatus.NOT_STARTED }
             ]);
         });
     });
@@ -124,36 +130,55 @@ describe('the app', () => {
                 text: ''
             } as PutTodoBody);
             expect(response.status).toStrictEqual(HttpStatus.BAD_REQUEST);
-            const message0 = response.body.message[0];
-            expect(message0.property).toStrictEqual('text');
-            expect(message0.constraints).toStrictEqual({
-                isNotEmpty: 'text should not be empty'
-            });
+            expect(response.body.message).toEqual(arrayContaining([
+                expect.objectContaining({
+                    property: 'text',
+                    constraints: {
+                        isNotEmpty: expect.stringContaining('should not be empty')
+                    }
+                }),
+                expect.objectContaining({
+                    property: 'status',
+                    constraints: {
+                        isIn: expect.stringContaining('must be one of the following')
+                    }
+                })
+            ]));
         });
 
         it('should create a todo if todo does not exist yet', async () => {
             await request(app.getHttpServer()).put('/todos/111').send({
-                text: 'hello world'
+                text: 'hello world',
+                status: TodoStatus.NOT_STARTED
             } as PutTodoBody);
 
             const todo = await entityManager.findOne(TodoEntity, 111);
-            expect(todo.id).toStrictEqual(111);
-            expect(todo.text).toStrictEqual('hello world');
+            expect(todo).toEqual({
+                id: 111,
+                text: 'hello world',
+                status: TodoEntityStatus.NOT_STARTED
+            });
         });
 
         it('should update todo if todo already exists', async () => {
             const originalTodo = new TodoEntity();
             originalTodo.id = 111;
             originalTodo.text = 'one one one';
+            originalTodo.status = TodoEntityStatus.NOT_STARTED;
             await entityManager.save(originalTodo);
 
             await request(app.getHttpServer()).put('/todos/111').send({
-                text: 'hello world'
+                text: 'hello world',
+                status: TodoStatus.IN_PROGRESS
             } as PutTodoBody);
 
             const updatedTodo = await entityManager.findOne(TodoEntity, 111);
             expect(updatedTodo.id).toStrictEqual(111);
-            expect(updatedTodo.text).toStrictEqual('hello world');
+            expect(updatedTodo).toEqual({
+                id: 111,
+                text: 'hello world',
+                status: TodoEntityStatus.IN_PROGRESS
+            });
         });
     });
 });
