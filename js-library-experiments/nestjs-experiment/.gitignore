@@ -1,3 +1,5 @@
 .idea
+dist
 node_modules
-dummy.db
+src/coverage
+db

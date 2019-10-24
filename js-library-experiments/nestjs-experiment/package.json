@@ -1,48 +1,72 @@
 {
   "name": "nestjs-experiment",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "",
-  "main": "index.js",
-  "scripts": {
-    "start": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
-    "test": "jest"
-  },
   "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "@types/jest": "^22.1.2",
-    "@types/node": "^9.4.6",
-    "axios": "^0.17.1",
-    "jest": "^22.3.0",
-    "nodemon": "^1.14.12",
-    "ts-node": "^4.1.0",
-    "typescript": "^2.7.1"
+  "license": "MIT",
+  "scripts": {
+    "prebuild": "rimraf dist",
+    "build": "nest build",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "start": "nest start",
+    "start:dev": "nest start --watch",
+    "start:debug": "nest start --debug --watch",
+    "start:prod": "node dist/main",
+    "lint": "tslint -p tsconfig.json -c tslint.json",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@nestjs/common": "^4.6.0",
-    "@nestjs/core": "^4.6.0",
-    "@nestjs/microservices": "^4.6.0",
-    "@nestjs/swagger": "^1.1.4",
-    "@nestjs/testing": "^4.6.1",
-    "@types/express": "^4.11.1",
-    "class-transformer": "^0.1.9",
-    "class-validator": "^0.8.1",
-    "reflect-metadata": "^0.1.12",
-    "rxjs": "^5.5.6",
-    "sqlite3": "^3.1.13",
-    "typeorm": "^0.1.12"
+    "@nestjs/common": "^6.7.2",
+    "@nestjs/core": "^6.7.2",
+    "@nestjs/platform-express": "^6.7.2",
+    "@nestjs/serve-static": "^1.0.1",
+    "@nestjs/swagger": "^3.1.0",
+    "@nestjs/typeorm": "^6.2.0",
+    "class-transformer": "^0.2.3",
+    "class-validator": "^0.10.2",
+    "nestjs-pino": "^0.5.0",
+    "pino-pretty": "^3.2.2",
+    "reflect-metadata": "^0.1.13",
+    "rimraf": "^3.0.0",
+    "rxjs": "^6.5.3",
+    "sqlite": "^3.0.3",
+    "swagger-ui-express": "^4.1.2",
+    "typeorm": "^0.2.20"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^6.9.0",
+    "@nestjs/schematics": "^6.7.0",
+    "@nestjs/testing": "^6.7.1",
+    "@types/express": "^4.17.1",
+    "@types/jest": "^24.0.18",
+    "@types/node": "^12.7.5",
+    "@types/supertest": "^2.0.8",
+    "jest": "^24.9.0",
+    "prettier": "^1.18.2",
+    "supertest": "^4.0.2",
+    "ts-jest": "^24.1.0",
+    "ts-loader": "^6.1.1",
+    "ts-node": "^8.4.1",
+    "tsconfig-paths": "^3.9.0",
+    "tslint": "^5.20.0",
+    "typescript": "^3.6.3"
   },
   "jest": {
     "moduleFileExtensions": [
-      "ts",
-      "js"
+      "js",
+      "json",
+      "ts"
     ],
+    "rootDir": "src",
+    "testRegex": ".spec.ts$",
     "transform": {
-      "^.+\\.ts$": "./preprocessor.js"
+      "^.+\\.(t|j)s$": "ts-jest"
     },
-    "testMatch": [
-      "**/*.spec.ts"
-    ],
+    "coverageDirectory": "./coverage",
     "testEnvironment": "node"
   }
 }
