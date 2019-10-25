@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, Put, Query, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, Patch, Put, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TodoEntity, TodoEntityStatus } from './todo.entity';
 import { FindManyOptions, Repository } from 'typeorm';
@@ -144,9 +144,9 @@ export class TodoController {
     @ApiOperation({ title: 'Create or update a todo', description: 'Creates or updates a todo' })
     @ApiImplicitParam({ name: 'id', description: 'Todo ID' })
     @ApiImplicitBody({ name: 'PutTodoBody', type: PutTodoBody, description: 'Todo details' })
-    @ApiResponse({ status: HttpStatus.OK, description: 'Successfully created or updated a todo' })
+    @ApiResponse({ status: HttpStatus.NO_CONTENT, description: 'Successfully created or updated a todo' })
     @Put(':id')
-    @HttpCode(HttpStatus.OK)
+    @HttpCode(HttpStatus.NO_CONTENT)
     async putTodo(
         @Param('id') id: number,
         @Body() body: PutTodoBody): Promise<void> {
@@ -158,6 +158,31 @@ export class TodoController {
         }
         todoEntity.text = body.text;
         todoEntity.status = todoEntityStatusFromTodoStatus(body.status);
+
+        await this.todoEntityRepository.save(todoEntity);
+    }
+
+    @ApiOperation({ title: 'Patch a todo', description: 'Patches an existing todo' })
+    @ApiResponse({ status: HttpStatus.NO_CONTENT, description: 'Successfully patched a todo' })
+    @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'No such todo' })
+    @Patch(':id')
+    @HttpCode(HttpStatus.NO_CONTENT)
+    async patchTodo(
+        @Param('id') id: number,
+        @Body() body: Partial<PutTodoBody>): Promise<void> {
+
+        const todoEntity = await this.todoEntityRepository.findOne(id);
+        if (todoEntity === undefined) {
+            throw new HttpException('no such todo', HttpStatus.NOT_FOUND);
+        }
+
+        if (body.text !== undefined) {
+            todoEntity.text = body.text;
+        }
+
+        if (body.status !== undefined) {
+            todoEntity.status = todoEntityStatusFromTodoStatus(body.status);
+        }
 
         await this.todoEntityRepository.save(todoEntity);
     }

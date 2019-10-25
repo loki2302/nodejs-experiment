@@ -149,7 +149,7 @@ describe('the app', () => {
                 await entityManager.save([todo1, todo2, todo3, todo4]);
             });
 
-            it.only('should sort', async () => {
+            it('should sort', async () => {
                 const get = async (url) => {
                     return (await request(app.getHttpServer()).get(url)).body.items.map(i => i.id);
                 };
@@ -218,11 +218,39 @@ describe('the app', () => {
             } as PutTodoBody);
 
             const updatedTodo = await entityManager.findOne(TodoEntity, 111);
-            expect(updatedTodo.id).toStrictEqual(111);
             expect(updatedTodo).toEqual({
                 id: 111,
                 text: 'hello world',
                 status: TodoEntityStatus.IN_PROGRESS
+            });
+        });
+    });
+
+    describe('PATCH /todos/:id', () => {
+        it('should 404 when there is no todo', async () => {
+            const response = await request(app.getHttpServer()).patch('/todos/123').send({
+                text: 'hello'
+            });
+            expect(response.status).toStrictEqual(HttpStatus.NOT_FOUND);
+        });
+
+        it('should patch a todo when there is a todo', async () => {
+            const todo = new TodoEntity();
+            todo.id = 111;
+            todo.text = 'one one one';
+            todo.status = TodoEntityStatus.NOT_STARTED;
+            await entityManager.save(todo);
+
+            const response = await request(app.getHttpServer()).patch('/todos/111').send({
+                text: 'hello'
+            });
+            expect(response.status).toStrictEqual(HttpStatus.NO_CONTENT);
+
+            const patchedTodo = await entityManager.findOne(TodoEntity, 111);
+            expect(patchedTodo).toEqual({
+                id: 111,
+                text: 'hello',
+                status: TodoEntityStatus.NOT_STARTED
             });
         });
     });
