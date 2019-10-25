@@ -6,6 +6,7 @@
 * `yarn test` - run unit tests (`src/*.spec.ts`)
 * `yarn test:cov` - run unit tests with coverage report
 * `yarn test:e2e` - run e2e tests (`test/*.e2e-spec.ts`)
+* `docker-compose up`
 
 What it has:
 
