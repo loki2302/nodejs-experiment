@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, Put, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TodoEntity, TodoEntityStatus } from './todo.entity';
-import { Repository } from 'typeorm';
+import { FindManyOptions, Repository } from 'typeorm';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino/dist';
 import { ApiImplicitBody, ApiImplicitParam, ApiImplicitQuery, ApiModelProperty, ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
 import { IsIn, IsNotEmpty, IsString } from 'class-validator';
@@ -10,6 +10,17 @@ export enum TodoStatus {
     NOT_STARTED = 'not-started',
     IN_PROGRESS = 'in-progress',
     DONE = 'done'
+}
+
+export enum TodoSortOrder {
+    ID = 'id',
+    TEXT = 'text',
+    STATUS = 'status'
+}
+
+export enum SortDirection {
+    ASCENDING = 'asc',
+    DESCENDING = 'desc'
 }
 
 export class Todo {
@@ -159,11 +170,49 @@ export class TodoController {
     @HttpCode(HttpStatus.OK)
     async getTodos(
         @Query('skip') skip: number = 0,
-        @Query('take') take: number = 10): Promise<TodosPage> {
+        @Query('take') take: number = 10,
+        @Query('status') status: TodoStatus|null = null,
+        @Query('sortBy') sortBy: TodoSortOrder = TodoSortOrder.ID,
+        @Query('direction') sortDirection: SortDirection = SortDirection.ASCENDING): Promise<TodosPage> {
 
-        this.logger.info({skip, take}, 'get todos');
+        this.logger.info({skip, take, status, sortBy, sortDirection }, 'get todos');
 
-        const [todoEntities, count] = await this.todoEntityRepository.findAndCount({ skip, take });
+        const options: FindManyOptions<TodoEntity> = {
+            skip,
+            take
+        };
+        if (status !== null) {
+            options.where = { status: todoEntityStatusFromTodoStatus(status) };
+        }
+
+        let direction: 'ASC'|'DESC';
+        if (sortDirection === SortDirection.ASCENDING) {
+            direction = 'ASC';
+        } else if (sortDirection === SortDirection.DESCENDING) {
+            direction = 'DESC';
+        } else {
+            throw new Error(`Unknown direction ${sortDirection}`);
+        }
+
+        if (sortBy === TodoSortOrder.ID) {
+            options.order = {
+                id: direction
+            };
+        } else if (sortBy === TodoSortOrder.TEXT) {
+            options.order = {
+                text: direction,
+                id: 'ASC'
+            };
+        } else if (sortBy === TodoSortOrder.STATUS) {
+            options.order = {
+                status: direction,
+                id: 'ASC'
+            };
+        } else {
+            throw new Error(`Unknown sortBy ${sortBy}`);
+        }
+
+        const [todoEntities, count] = await this.todoEntityRepository.findAndCount(options);
         return {
             total: count,
             skip,

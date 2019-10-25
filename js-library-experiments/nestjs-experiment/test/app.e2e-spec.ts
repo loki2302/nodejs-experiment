@@ -7,6 +7,7 @@ import { unlinkSync } from 'fs';
 import { EntityManager } from 'typeorm';
 import { TodoEntity, TodoEntityStatus } from '../src/todo.entity';
 import arrayContaining = jasmine.arrayContaining;
+import each from 'jest-each';
 
 describe('the app', () => {
     let app: INestApplication;
@@ -121,6 +122,50 @@ describe('the app', () => {
                 { id: 111, text: 'one one one', status: TodoStatus.NOT_STARTED },
                 { id: 222, text: 'two two two', status: TodoStatus.NOT_STARTED }
             ]);
+        });
+
+        describe('sorting and filtering', () => {
+            beforeEach(async () => {
+                const todo1 = new TodoEntity();
+                todo1.id = 111;
+                todo1.text = 'one one one';
+                todo1.status = TodoEntityStatus.NOT_STARTED;
+
+                const todo2 = new TodoEntity();
+                todo2.id = 222;
+                todo2.text = 'two two two';
+                todo2.status = TodoEntityStatus.DONE;
+
+                const todo3 = new TodoEntity();
+                todo3.id = 333;
+                todo3.text = 'three three three';
+                todo3.status = TodoEntityStatus.NOT_STARTED;
+
+                const todo4 = new TodoEntity();
+                todo4.id = 444;
+                todo4.text = 'four four four';
+                todo4.status = TodoEntityStatus.IN_PROGRESS;
+
+                await entityManager.save([todo1, todo2, todo3, todo4]);
+            });
+
+            it.only('should sort', async () => {
+                const get = async (url) => {
+                    return (await request(app.getHttpServer()).get(url)).body.items.map(i => i.id);
+                };
+
+                expect(await get('/todos?sortBy=id')).toEqual([111, 222, 333, 444]);
+                expect(await get('/todos?sortBy=id&direction=asc')).toEqual([111, 222, 333, 444]);
+                expect(await get('/todos?sortBy=id&direction=desc')).toEqual([444, 333, 222, 111]);
+
+                expect(await get('/todos?sortBy=text')).toEqual([444, 111, 333, 222]);
+                expect(await get('/todos?sortBy=text&direction=asc')).toEqual([444, 111, 333, 222]);
+                expect(await get('/todos?sortBy=text&direction=desc')).toEqual([222, 333, 111, 444]);
+
+                expect(await get('/todos?sortBy=status')).toEqual([222, 444, 111, 333]);
+                expect(await get('/todos?sortBy=status&direction=asc')).toEqual([222, 444, 111, 333]);
+                expect(await get('/todos?sortBy=status&direction=desc')).toEqual([111, 333, 444, 222]);
+            });
         });
     });
 
