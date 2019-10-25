@@ -6,8 +6,6 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { unlinkSync } from 'fs';
 import { EntityManager } from 'typeorm';
 import { TodoEntity, TodoEntityStatus } from '../src/todo.entity';
-import arrayContaining = jasmine.arrayContaining;
-import each from 'jest-each';
 
 describe('the app', () => {
     let app: INestApplication;
@@ -175,7 +173,7 @@ describe('the app', () => {
                 text: ''
             } as PutTodoBody);
             expect(response.status).toStrictEqual(HttpStatus.BAD_REQUEST);
-            expect(response.body.message).toEqual(arrayContaining([
+            expect(response.body.message).toEqual(expect.arrayContaining([
                 expect.objectContaining({
                     property: 'text',
                     constraints: {
