@@ -16,11 +16,11 @@ describe('the app', () => {
         } catch { /* intentionally blank */}
 
         const moduleFixture: TestingModule = await Test.createTestingModule({
-            imports: [AppModule],
+            imports: [AppModule.forE2eTests()],
         }).compile();
 
         app = moduleFixture.createNestApplication();
-        entityManager = app.select(AppModule).get(EntityManager);
+        entityManager = app.get(EntityManager);
 
         await app.init();
     });

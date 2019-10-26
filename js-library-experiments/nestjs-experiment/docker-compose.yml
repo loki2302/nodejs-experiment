@@ -6,4 +6,21 @@ services:
     ports:
       - 3000:3000
     environment:
-      SOMETHING: hello world
+      APP_MYSQL_HOST: mysql
+      APP_MYSQL_PORT: 3306
+      APP_MYSQL_USERNAME: ${MYSQL_USER}
+      APP_MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      APP_MYSQL_DATABASE: ${MYSQL_DATABASE}
+
+  mysql:
+    image: mysql:8.0.18
+    volumes:
+      - ./data:/var/lib/mysql
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: qwerty
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    command: --default-authentication-plugin=mysql_native_password
