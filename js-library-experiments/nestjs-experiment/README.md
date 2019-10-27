@@ -10,6 +10,7 @@
 
 What it has:
 
-1. http://localhost:3000/swagger
-2. http://localhost:3000/throw
-3. http://localhost:3000/any/crazy/123/url?xxx=111
+1. OAuth2 applied to `/todos` with token endpoint at `/oauth/token`
+2. http://localhost:3000/swagger (use `client1` / `client1Secret` / `user1` / `password` to authenticate)
+3. http://localhost:3000/throw
+4. http://localhost:3000/any/crazy/123/url?xxx=111
