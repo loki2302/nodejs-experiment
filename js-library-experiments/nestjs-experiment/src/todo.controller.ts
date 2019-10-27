@@ -1,10 +1,18 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, Patch, Put, Query, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, createParamDecorator, Delete, Get, HttpCode, HttpException, HttpStatus, Param,
+    Patch, Put, Query, Req, UsePipes, ValidationPipe } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TodoEntity, TodoEntityStatus } from './todo.entity';
 import { FindManyOptions, Repository } from 'typeorm';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino/dist';
-import { ApiImplicitBody, ApiImplicitParam, ApiImplicitQuery, ApiModelProperty, ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
+import {
+    ApiImplicitBody, ApiImplicitParam, ApiImplicitQuery, ApiModelProperty, ApiOAuth2Auth, ApiOperation, ApiResponse,
+    ApiUseTags
+} from '@nestjs/swagger';
 import { IsIn, IsNotEmpty, IsString } from 'class-validator';
+
+export const UserId = createParamDecorator((data, req) => {
+    return req.res.locals.oauth.token.user.userId;
+});
 
 export enum TodoStatus {
     NOT_STARTED = 'not-started',
@@ -84,17 +92,6 @@ function todoEntityStatusFromTodoStatus(todoStatus: TodoStatus): TodoEntityStatu
 }
 
 function todoFromTodoEntity(todoEntity: TodoEntity): Todo {
-    let status: TodoStatus;
-    if (todoEntity.status === TodoEntityStatus.NOT_STARTED) {
-        status = TodoStatus.NOT_STARTED;
-    } else if (todoEntity.status === TodoEntityStatus.IN_PROGRESS) {
-        status = TodoStatus.IN_PROGRESS;
-    } else if (todoEntity.status === TodoEntityStatus.DONE) {
-        status = TodoStatus.DONE;
-    } else {
-        throw new Error(`Don't know how to convert TodoEntityStatus ${todoEntity.status}`);
-    }
-
     const todo = new Todo();
     todo.id = todoEntity.id;
     todo.text = todoEntity.text;
@@ -102,6 +99,7 @@ function todoFromTodoEntity(todoEntity: TodoEntity): Todo {
     return todo;
 }
 
+@ApiOAuth2Auth()
 @ApiUseTags('todos')
 @Controller('todos')
 @UsePipes(new ValidationPipe())
@@ -117,7 +115,9 @@ export class TodoController {
     @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'No such todo' })
     @Get(':id')
     @HttpCode(HttpStatus.OK)
-    async getTodo(@Param('id') id: number): Promise<Todo> {
+    async getTodo(@Param('id') id: number, @UserId() userId: string): Promise<Todo> {
+        console.log(`User ID is ${userId}`);
+
         const todoEntity = await this.todoEntityRepository.findOne(id);
         if (todoEntity === undefined) {
             throw new HttpException('no such todo', HttpStatus.NOT_FOUND);

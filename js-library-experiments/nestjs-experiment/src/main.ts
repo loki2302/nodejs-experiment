@@ -17,6 +17,7 @@ async function bootstrap() {
         .setDescription('Dummy API description here')
         .setVersion('1.0')
         .addTag('todos', 'The todos')
+        .addOAuth2('password', 'authorization url', '/oauth/token')
         .build()));
 
     await app.listen(3000);

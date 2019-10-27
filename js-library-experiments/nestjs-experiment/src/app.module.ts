@@ -1,4 +1,4 @@
-import { DynamicModule, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { DynamicModule, Inject, Injectable, MiddlewareConsumer, Module, NestMiddleware, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TodoEntity } from './todo.entity';
@@ -10,6 +10,8 @@ import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { DummyExceptionFilter } from './dummy-exception.filter';
+import * as ExpressOAuth2Server from 'express-oauth-server';
+import { OAuthModelService } from './oauth-model.service';
 
 @Module({})
 export class AppModule implements NestModule {
@@ -72,12 +74,27 @@ export class AppModule implements NestModule {
                 {
                     provide: APP_FILTER,
                     useClass: DummyExceptionFilter
+                },
+                OAuthModelService,
+                {
+                    provide: ExpressOAuth2Server,
+                    inject: [OAuthModelService],
+                    useFactory: (oAuthModelService: OAuthModelService) => {
+                        return new ExpressOAuth2Server({
+                            model: oAuthModelService
+                        });
+                    }
                 }
-            ],
+            ]
         };
+    }
+
+    constructor(private readonly expressOAuth2Server: ExpressOAuth2Server) {
     }
 
     configure(consumer: MiddlewareConsumer): any {
         consumer.apply(DummyMiddleware).forRoutes('*');
+        consumer.apply(this.expressOAuth2Server.token()).forRoutes('/oauth/token');
+        consumer.apply(this.expressOAuth2Server.authenticate()).forRoutes('todos/*');
     }
 }
