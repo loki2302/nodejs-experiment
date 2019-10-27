@@ -1,7 +1,6 @@
 import { Body, Controller, createParamDecorator, Delete, Get, HttpCode, HttpException, HttpStatus, Param,
-    Patch, Put, Query, Req, UsePipes, ValidationPipe } from '@nestjs/common';
+    Patch, Put, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { TodoEntity, TodoEntityStatus } from './todo.entity';
 import { FindManyOptions, Repository } from 'typeorm';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino/dist';
 import {
@@ -9,9 +8,10 @@ import {
     ApiUseTags
 } from '@nestjs/swagger';
 import { IsIn, IsNotEmpty, IsString } from 'class-validator';
+import { TodoEntity, TodoEntityStatus } from './entities';
 
 export const UserId = createParamDecorator((data, req) => {
-    return req.res.locals.oauth.token.user.userId;
+    return req.res.locals.oauth.token.user.username;
 });
 
 export enum TodoStatus {
@@ -190,6 +190,9 @@ export class TodoController {
     @ApiOperation({ title: 'Get all todos', description: 'Gets all todos with pagination' })
     @ApiImplicitQuery({ name: 'skip', required: false, description: 'Number of todos to skip' })
     @ApiImplicitQuery({ name: 'take', required: false, description: 'Number of todos to take' })
+    @ApiImplicitQuery({ name: 'status', required: false, enum: Object.values(TodoStatus), description: 'Status filter' })
+    @ApiImplicitQuery({ name: 'sortBy', required: false, enum: Object.values(TodoSortOrder), description: 'Sort field' })
+    @ApiImplicitQuery({ name: 'direction', required: false, enum: Object.values(SortDirection), description: 'Sort direction' })
     @ApiResponse({ status: HttpStatus.OK, description: 'A collection of todos', type: TodosPage })
     @Get()
     @HttpCode(HttpStatus.OK)

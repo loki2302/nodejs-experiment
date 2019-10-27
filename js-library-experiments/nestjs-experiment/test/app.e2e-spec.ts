@@ -4,7 +4,7 @@ import { PutTodoBody, TodosPage, TodoStatus } from '../src/todo.controller';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { unlinkSync } from 'fs';
 import { EntityManager } from 'typeorm';
-import { TodoEntity, TodoEntityStatus } from '../src/todo.entity';
+import { TodoEntity, TodoEntityStatus } from '../src/entities';
 import Axios, { AxiosInstance } from 'axios';
 import * as oauth from 'axios-oauth-client';
 import * as tokenProvider from 'axios-token-interceptor';

@@ -1,7 +1,6 @@
-import { DynamicModule, Inject, Injectable, MiddlewareConsumer, Module, NestMiddleware, NestModule } from '@nestjs/common';
+import { DynamicModule, MiddlewareConsumer, Module, NestMiddleware, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { TodoEntity } from './todo.entity';
 import { TodoController } from './todo.controller';
 import { LoggerModule } from 'nestjs-pino/dist';
 import { DummyMiddleware } from './dummy.middleware';
@@ -10,11 +9,14 @@ import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { DummyExceptionFilter } from './dummy-exception.filter';
-import * as ExpressOAuth2Server from 'express-oauth-server';
-import { OAuthModelService } from './oauth-model.service';
+import { ClientEntity, TodoEntity, TokenEntity, UserEntity } from './entities';
+import { OAuthModelService } from './oauthmodel.service';
+import ExpressOAuthServer = require('express-oauth-server');
 
 @Module({})
 export class AppModule implements NestModule {
+    static readonly ENTITIES = [TodoEntity, UserEntity, ClientEntity, TokenEntity];
+
     static forRuntime(
         mysqlHost: string,
         mysqlPort: number,
@@ -29,7 +31,7 @@ export class AppModule implements NestModule {
             username: mysqlUsername,
             password: mysqlPassword,
             database: mysqlDatabase,
-            entities: [TodoEntity],
+            entities: AppModule.ENTITIES,
             synchronize: true,
             logging: true
         }));
@@ -39,7 +41,7 @@ export class AppModule implements NestModule {
         return AppModule.make(TypeOrmModule.forRoot({
             type: 'sqlite',
             database: 'db',
-            entities: [TodoEntity],
+            entities: AppModule.ENTITIES,
             synchronize: true,
             logging: true
         }));
@@ -59,7 +61,7 @@ export class AppModule implements NestModule {
                     useLevelLabels: true
                 }),
                 typeOrmModule,
-                TypeOrmModule.forFeature([TodoEntity])
+                TypeOrmModule.forFeature(AppModule.ENTITIES)
             ],
             controllers: [
                 AppController,
@@ -77,10 +79,10 @@ export class AppModule implements NestModule {
                 },
                 OAuthModelService,
                 {
-                    provide: ExpressOAuth2Server,
+                    provide: ExpressOAuthServer,
                     inject: [OAuthModelService],
                     useFactory: (oAuthModelService: OAuthModelService) => {
-                        return new ExpressOAuth2Server({
+                        return new ExpressOAuthServer({
                             model: oAuthModelService
                         });
                     }
@@ -89,12 +91,12 @@ export class AppModule implements NestModule {
         };
     }
 
-    constructor(private readonly expressOAuth2Server: ExpressOAuth2Server) {
+    constructor(private readonly expressOAuthServer: ExpressOAuthServer) {
     }
 
     configure(consumer: MiddlewareConsumer): any {
         consumer.apply(DummyMiddleware).forRoutes('*');
-        consumer.apply(this.expressOAuth2Server.token()).forRoutes('/oauth/token');
-        consumer.apply(this.expressOAuth2Server.authenticate()).forRoutes('todos/*');
+        consumer.apply(this.expressOAuthServer.token()).forRoutes('/oauth/token');
+        consumer.apply(this.expressOAuthServer.authenticate()).forRoutes(TodoController);
     }
 }
