@@ -7,15 +7,27 @@ export enum TodoEntityStatus {
 }
 
 @Entity()
+export class UserEntity {
+    @PrimaryColumn()
+    username: string;
+
+    @Column({ nullable: false })
+    password: string;
+}
+
+@Entity()
 export class TodoEntity {
     @PrimaryColumn()
     id: number;
 
-    @Column()
+    @Column({ nullable: false })
     text: string;
 
-    @Column()
+    @Column({ nullable: false })
     status: TodoEntityStatus;
+
+    @ManyToOne(type => UserEntity, { nullable: false })
+    user: UserEntity;
 
     @CreateDateColumn()
     createdAt: Date;
@@ -25,26 +37,17 @@ export class TodoEntity {
 }
 
 @Entity()
-export class UserEntity {
-    @PrimaryColumn()
-    username: string;
-
-    @Column()
-    password: string;
-}
-
-@Entity()
 export class ClientEntity {
     @PrimaryColumn()
     clientId: string;
 
-    @Column()
+    @Column({ nullable: false })
     clientSecret: string;
 
-    @Column('simple-array')
+    @Column('simple-array', { nullable: false })
     redirectUris: string[];
 
-    @Column('simple-array')
+    @Column('simple-array', { nullable: false })
     grants: string[];
 }
 
@@ -53,21 +56,21 @@ export class TokenEntity {
     @PrimaryColumn()
     accessToken: string;
 
-    @Column()
+    @Column({ nullable: false })
     accessTokenExpiresAt: Date;
 
-    @Column({nullable: true})
+    @Column({ nullable: true })
     refreshToken: string;
 
-    @Column({nullable: true})
+    @Column({ nullable: true })
     refreshTokenExpiresAt: Date;
 
-    @Column('simple-array')
+    @Column('simple-array', { nullable: false })
     scope: string[];
 
-    @ManyToOne(type => ClientEntity)
+    @ManyToOne(type => ClientEntity, { nullable: false })
     client: ClientEntity;
 
-    @ManyToOne(type => UserEntity)
+    @ManyToOne(type => UserEntity, { nullable: false })
     user: UserEntity;
 }

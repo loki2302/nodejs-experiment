@@ -4,11 +4,11 @@ import { TodoStatus } from '../src/todo.controller';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { unlinkSync } from 'fs';
 import { EntityManager } from 'typeorm';
-import { TodoEntity, TodoEntityStatus } from '../src/entities';
+import { TodoEntity, TodoEntityStatus, UserEntity } from '../src/entities';
 import Axios from 'axios';
 import * as oauth from 'axios-oauth-client';
 
-describe('the app', () => {
+describe('oauth', () => {
     let app: INestApplication;
     let entityManager: EntityManager;
     beforeEach(async () => {
@@ -44,6 +44,7 @@ describe('the app', () => {
         todo.id = 111;
         todo.text = 'one one one';
         todo.status = TodoEntityStatus.NOT_STARTED;
+        todo.user = await entityManager.findOne(UserEntity, 'user1');
         await entityManager.save(todo);
 
         const getCredentialsViaUsernameAndPassword = oauth.client(Axios.create(), {

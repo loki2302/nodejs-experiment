@@ -8,7 +8,7 @@ import {
     ApiUseTags
 } from '@nestjs/swagger';
 import { IsIn, IsNotEmpty, IsString } from 'class-validator';
-import { TodoEntity, TodoEntityStatus } from './entities';
+import { TodoEntity, TodoEntityStatus, UserEntity } from './entities';
 
 export const UserId = createParamDecorator((data, req) => {
     return req.res.locals.oauth.token.user.username;
@@ -116,7 +116,8 @@ function todoFromTodoEntity(todoEntity: TodoEntity): Todo {
 export class TodoController {
     constructor(
         @InjectPinoLogger(TodoController.name) private readonly logger: PinoLogger,
-        @InjectRepository(TodoEntity) private readonly todoEntityRepository: Repository<TodoEntity>) {
+        @InjectRepository(TodoEntity) private readonly todoEntityRepository: Repository<TodoEntity>,
+        @InjectRepository(UserEntity) private readonly userEntityRepository: Repository<UserEntity>) {
     }
 
     @ApiOperation({ title: 'Get a todo', description: 'Gets a todo' })
@@ -126,11 +127,13 @@ export class TodoController {
     @Get(':id')
     @HttpCode(HttpStatus.OK)
     async getTodo(@Param('id') id: number, @UserId() userId: string): Promise<Todo> {
-        console.log(`User ID is ${userId}`);
-
-        const todoEntity = await this.todoEntityRepository.findOne(id);
+        const todoEntity = await this.todoEntityRepository.findOne(id, { relations: ['user'] });
         if (todoEntity === undefined) {
             throw new HttpException('no such todo', HttpStatus.NOT_FOUND);
+        }
+
+        if (todoEntity.user.username !== userId) {
+            throw new HttpException('forbidden', HttpStatus.FORBIDDEN);
         }
 
         return todoFromTodoEntity(todoEntity);
@@ -142,10 +145,14 @@ export class TodoController {
     @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'No such todo' })
     @Delete(':id')
     @HttpCode(HttpStatus.NO_CONTENT)
-    async deleteTodo(@Param('id') id: number): Promise<void> {
-        const todoEntity = await this.todoEntityRepository.findOne(id);
+    async deleteTodo(@Param('id') id: number, @UserId() userId: string): Promise<void> {
+        const todoEntity = await this.todoEntityRepository.findOne(id, { relations: ['user'] });
         if (todoEntity === undefined) {
             throw new HttpException('no such todo', HttpStatus.NOT_FOUND);
+        }
+
+        if (todoEntity.user.username !== userId) {
+            throw new HttpException('forbidden', HttpStatus.FORBIDDEN);
         }
 
         await this.todoEntityRepository.delete(todoEntity.id);
@@ -159,12 +166,18 @@ export class TodoController {
     @HttpCode(HttpStatus.NO_CONTENT)
     async putTodo(
         @Param('id') id: number,
-        @Body() body: PutTodoBody): Promise<void> {
+        @Body() body: PutTodoBody,
+        @UserId() userId: string): Promise<void> {
 
-        let todoEntity = await this.todoEntityRepository.findOne(id);
+        let todoEntity = await this.todoEntityRepository.findOne(id, { relations: ['user'] });
         if (todoEntity === undefined) {
             todoEntity = new TodoEntity();
             todoEntity.id = id;
+            todoEntity.user = await this.userEntityRepository.findOneOrFail(userId);
+        } else {
+            if (todoEntity.user.username !== userId) {
+                throw new HttpException('forbidden', HttpStatus.FORBIDDEN);
+            }
         }
         todoEntity.text = body.text;
         todoEntity.status = todoEntityStatusFromTodoStatus(body.status);
@@ -179,11 +192,16 @@ export class TodoController {
     @HttpCode(HttpStatus.NO_CONTENT)
     async patchTodo(
         @Param('id') id: number,
-        @Body() body: Partial<PutTodoBody>): Promise<void> {
+        @Body() body: Partial<PutTodoBody>,
+        @UserId() userId: string): Promise<void> {
 
-        const todoEntity = await this.todoEntityRepository.findOne(id);
+        const todoEntity = await this.todoEntityRepository.findOne(id, { relations: ['user'] });
         if (todoEntity === undefined) {
             throw new HttpException('no such todo', HttpStatus.NOT_FOUND);
+        }
+
+        if (todoEntity.user.username !== userId) {
+            throw new HttpException('forbidden', HttpStatus.FORBIDDEN);
         }
 
         if (body.text !== undefined) {
@@ -207,20 +225,22 @@ export class TodoController {
     @Get()
     @HttpCode(HttpStatus.OK)
     async getTodos(
+        @UserId() userId: string,
         @Query('skip') skip: number = 0,
         @Query('take') take: number = 10,
         @Query('status') status: TodoStatus|null = null,
         @Query('sortBy') sortBy: TodoSortOrder = TodoSortOrder.ID,
         @Query('direction') sortDirection: SortDirection = SortDirection.ASCENDING): Promise<TodosPage> {
 
-        this.logger.info({skip, take, status, sortBy, sortDirection }, 'get todos');
-
         const options: FindManyOptions<TodoEntity> = {
             skip,
             take
         };
         if (status !== null) {
-            options.where = { status: todoEntityStatusFromTodoStatus(status) };
+            options.where = {
+                user: await this.userEntityRepository.findOneOrFail(userId),
+                status: todoEntityStatusFromTodoStatus(status)
+            };
         }
 
         let direction: 'ASC'|'DESC';

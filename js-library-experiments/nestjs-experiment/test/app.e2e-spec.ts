@@ -4,7 +4,7 @@ import { PutTodoBody, TodosPage, TodoStatus } from '../src/todo.controller';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { unlinkSync } from 'fs';
 import { EntityManager } from 'typeorm';
-import { TodoEntity, TodoEntityStatus } from '../src/entities';
+import { TodoEntity, TodoEntityStatus, UserEntity } from '../src/entities';
 import Axios, { AxiosInstance } from 'axios';
 import * as oauth from 'axios-oauth-client';
 import * as tokenProvider from 'axios-token-interceptor';
@@ -47,51 +47,6 @@ describe('the app', () => {
         });
     });
 
-    it('should not let me in without token', async () => {
-        const response = await Axios.request({
-            method: 'get',
-            url: 'http://localhost:3000/todos/111',
-            validateStatus: () => true
-        });
-        expect(response.status).toStrictEqual(HttpStatus.UNAUTHORIZED);
-    });
-
-    it('should let me in with token', async () => {
-        const todo = new TodoEntity();
-        todo.id = 111;
-        todo.text = 'one one one';
-        todo.status = TodoEntityStatus.NOT_STARTED;
-        await entityManager.save(todo);
-
-        const getCredentialsViaUsernameAndPassword = oauth.client(Axios.create(), {
-            url: 'http://localhost:3000/oauth/token',
-            grant_type: 'password',
-            client_id: 'client1',
-            client_secret: 'client1Secret',
-            username: 'user1',
-            password: 'password1',
-            scope: 'dummy'
-        });
-
-        const credentials = await getCredentialsViaUsernameAndPassword();
-        const accessToken = credentials.access_token;
-
-        const response = await Axios.request({
-            method: 'get',
-            url: 'http://localhost:3000/todos/111',
-            validateStatus: () => true,
-            headers: {
-                Authorization: `Bearer ${accessToken}`
-            }
-        });
-        expect(response.status).toStrictEqual(HttpStatus.OK);
-        expect(response.data).toStrictEqual(expect.objectContaining({
-            id: 111,
-            text: 'one one one',
-            status: TodoStatus.NOT_STARTED
-        }));
-    });
-
     describe('/todos', () => {
         let axios: AxiosInstance;
         beforeEach(() => {
@@ -123,6 +78,7 @@ describe('the app', () => {
                 todo.id = 111;
                 todo.text = 'one one one';
                 todo.status = TodoEntityStatus.NOT_STARTED;
+                todo.user = await entityManager.findOne(UserEntity, 'user1');
                 await entityManager.save(todo);
 
                 const response = await axios.get('/todos/111');
@@ -146,6 +102,7 @@ describe('the app', () => {
                 todo.id = 111;
                 todo.text = 'one one one';
                 todo.status = TodoEntityStatus.NOT_STARTED;
+                todo.user = await entityManager.findOne(UserEntity, 'user1');
                 await entityManager.save(todo);
 
                 const response = await axios.delete('/todos/111');
@@ -170,11 +127,13 @@ describe('the app', () => {
                 todo1.id = 111;
                 todo1.text = 'one one one';
                 todo1.status = TodoEntityStatus.NOT_STARTED;
+                todo1.user = await entityManager.findOne(UserEntity, 'user1');
 
                 const todo2 = new TodoEntity();
                 todo2.id = 222;
                 todo2.text = 'two two two';
                 todo2.status = TodoEntityStatus.NOT_STARTED;
+                todo2.user = await entityManager.findOne(UserEntity, 'user1');
 
                 await entityManager.save([todo1, todo2]);
 
@@ -195,21 +154,25 @@ describe('the app', () => {
                     todo1.id = 111;
                     todo1.text = 'one one one';
                     todo1.status = TodoEntityStatus.NOT_STARTED;
+                    todo1.user = await entityManager.findOne(UserEntity, 'user1');
 
                     const todo2 = new TodoEntity();
                     todo2.id = 222;
                     todo2.text = 'two two two';
                     todo2.status = TodoEntityStatus.DONE;
+                    todo2.user = await entityManager.findOne(UserEntity, 'user1');
 
                     const todo3 = new TodoEntity();
                     todo3.id = 333;
                     todo3.text = 'three three three';
                     todo3.status = TodoEntityStatus.NOT_STARTED;
+                    todo3.user = await entityManager.findOne(UserEntity, 'user1');
 
                     const todo4 = new TodoEntity();
                     todo4.id = 444;
                     todo4.text = 'four four four';
                     todo4.status = TodoEntityStatus.IN_PROGRESS;
+                    todo4.user = await entityManager.findOne(UserEntity, 'user1');
 
                     await entityManager.save([todo1, todo2, todo3, todo4]);
                 });
@@ -275,6 +238,7 @@ describe('the app', () => {
                 originalTodo.id = 111;
                 originalTodo.text = 'one one one';
                 originalTodo.status = TodoEntityStatus.NOT_STARTED;
+                originalTodo.user = await entityManager.findOne(UserEntity, 'user1');
                 await entityManager.save(originalTodo);
 
                 await axios.put('/todos/111', {
@@ -304,6 +268,7 @@ describe('the app', () => {
                 todo.id = 111;
                 todo.text = 'one one one';
                 todo.status = TodoEntityStatus.NOT_STARTED;
+                todo.user = await entityManager.findOne(UserEntity, 'user1');
                 await entityManager.save(todo);
 
                 const response = await axios.patch('/todos/111', {
