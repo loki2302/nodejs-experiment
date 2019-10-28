@@ -53,7 +53,7 @@ describe('the app', () => {
             url: 'http://localhost:3000/todos/111',
             validateStatus: () => true
         });
-        expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+        expect(response.status).toStrictEqual(HttpStatus.UNAUTHORIZED);
     });
 
     it('should let me in with token', async () => {
@@ -84,12 +84,12 @@ describe('the app', () => {
                 Authorization: `Bearer ${accessToken}`
             }
         });
-        expect(response.status).toEqual(HttpStatus.OK);
-        expect(response.data).toStrictEqual({
+        expect(response.status).toStrictEqual(HttpStatus.OK);
+        expect(response.data).toStrictEqual(expect.objectContaining({
             id: 111,
             text: 'one one one',
             status: TodoStatus.NOT_STARTED
-        });
+        }));
     });
 
     describe('/todos', () => {
@@ -127,11 +127,11 @@ describe('the app', () => {
 
                 const response = await axios.get('/todos/111');
                 expect(response.status).toStrictEqual(HttpStatus.OK);
-                expect(response.data).toStrictEqual({
+                expect(response.data).toStrictEqual(expect.objectContaining({
                     id: 111,
                     text: 'one one one',
                     status: TodoStatus.NOT_STARTED
-                });
+                }));
             });
         });
 
@@ -184,8 +184,8 @@ describe('the app', () => {
                 expect(body.skip).toStrictEqual(0);
                 expect(body.take).toStrictEqual(10);
                 expect(body.items).toStrictEqual([
-                    { id: 111, text: 'one one one', status: TodoStatus.NOT_STARTED },
-                    { id: 222, text: 'two two two', status: TodoStatus.NOT_STARTED }
+                    expect.objectContaining({ id: 111, text: 'one one one', status: TodoStatus.NOT_STARTED }),
+                    expect.objectContaining({ id: 222, text: 'two two two', status: TodoStatus.NOT_STARTED })
                 ]);
             });
 
@@ -219,17 +219,17 @@ describe('the app', () => {
                         return (await axios.get(url)).data.items.map(i => i.id);
                     };
 
-                    expect(await get('/todos?sortBy=id')).toEqual([111, 222, 333, 444]);
-                    expect(await get('/todos?sortBy=id&direction=asc')).toEqual([111, 222, 333, 444]);
-                    expect(await get('/todos?sortBy=id&direction=desc')).toEqual([444, 333, 222, 111]);
+                    expect(await get('/todos?sortBy=id')).toStrictEqual([111, 222, 333, 444]);
+                    expect(await get('/todos?sortBy=id&direction=asc')).toStrictEqual([111, 222, 333, 444]);
+                    expect(await get('/todos?sortBy=id&direction=desc')).toStrictEqual([444, 333, 222, 111]);
 
-                    expect(await get('/todos?sortBy=text')).toEqual([444, 111, 333, 222]);
-                    expect(await get('/todos?sortBy=text&direction=asc')).toEqual([444, 111, 333, 222]);
-                    expect(await get('/todos?sortBy=text&direction=desc')).toEqual([222, 333, 111, 444]);
+                    expect(await get('/todos?sortBy=text')).toStrictEqual([444, 111, 333, 222]);
+                    expect(await get('/todos?sortBy=text&direction=asc')).toStrictEqual([444, 111, 333, 222]);
+                    expect(await get('/todos?sortBy=text&direction=desc')).toStrictEqual([222, 333, 111, 444]);
 
-                    expect(await get('/todos?sortBy=status')).toEqual([222, 444, 111, 333]);
-                    expect(await get('/todos?sortBy=status&direction=asc')).toEqual([222, 444, 111, 333]);
-                    expect(await get('/todos?sortBy=status&direction=desc')).toEqual([111, 333, 444, 222]);
+                    expect(await get('/todos?sortBy=status')).toStrictEqual([222, 444, 111, 333]);
+                    expect(await get('/todos?sortBy=status&direction=asc')).toStrictEqual([222, 444, 111, 333]);
+                    expect(await get('/todos?sortBy=status&direction=desc')).toStrictEqual([111, 333, 444, 222]);
                 });
             });
         });
@@ -240,7 +240,7 @@ describe('the app', () => {
                     text: ''
                 } as PutTodoBody);
                 expect(response.status).toStrictEqual(HttpStatus.BAD_REQUEST);
-                expect(response.data.message).toEqual(expect.arrayContaining([
+                expect(response.data.message).toStrictEqual(expect.arrayContaining([
                     expect.objectContaining({
                         property: 'text',
                         constraints: {
@@ -263,11 +263,11 @@ describe('the app', () => {
                 } as PutTodoBody);
 
                 const todo = await entityManager.findOne(TodoEntity, 111);
-                expect(todo).toEqual({
+                expect(todo).toStrictEqual(expect.objectContaining({
                     id: 111,
                     text: 'hello world',
                     status: TodoEntityStatus.NOT_STARTED
-                });
+                }));
             });
 
             it('should update todo if todo already exists', async () => {
@@ -283,11 +283,11 @@ describe('the app', () => {
                 } as PutTodoBody);
 
                 const updatedTodo = await entityManager.findOne(TodoEntity, 111);
-                expect(updatedTodo).toEqual({
+                expect(updatedTodo).toStrictEqual(expect.objectContaining({
                     id: 111,
                     text: 'hello world',
                     status: TodoEntityStatus.IN_PROGRESS
-                });
+                }));
             });
         });
 
@@ -312,11 +312,11 @@ describe('the app', () => {
                 expect(response.status).toStrictEqual(HttpStatus.NO_CONTENT);
 
                 const patchedTodo = await entityManager.findOne(TodoEntity, 111);
-                expect(patchedTodo).toEqual({
+                expect(patchedTodo).toStrictEqual(expect.objectContaining({
                     id: 111,
                     text: 'hello',
                     status: TodoEntityStatus.NOT_STARTED
-                });
+                }));
             });
         });
     });

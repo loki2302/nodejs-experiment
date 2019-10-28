@@ -36,7 +36,7 @@ describe('the app', () => {
             url: 'http://localhost:3000/todos/111',
             validateStatus: () => true
         });
-        expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+        expect(response.status).toStrictEqual(HttpStatus.UNAUTHORIZED);
     });
 
     it('should let me in with token', async () => {
@@ -67,11 +67,11 @@ describe('the app', () => {
                 Authorization: `Bearer ${accessToken}`
             }
         });
-        expect(response.status).toEqual(HttpStatus.OK);
-        expect(response.data).toStrictEqual({
+        expect(response.status).toStrictEqual(HttpStatus.OK);
+        expect(response.data).toStrictEqual(expect.objectContaining({
             id: 111,
             text: 'one one one',
             status: TodoStatus.NOT_STARTED
-        });
+        }));
     });
 });

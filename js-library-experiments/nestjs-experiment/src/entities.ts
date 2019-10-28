@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryColumn, UpdateDateColumn } from 'typeorm';
 
 export enum TodoEntityStatus {
     NOT_STARTED = 'not-started',
@@ -16,6 +16,12 @@ export class TodoEntity {
 
     @Column()
     status: TodoEntityStatus;
+
+    @CreateDateColumn()
+    createdAt: Date;
+
+    @UpdateDateColumn()
+    updatedAt: Date;
 }
 
 @Entity()

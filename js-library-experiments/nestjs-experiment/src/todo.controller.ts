@@ -1,7 +1,7 @@
 import { Body, Controller, createParamDecorator, Delete, Get, HttpCode, HttpException, HttpStatus, Param,
     Patch, Put, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, Repository } from 'typeorm';
+import { CreateDateColumn, FindManyOptions, Repository, UpdateDateColumn } from 'typeorm';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino/dist';
 import {
     ApiImplicitBody, ApiImplicitParam, ApiImplicitQuery, ApiModelProperty, ApiOAuth2Auth, ApiOperation, ApiResponse,
@@ -23,7 +23,9 @@ export enum TodoStatus {
 export enum TodoSortOrder {
     ID = 'id',
     TEXT = 'text',
-    STATUS = 'status'
+    STATUS = 'status',
+    CREATED_AT = 'created-at',
+    UPDATED_AT = 'updated-at'
 }
 
 export enum SortDirection {
@@ -40,6 +42,12 @@ export class Todo {
 
     @ApiModelProperty({ description: 'Todo status', enum: Object.values(TodoStatus) })
     status: TodoStatus;
+
+    @ApiModelProperty({ description: 'Todo created at', type: String, format: 'date-time' })
+    createdAt: Date;
+
+    @ApiModelProperty({ description: 'Todo updated at', type: String, format: 'date-time' })
+    updatedAt: Date;
 }
 
 export class PutTodoBody {
@@ -96,6 +104,8 @@ function todoFromTodoEntity(todoEntity: TodoEntity): Todo {
     todo.id = todoEntity.id;
     todo.text = todoEntity.text;
     todo.status = todoStatusFromTodoEntityStatus(todoEntity.status);
+    todo.createdAt = todoEntity.createdAt;
+    todo.updatedAt = todoEntity.updatedAt;
     return todo;
 }
 
@@ -138,7 +148,7 @@ export class TodoController {
             throw new HttpException('no such todo', HttpStatus.NOT_FOUND);
         }
 
-        await this.todoEntityRepository.delete(todoEntity);
+        await this.todoEntityRepository.delete(todoEntity.id);
     }
 
     @ApiOperation({ title: 'Create or update a todo', description: 'Creates or updates a todo' })
@@ -234,6 +244,16 @@ export class TodoController {
         } else if (sortBy === TodoSortOrder.STATUS) {
             options.order = {
                 status: direction,
+                id: 'ASC'
+            };
+        } else if (sortBy === TodoSortOrder.CREATED_AT) {
+            options.order = {
+                createdAt: direction,
+                id: 'ASC'
+            };
+        } else if (sortBy === TodoSortOrder.UPDATED_AT) {
+            options.order = {
+                updatedAt: direction,
                 id: 'ASC'
             };
         } else {
