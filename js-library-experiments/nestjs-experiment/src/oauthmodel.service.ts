@@ -2,7 +2,7 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ClientEntity, TokenEntity, UserEntity } from './entities';
-import { Client, PasswordModel, RefreshTokenModel, User, RefreshToken, Falsey, Token } from 'oauth2-server';
+import { Client, Falsey, PasswordModel, RefreshToken, RefreshTokenModel, Token, User } from 'oauth2-server';
 
 @Injectable()
 export class OAuthModelService implements OnModuleInit, PasswordModel, RefreshTokenModel {
@@ -31,49 +31,43 @@ export class OAuthModelService implements OnModuleInit, PasswordModel, RefreshTo
     }
 
     async getAccessToken(accessToken: string): Promise<Token | Falsey> {
-        const token = await this.tokenEntityRepository.findOne(accessToken);
+        const token = await this.tokenEntityRepository.findOne(accessToken, { relations: ['client', 'user'] });
         if (token === undefined) {
             return false;
         }
-
-        const client = await this.clientEntityRepository.findOneOrFail(token.clientId);
-        const user = await this.userEntityRepository.findOneOrFail(token.userId);
 
         return {
             accessToken: token.accessToken,
             accessTokenExpiresAt: token.accessTokenExpiresAt,
             scope: token.scope,
             client: {
-                id: client.clientId,
-                redirectUris: client.redirectUris,
-                grants: client.grants
+                id: token.client.clientId,
+                redirectUris: token.client.redirectUris,
+                grants: token.client.grants
             },
             user: {
-                username: user.username
+                username: token.user.username
             }
         };
     }
 
     async getRefreshToken(refreshToken: string): Promise<RefreshToken | Falsey> {
-        const token = await this.tokenEntityRepository.findOne({ refreshToken });
+        const token = await this.tokenEntityRepository.findOne({ refreshToken }, { relations: ['client', 'user'] });
         if (token === undefined) {
             return false;
         }
-
-        const client = await this.clientEntityRepository.findOneOrFail(token.clientId);
-        const user = await this.userEntityRepository.findOneOrFail(token.userId);
 
         return {
             refreshToken: token.refreshToken,
             refreshTokenExpiresAt: token.refreshTokenExpiresAt,
             scope: token.scope,
             client: {
-                id: client.clientId,
-                redirectUris: client.redirectUris,
-                grants: client.grants
+                id: token.client.clientId,
+                redirectUris: token.client.redirectUris,
+                grants: token.client.grants
             },
             user: {
-                username: user.username
+                username: token.user.username
             }
         };
     }
@@ -120,8 +114,8 @@ export class OAuthModelService implements OnModuleInit, PasswordModel, RefreshTo
         tokenEntity.refreshToken = token.refreshToken;
         tokenEntity.refreshTokenExpiresAt = token.refreshTokenExpiresAt;
         tokenEntity.scope = Array.isArray(token.scope) ? token.scope : [token.scope];
-        tokenEntity.clientId = client.id;
-        tokenEntity.userId = user.username;
+        tokenEntity.client = await this.clientEntityRepository.findOneOrFail(client.id);
+        tokenEntity.user = await this.userEntityRepository.findOneOrFail(user.username);
         await this.tokenEntityRepository.save(tokenEntity);
 
         return {

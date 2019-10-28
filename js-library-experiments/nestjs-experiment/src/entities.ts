@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
 
 export enum TodoEntityStatus {
     NOT_STARTED = 'not-started',
@@ -59,9 +59,9 @@ export class TokenEntity {
     @Column('simple-array')
     scope: string[];
 
-    @Column()
-    clientId: string;
+    @ManyToOne(type => ClientEntity)
+    client: ClientEntity;
 
-    @Column()
-    userId: string;
+    @ManyToOne(type => UserEntity)
+    user: UserEntity;
 }
