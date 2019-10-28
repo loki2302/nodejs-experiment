@@ -6,6 +6,7 @@ services:
     ports:
       - 3000:3000
     environment:
+      APP_DB_TYPE: mysql
       APP_MYSQL_HOST: mysql
       APP_MYSQL_PORT: 3306
       APP_MYSQL_USERNAME: ${MYSQL_USER}

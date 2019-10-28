@@ -1,4 +1,4 @@
-import { DynamicModule, MiddlewareConsumer, Module, NestMiddleware, NestModule } from '@nestjs/common';
+import { DynamicModule, MiddlewareConsumer, Module, NestModule, Type } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TodoController } from './todo.controller';
@@ -13,41 +13,43 @@ import { ClientEntity, TodoEntity, TokenEntity, UserEntity } from './entities';
 import { OAuthModelService } from './oauthmodel.service';
 import ExpressOAuthServer = require('express-oauth-server');
 
+const AllEntities = [TodoEntity, UserEntity, ClientEntity, TokenEntity];
+
+const TypeOrmModuleDefaults = {
+    entities: AllEntities,
+    synchronize: true,
+    logging: true
+};
+
+export function makeMysqlDatabaseModule(
+    mysqlHost: string,
+    mysqlPort: number,
+    mysqlUsername: string,
+    mysqlPassword: string,
+    mysqlDatabase: string): DynamicModule {
+
+    return TypeOrmModule.forRoot({
+        ...TypeOrmModuleDefaults,
+        type: 'mysql',
+        host: mysqlHost,
+        port: mysqlPort,
+        username: mysqlUsername,
+        password: mysqlPassword,
+        database: mysqlDatabase
+    });
+}
+
+export function makeSqliteDatabaseModule(dbName: string): DynamicModule {
+    return TypeOrmModule.forRoot({
+        ...TypeOrmModuleDefaults,
+        type: 'sqlite',
+        database: dbName
+    });
+}
+
 @Module({})
 export class AppModule implements NestModule {
-    static readonly ENTITIES = [TodoEntity, UserEntity, ClientEntity, TokenEntity];
-
-    static forRuntime(
-        mysqlHost: string,
-        mysqlPort: number,
-        mysqlUsername: string,
-        mysqlPassword: string,
-        mysqlDatabase: string): DynamicModule {
-
-        return AppModule.make(TypeOrmModule.forRoot({
-            type: 'mysql',
-            host: mysqlHost,
-            port: mysqlPort,
-            username: mysqlUsername,
-            password: mysqlPassword,
-            database: mysqlDatabase,
-            entities: AppModule.ENTITIES,
-            synchronize: true,
-            logging: true
-        }));
-    }
-
-    static forE2eTests(): DynamicModule {
-        return AppModule.make(TypeOrmModule.forRoot({
-            type: 'sqlite',
-            database: 'db',
-            entities: AppModule.ENTITIES,
-            synchronize: true,
-            logging: true
-        }));
-    }
-
-    static make(typeOrmModule: any): DynamicModule {
+    static make(typeOrmModule: Type<any> | DynamicModule, logLevel: string): DynamicModule {
         return {
             module: AppModule,
             imports: [
@@ -56,12 +58,12 @@ export class AppModule implements NestModule {
                 }),
                 LoggerModule.forRoot({
                     name: 'app1',
-                    level: 'info',
+                    level: logLevel,
                     prettyPrint: true,
                     useLevelLabels: true
                 }),
                 typeOrmModule,
-                TypeOrmModule.forFeature(AppModule.ENTITIES)
+                TypeOrmModule.forFeature(AllEntities)
             ],
             controllers: [
                 AppController,
