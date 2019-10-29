@@ -10,51 +10,69 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { DummyExceptionFilter } from './dummy-exception.filter';
 import { ClientEntity, TodoEntity, TokenEntity, UserEntity } from './entities';
 import { OAuthModelService } from './oauthmodel.service';
-import ExpressOAuthServer = require('express-oauth-server');
 import { WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
+import { Logger } from 'winston';
 import * as ExpressCtx from 'express-ctx';
 import { InjectRequestContextFormat, SetRequestContextMiddleware } from './logging';
 import { Format } from 'logform';
+import ExpressOAuthServer = require('express-oauth-server');
+import { WinstonTypeOrmLogger } from './winston-typeorm-logger';
 
 const AllEntities = [TodoEntity, UserEntity, ClientEntity, TokenEntity];
 
-const TypeOrmModuleDefaults = {
-    entities: AllEntities,
-    synchronize: true,
-    logging: true
-};
+export interface MysqlTypeOrmDetails {
+    type: 'mysql';
+    mysqlHost: string;
+    mysqlPort: number;
+    mysqlUsername: string;
+    mysqlPassword: string;
+    mysqlDatabase: string;
+}
 
-export function makeMysqlDatabaseModule(
-    mysqlHost: string,
-    mysqlPort: number,
-    mysqlUsername: string,
-    mysqlPassword: string,
-    mysqlDatabase: string): DynamicModule {
+export interface SqliteTypeOrmDetails {
+    type: 'sqlite';
+    dbName: string;
+}
 
-    return TypeOrmModule.forRoot({
-        ...TypeOrmModuleDefaults,
-        type: 'mysql',
-        host: mysqlHost,
-        port: mysqlPort,
-        username: mysqlUsername,
-        password: mysqlPassword,
-        database: mysqlDatabase
+export function makeTypeOrmModule(details: MysqlTypeOrmDetails | SqliteTypeOrmDetails): DynamicModule {
+    let dbTypeSpecificAttributes: any;
+    if (details.type === 'mysql') {
+        dbTypeSpecificAttributes = {
+            type: 'mysql',
+            host: details.mysqlHost,
+            port: details.mysqlPort,
+            username: details.mysqlUsername,
+            password: details.mysqlPassword,
+            database: details.mysqlDatabase,
+        };
+    } else if (details.type === 'sqlite') {
+        dbTypeSpecificAttributes = {
+            type: 'sqlite',
+            database: details.dbName
+        };
+    } else {
+        const exhaustiveCheck: never = details;
+    }
+
+    return TypeOrmModule.forRootAsync({
+        inject: ['winston'],
+        useFactory: (winstonLogger: Logger) => {
+            return {
+                ...dbTypeSpecificAttributes,
+                entities: AllEntities,
+                synchronize: true,
+                logging: ['query', 'schema', 'error', 'warn', 'info', 'log', 'migration'],
+                logger: new WinstonTypeOrmLogger(winstonLogger)
+            };
+        }
     });
 }
 
-export function makeSqliteDatabaseModule(dbName: string): DynamicModule {
-    return TypeOrmModule.forRoot({
-        ...TypeOrmModuleDefaults,
-        type: 'sqlite',
-        database: dbName
-    });
-}
-
-export function makeLoggingModule(mode: 'text'|'json', level: string): DynamicModule {
+export function makeWinstonModule(mode: 'text' | 'json', level: string): DynamicModule {
     let formatters: Format[] = [
         new InjectRequestContextFormat(),
-        winston.format.timestamp(),
+        winston.format.timestamp()
     ];
     if (mode === 'text') {
         formatters = [
@@ -73,6 +91,8 @@ export function makeLoggingModule(mode: 'text'|'json', level: string): DynamicMo
             ...formatters,
             winston.format.logstash()
         ];
+    } else {
+        const exhaustiveCheck: never = mode;
     }
 
     return WinstonModule.forRoot({
@@ -88,7 +108,7 @@ export function makeLoggingModule(mode: 'text'|'json', level: string): DynamicMo
 export class AppModule implements NestModule {
     static make(
         typeOrmModule: Type<any> | DynamicModule,
-        loggingModule: Type<any> | DynamicModule): DynamicModule {
+        winstonModule: Type<any> | DynamicModule): DynamicModule {
 
         return {
             module: AppModule,
@@ -98,7 +118,7 @@ export class AppModule implements NestModule {
                 }),
                 typeOrmModule,
                 TypeOrmModule.forFeature(AllEntities),
-                loggingModule
+                winstonModule
             ],
             controllers: [
                 AppController,

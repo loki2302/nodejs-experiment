@@ -21,7 +21,7 @@ export interface WebConfig {
 }
 
 export interface LogConfig {
-    APP_LOG_MODE: 'text'|'json';
+    APP_LOG_MODE: 'text' | 'json';
     APP_LOG_LEVEL: string;
 }
 
