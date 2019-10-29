@@ -12,6 +12,7 @@ services:
       APP_MYSQL_USERNAME: ${MYSQL_USER}
       APP_MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       APP_MYSQL_DATABASE: ${MYSQL_DATABASE}
+      APP_LOG_MODE: json
 
   mysql:
     image: mysql:8.0.18

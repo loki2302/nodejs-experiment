@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule, makeSqliteDatabaseModule } from './../src/app.module';
+import { AppModule, makeLoggingModule, makeSqliteDatabaseModule } from './../src/app.module';
 import { TodoStatus } from '../src/todo.controller';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { unlinkSync } from 'fs';
@@ -17,7 +17,10 @@ describe('oauth', () => {
         } catch { /* intentionally blank */}
 
         const moduleFixture: TestingModule = await Test.createTestingModule({
-            imports: [AppModule.make(makeSqliteDatabaseModule('db'), 'info')]
+            imports: [AppModule.make(
+                makeSqliteDatabaseModule('db'),
+                makeLoggingModule('text', 'info'))
+            ]
         }).compile();
 
         app = moduleFixture.createNestApplication();

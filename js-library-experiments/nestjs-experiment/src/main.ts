@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { AppModule, makeMysqlDatabaseModule, makeSqliteDatabaseModule } from './app.module';
+import { AppModule, makeLoggingModule, makeMysqlDatabaseModule, makeSqliteDatabaseModule } from './app.module';
 import { loadConfig } from './config';
 import { DynamicModule } from '@nestjs/common';
 
@@ -21,7 +21,10 @@ async function bootstrap() {
         throw new Error('Unknown db type');
     }
 
-    const app = await NestFactory.create(AppModule.make(typeOrmModule, config.APP_LOG_LEVEL));
+    const loggingModule = makeLoggingModule(config.APP_LOG_MODE, config.APP_LOG_LEVEL);
+
+    const app = await NestFactory.create(AppModule.make(typeOrmModule, loggingModule));
+    app.useLogger(app.get('NestWinston'));
 
     SwaggerModule.setup('swagger', app, SwaggerModule.createDocument(app, new DocumentBuilder()
         .setTitle('Dummy API')

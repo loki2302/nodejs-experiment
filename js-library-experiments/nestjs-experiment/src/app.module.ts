@@ -2,7 +2,6 @@ import { DynamicModule, MiddlewareConsumer, Module, NestModule, Type } from '@ne
 import { AppController } from './app.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TodoController } from './todo.controller';
-import { LoggerModule } from 'nestjs-pino/dist';
 import { DummyMiddleware } from './dummy.middleware';
 import { DummyInterceptor } from './dummy.interceptor';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
@@ -12,6 +11,11 @@ import { DummyExceptionFilter } from './dummy-exception.filter';
 import { ClientEntity, TodoEntity, TokenEntity, UserEntity } from './entities';
 import { OAuthModelService } from './oauthmodel.service';
 import ExpressOAuthServer = require('express-oauth-server');
+import { WinstonModule } from 'nest-winston';
+import * as winston from 'winston';
+import * as ExpressCtx from 'express-ctx';
+import { InjectRequestContextFormat, SetRequestContextMiddleware } from './logging';
+import { Format } from 'logform';
 
 const AllEntities = [TodoEntity, UserEntity, ClientEntity, TokenEntity];
 
@@ -47,23 +51,54 @@ export function makeSqliteDatabaseModule(dbName: string): DynamicModule {
     });
 }
 
+export function makeLoggingModule(mode: 'text'|'json', level: string): DynamicModule {
+    let formatters: Format[] = [
+        new InjectRequestContextFormat(),
+        winston.format.timestamp(),
+    ];
+    if (mode === 'text') {
+        formatters = [
+            ...formatters,
+            winston.format.printf(i => {
+                const rest = JSON.stringify(Object.assign({}, i, {
+                    level: undefined,
+                    message: undefined,
+                    timestamp: undefined
+                }));
+                return `${i.timestamp} ${i.level}: ${i.message} <${rest}>`;
+            })
+        ];
+    } else if (mode === 'json') {
+        formatters = [
+            ...formatters,
+            winston.format.logstash()
+        ];
+    }
+
+    return WinstonModule.forRoot({
+        level,
+        format: winston.format.combine(...formatters),
+        transports: [
+            new winston.transports.Console()
+        ]
+    });
+}
+
 @Module({})
 export class AppModule implements NestModule {
-    static make(typeOrmModule: Type<any> | DynamicModule, logLevel: string): DynamicModule {
+    static make(
+        typeOrmModule: Type<any> | DynamicModule,
+        loggingModule: Type<any> | DynamicModule): DynamicModule {
+
         return {
             module: AppModule,
             imports: [
                 ServeStaticModule.forRoot({
                     rootPath: join(__dirname, '..', 'static')
                 }),
-                LoggerModule.forRoot({
-                    name: 'app1',
-                    level: logLevel,
-                    prettyPrint: true,
-                    useLevelLabels: true
-                }),
                 typeOrmModule,
-                TypeOrmModule.forFeature(AllEntities)
+                TypeOrmModule.forFeature(AllEntities),
+                loggingModule
             ],
             controllers: [
                 AppController,
@@ -88,7 +123,8 @@ export class AppModule implements NestModule {
                             model: oAuthModelService
                         });
                     }
-                }
+                },
+                SetRequestContextMiddleware
             ]
         };
     }
@@ -97,6 +133,7 @@ export class AppModule implements NestModule {
     }
 
     configure(consumer: MiddlewareConsumer): any {
+        consumer.apply(ExpressCtx.middleware, SetRequestContextMiddleware).forRoutes('*');
         consumer.apply(DummyMiddleware).forRoutes('*');
         consumer.apply(this.expressOAuthServer.token()).forRoutes('/oauth/token');
         consumer.apply(this.expressOAuthServer.authenticate()).forRoutes(TodoController);

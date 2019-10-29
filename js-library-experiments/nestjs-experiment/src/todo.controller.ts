@@ -1,14 +1,16 @@
-import { Body, Controller, createParamDecorator, Delete, Get, HttpCode, HttpException, HttpStatus, Param,
-    Patch, Put, Query, UsePipes, ValidationPipe } from '@nestjs/common';
+import {
+    Body, Controller, createParamDecorator, Delete, Get, HttpCode, HttpException, HttpStatus, Inject, Param,
+    Patch, Put, Query, UsePipes, ValidationPipe
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateDateColumn, FindManyOptions, Repository, UpdateDateColumn } from 'typeorm';
-import { InjectPinoLogger, PinoLogger } from 'nestjs-pino/dist';
+import { FindManyOptions, Repository} from 'typeorm';
 import {
     ApiImplicitBody, ApiImplicitParam, ApiImplicitQuery, ApiModelProperty, ApiOAuth2Auth, ApiOperation, ApiResponse,
     ApiUseTags
 } from '@nestjs/swagger';
 import { IsIn, IsNotEmpty, IsString } from 'class-validator';
 import { TodoEntity, TodoEntityStatus, UserEntity } from './entities';
+import { Logger } from 'winston';
 
 export const UserId = createParamDecorator((data, req) => {
     return req.res.locals.oauth.token.user.username;
@@ -115,7 +117,7 @@ function todoFromTodoEntity(todoEntity: TodoEntity): Todo {
 @UsePipes(new ValidationPipe())
 export class TodoController {
     constructor(
-        @InjectPinoLogger(TodoController.name) private readonly logger: PinoLogger,
+        @Inject('winston') private readonly logger: Logger,
         @InjectRepository(TodoEntity) private readonly todoEntityRepository: Repository<TodoEntity>,
         @InjectRepository(UserEntity) private readonly userEntityRepository: Repository<UserEntity>) {
     }
@@ -127,6 +129,8 @@ export class TodoController {
     @Get(':id')
     @HttpCode(HttpStatus.OK)
     async getTodo(@Param('id') id: number, @UserId() userId: string): Promise<Todo> {
+        this.logger.info(`User ${userId} wants todo ${id}`, { userId, todoId: id });
+
         const todoEntity = await this.todoEntityRepository.findOne(id, { relations: ['user'] });
         if (todoEntity === undefined) {
             throw new HttpException('no such todo', HttpStatus.NOT_FOUND);

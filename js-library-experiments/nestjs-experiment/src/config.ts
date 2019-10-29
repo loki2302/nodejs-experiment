@@ -21,6 +21,7 @@ export interface WebConfig {
 }
 
 export interface LogConfig {
+    APP_LOG_MODE: 'text'|'json';
     APP_LOG_LEVEL: string;
 }
 
@@ -36,6 +37,7 @@ export function loadConfig(): AppConfig {
         APP_MYSQL_DATABASE: Joi.when('APP_DB_TYPE', { is: 'mysql', then: Joi.string().required() }),
         APP_SQLITE_DATABASE: Joi.when('APP_DB_TYPE', { is: 'sqlite', then: Joi.string().default('db') }),
         APP_PORT: Joi.number().default(3000),
+        APP_LOG_MODE: Joi.string().equal('text', 'json').default('text'),
         APP_LOG_LEVEL: Joi.string().default('info')
     });
 
