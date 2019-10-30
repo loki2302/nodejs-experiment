@@ -20,7 +20,7 @@ describe('the app', () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [AppModule.make(
                 makeTypeOrmModule({ type: 'sqlite', dbName: 'db' }),
-                makeWinstonModule('text', 'info'))
+                makeWinstonModule({ mode: 'text', level: 'info' }))
             ]
         }).compile();
 

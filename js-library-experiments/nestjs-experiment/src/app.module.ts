@@ -35,24 +35,26 @@ export interface SqliteTypeOrmDetails {
     dbName: string;
 }
 
-export function makeTypeOrmModule(details: MysqlTypeOrmDetails | SqliteTypeOrmDetails): DynamicModule {
+export type DbConfig = MysqlTypeOrmDetails | SqliteTypeOrmDetails;
+
+export function makeTypeOrmModule(dbConfig: DbConfig): DynamicModule {
     let dbTypeSpecificAttributes: any;
-    if (details.type === 'mysql') {
+    if (dbConfig.type === 'mysql') {
         dbTypeSpecificAttributes = {
             type: 'mysql',
-            host: details.mysqlHost,
-            port: details.mysqlPort,
-            username: details.mysqlUsername,
-            password: details.mysqlPassword,
-            database: details.mysqlDatabase,
+            host: dbConfig.mysqlHost,
+            port: dbConfig.mysqlPort,
+            username: dbConfig.mysqlUsername,
+            password: dbConfig.mysqlPassword,
+            database: dbConfig.mysqlDatabase,
         };
-    } else if (details.type === 'sqlite') {
+    } else if (dbConfig.type === 'sqlite') {
         dbTypeSpecificAttributes = {
             type: 'sqlite',
-            database: details.dbName
+            database: dbConfig.dbName
         };
     } else {
-        const exhaustiveCheck: never = details;
+        const exhaustiveCheck: never = dbConfig;
     }
 
     return TypeOrmModule.forRootAsync({
@@ -69,12 +71,17 @@ export function makeTypeOrmModule(details: MysqlTypeOrmDetails | SqliteTypeOrmDe
     });
 }
 
-export function makeWinstonModule(mode: 'text' | 'json', level: string): DynamicModule {
+export interface LogConfig {
+    mode: 'text' | 'json';
+    level: string;
+}
+
+export function makeWinstonModule(logConfig: LogConfig): DynamicModule {
     let formatters: Format[] = [
         new InjectRequestContextFormat(),
         winston.format.timestamp()
     ];
-    if (mode === 'text') {
+    if (logConfig.mode === 'text') {
         formatters = [
             ...formatters,
             winston.format.printf(i => {
@@ -86,17 +93,17 @@ export function makeWinstonModule(mode: 'text' | 'json', level: string): Dynamic
                 return `${i.timestamp} ${i.level}: ${i.message} <${rest}>`;
             })
         ];
-    } else if (mode === 'json') {
+    } else if (logConfig.mode === 'json') {
         formatters = [
             ...formatters,
             winston.format.logstash()
         ];
     } else {
-        const exhaustiveCheck: never = mode;
+        const exhaustiveCheck: never = logConfig.mode;
     }
 
     return WinstonModule.forRoot({
-        level,
+        level: logConfig.level,
         format: winston.format.combine(...formatters),
         transports: [
             new winston.transports.Console()

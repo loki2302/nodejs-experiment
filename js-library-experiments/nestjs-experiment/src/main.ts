@@ -2,32 +2,13 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule, makeWinstonModule, makeTypeOrmModule } from './app.module';
 import { loadConfig } from './config';
-import { DynamicModule } from '@nestjs/common';
 
 async function bootstrap() {
     const config = loadConfig();
+    console.log('CONFIG', JSON.stringify(config, null, 2));
 
-    let typeOrmModule: DynamicModule;
-    if (config.APP_DB_TYPE === 'mysql') {
-        typeOrmModule = makeTypeOrmModule({
-            type: 'mysql',
-            mysqlHost: config.APP_MYSQL_HOST,
-            mysqlPort: config.APP_MYSQL_PORT,
-            mysqlUsername: config.APP_MYSQL_USERNAME,
-            mysqlPassword: config.APP_MYSQL_PASSWORD,
-            mysqlDatabase: config.APP_MYSQL_DATABASE
-        });
-    } else if (config.APP_DB_TYPE === 'sqlite') {
-        typeOrmModule = makeTypeOrmModule({
-            type: 'sqlite',
-            dbName: config.APP_SQLITE_DATABASE
-        });
-    } else {
-        throw new Error('Unknown db type');
-    }
-
-    const loggingModule = makeWinstonModule(config.APP_LOG_MODE, config.APP_LOG_LEVEL);
-
+    const typeOrmModule = makeTypeOrmModule(config.dbConfig);
+    const loggingModule = makeWinstonModule(config.logConfig);
     const app = await NestFactory.create(AppModule.make(typeOrmModule, loggingModule));
     app.useLogger(app.get('NestWinston'));
 
@@ -39,7 +20,7 @@ async function bootstrap() {
         .addOAuth2('password', 'authorization url', '/oauth/token')
         .build()));
 
-    await app.listen(config.APP_PORT);
+    await app.listen(config.port);
 }
 
 bootstrap();
