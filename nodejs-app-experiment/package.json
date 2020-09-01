@@ -50,7 +50,7 @@
     "protractor": "^2.0.0",
     "q": "^2.0.3",
     "request-promise": "^0.4.1",
-    "sequelize": "^2.0.5",
+    "sequelize": "^6.3.4",
     "server-destroy": "*",
     "sqlite3": "^3.0.5"
   }
