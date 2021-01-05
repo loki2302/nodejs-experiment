@@ -28,7 +28,7 @@
     "@types/passport-http": "^0.3.4",
     "@types/passport-jwt": "^3.0.1",
     "@types/passport-local": "^1.0.32",
-    "axios": "^0.17.1",
+    "axios": "^0.21.1",
     "chai": "^4.1.2",
     "class-validator": "^0.8.1",
     "ejs": "^2.5.7",
